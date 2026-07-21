@@ -13,12 +13,14 @@ This project explores how a dedicated platform can organize these processes into
 ## Initial Technologies
 
 backend:
+
 - NestJS
 - TypeScript
 - PostgreSQL
 - Prisma
 
 frontend:
+
 - Web: Nextjs
 - Mobile: Expo
 
