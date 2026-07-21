@@ -3,7 +3,11 @@ export class Email {
 
   readonly #value: string;
 
-  constructor(raw: string) {
+  private constructor(value: string) {
+    this.#value = value;
+  }
+
+  public static create(raw: string): Email {
     if (!raw) {
       throw new Error('Email is required');
     }
@@ -14,7 +18,7 @@ export class Email {
       throw new Error('Invalid email');
     }
 
-    this.#value = value;
+    return new Email(value);
   }
 
   private static normalize(raw: string): string {
