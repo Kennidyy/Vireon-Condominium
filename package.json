@@ -8,7 +8,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check-types": "turbo run check-types",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "eval": "bun run format && bun run lint && bun run check-types && bun run format:check && bun run test"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
