@@ -5,4 +5,8 @@ export class Argon2PasswordHasher implements PasswordHasher {
   async hash(pswd: string): Promise<string> {
     return await argon2.hash(pswd);
   }
+
+  async compare(pswd: string, hashed: string): Promise<boolean> {
+    return await argon2.verify(hashed, pswd);
+  }
 }
