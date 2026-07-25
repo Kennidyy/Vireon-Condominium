@@ -22,4 +22,8 @@ export class InMemoryUserRepository implements UserRepository {
   getById(id: string): Promise<User | null> { // TODO: implement getById as soon as possible
     return Promise.resolve(null)
   }
+
+  deleteById(id: string): Promise<void> { // TODO: implement getById as soon as possible
+    return Promise.resolve()
+  }
 }
