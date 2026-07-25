@@ -7,6 +7,7 @@ import { Argon2PasswordHasher } from '../../infrastructure/crypto/Argon2Password
 import { GetUserByEmailUseCase } from '../../application/use-cases/GetUserByEmailUseCase';
 import { GetUserByIdUseCase } from '../../application/use-cases/GetUserByIdUseCase';
 import { DeleteUserByIdUseCase } from '../../application/use-cases/DeleteUserByIdUseCase';
+import { UpdateUserUseCase } from '../../application/use-cases/UpdateUserUseCase';
 
 @Module({
   imports: [PrismaModule],
@@ -16,6 +17,7 @@ import { DeleteUserByIdUseCase } from '../../application/use-cases/DeleteUserByI
     GetUserByEmailUseCase,
     GetUserByIdUseCase,
     DeleteUserByIdUseCase,
+    UpdateUserUseCase,
     PrismaUserRepository,
     Argon2PasswordHasher,
     {

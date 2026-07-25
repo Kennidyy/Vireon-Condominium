@@ -20,6 +20,14 @@ export class User {
     return new User(id, Email.create(email), Password.fromHash(password));
   }
 
+  changeEmail(email: Email): void {
+    this.#email = email;
+  }
+
+  changePassword(password: Password): void {
+    this.#password = password;
+  }
+
   get id(): string {
     return this.#id;
   }
