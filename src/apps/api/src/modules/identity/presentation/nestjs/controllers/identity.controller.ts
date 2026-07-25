@@ -15,6 +15,8 @@ import { GetUserByIdUseCase } from '../../../application/use-cases/GetUserByIdUs
 import { DeleteUserByIdUseCase } from '../../../application/use-cases/DeleteUserByIdUseCase';
 import { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseCase';
 import type { UpdateUserDto } from '../../../application/dto/UpdateUserDto';
+import { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
+import { UserResponseDto } from '../dto/UserResponseDto';
 
 @Controller('identity')
 export class IdentityController {
@@ -24,6 +26,7 @@ export class IdentityController {
     private readonly getUserByIdUseCase: GetUserByIdUseCase,
     private readonly deleteUserByIdUseCase: DeleteUserByIdUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly getAllUsersUseCase: GetAllUsersUseCase,
   ) {}
 
   @Get('users')
@@ -49,5 +52,12 @@ export class IdentityController {
   @Patch('users/:id')
   async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return await this.updateUserUseCase.execute(id, dto);
+  }
+
+  @Get('all')
+  async getAll() {
+    const users = await this.getAllUsersUseCase.execute();
+
+    return users.map((user) => new UserResponseDto(user));
   }
 }

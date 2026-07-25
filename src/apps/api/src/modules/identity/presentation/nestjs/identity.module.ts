@@ -8,6 +8,7 @@ import { GetUserByEmailUseCase } from '../../application/use-cases/GetUserByEmai
 import { GetUserByIdUseCase } from '../../application/use-cases/GetUserByIdUseCase';
 import { DeleteUserByIdUseCase } from '../../application/use-cases/DeleteUserByIdUseCase';
 import { UpdateUserUseCase } from '../../application/use-cases/UpdateUserUseCase';
+import { GetAllUsersUseCase } from '../../application/use-cases/GetAllUsersUseCase';
 
 @Module({
   imports: [PrismaModule],
@@ -18,6 +19,7 @@ import { UpdateUserUseCase } from '../../application/use-cases/UpdateUserUseCase
     GetUserByIdUseCase,
     DeleteUserByIdUseCase,
     UpdateUserUseCase,
+    GetAllUsersUseCase,
     PrismaUserRepository,
     Argon2PasswordHasher,
     {

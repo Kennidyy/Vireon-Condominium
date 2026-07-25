@@ -1,0 +1,20 @@
+info:
+  name: Delete User By ID
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: http://localhost:3000/identity/users/26f4dba7-fdbe-47eb-b2a0-3b118d443da6
+  body:
+    type: form-urlencoded
+    data:
+      - name: email
+        value: ""
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

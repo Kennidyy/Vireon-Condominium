@@ -38,4 +38,8 @@ export class InMemoryUserRepository implements UserRepository {
     }
     return Promise.resolve();
   }
+
+  getAll(): Promise<User[]> {
+    return Promise.resolve(this.users);
+  }
 }
