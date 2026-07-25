@@ -29,7 +29,7 @@ export class IdentityController {
     private readonly deleteUserByIdUseCase: DeleteUserByIdUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
-    private readonly loginUseCase: LoginUseCase
+    private readonly loginUseCase: LoginUseCase,
   ) {}
 
   @Get('users')
@@ -64,9 +64,8 @@ export class IdentityController {
     return users.map((user) => new UserResponseDto(user));
   }
 
-  @Post("/login")
+  @Post('/login')
   async login(@Body() dto: LoginDto) {
-    await this.loginUseCase.execute(dto)
+    await this.loginUseCase.execute(dto);
   }
-
 }
