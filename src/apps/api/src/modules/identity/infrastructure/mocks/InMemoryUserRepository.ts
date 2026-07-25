@@ -18,16 +18,24 @@ export class InMemoryUserRepository implements UserRepository {
     return Promise.resolve(user ?? null);
   }
 
-  
-  getById(id: string): Promise<User | null> { // TODO: implement getById as soon as possible
-    return Promise.resolve(null)
+  getById(id: string): Promise<User | null> {
+    const user = [...this.users.values()].find((user) => user.id === id);
+    return Promise.resolve(user ?? null);
   }
 
-  deleteById(id: string): Promise<void> { // TODO: implement getById as soon as possible
-    return Promise.resolve()
+  deleteById(id: string): Promise<void> {
+    const index = this.users.findIndex((user) => user.id === id);
+    if (index !== -1) {
+      this.users.splice(index, 1);
+    }
+    return Promise.resolve();
   }
 
-  update(user: User): Promise<void> { // TODO: implement getById as soon as possible
-    return Promise.resolve()
+  update(user: User): Promise<void> {
+    const index = this.users.findIndex((u) => u.id === user.id);
+    if (index !== -1) {
+      this.users[index] = user;
+    }
+    return Promise.resolve();
   }
 }
