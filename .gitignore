@@ -17,7 +17,7 @@ coverage
 
 # Turbo
 .turbo
-bruno
+./bruno
 # Vercel
 .vercel
 
