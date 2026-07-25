@@ -2,12 +2,17 @@ import { User } from '../../domain/entities/User';
 import { Email } from '../../domain/value-objects/Email';
 import { Password } from '../../domain/value-objects/Password';
 import { CreateUserDto } from '../dto/CreateUserDto';
-import { PasswordHasher } from '../ports/PasswordHasher';
-import { UserRepository } from '../ports/UserRepository';
+import type { PasswordHasher } from '../ports/PasswordHasher';
+import type { UserRepository } from '../ports/UserRepository';
+import { Inject, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CreateUserUseCase {
   constructor(
+    @Inject('PasswordHasher')
     private readonly passwordHasher: PasswordHasher,
+
+    @Inject('UserRepository')
     private readonly userRepository: UserRepository,
   ) {}
 
@@ -24,11 +29,7 @@ export class CreateUserUseCase {
 
     const passwordHash = await this.passwordHasher.hash(password.value);
 
-    const user = User.create(
-      crypto.randomUUID(),
-      email,
-      Password.fromHash(passwordHash),
-    );
+    const user = User.create(email, Password.fromHash(passwordHash));
 
     await this.userRepository.save(user);
 

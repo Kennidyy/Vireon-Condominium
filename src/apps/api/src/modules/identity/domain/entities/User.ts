@@ -12,8 +12,20 @@ export class User {
     this.#password = password;
   }
 
-  public static create(id: string, email: Email, password: Password): User {
-    return new User(id, email, password);
+  public static create(email: Email, password: Password): User {
+    return new User(crypto.randomUUID(), email, password);
+  }
+
+  public static restore(id: string, email: string, password: string): User {
+    return new User(id, Email.create(email), Password.fromHash(password));
+  }
+
+  changeEmail(email: Email): void {
+    this.#email = email;
+  }
+
+  changePassword(password: Password): void {
+    this.#password = password;
   }
 
   get id(): string {

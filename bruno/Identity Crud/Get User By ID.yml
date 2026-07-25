@@ -1,0 +1,15 @@
+info:
+  name: Get User By ID
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:3000/identity/users/abe86e00-c12a-4c06-9dda-9ee8b6ddd0a5
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
