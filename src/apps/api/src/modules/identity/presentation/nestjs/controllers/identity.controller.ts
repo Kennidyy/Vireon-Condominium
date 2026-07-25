@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateUserUseCase } from '../../../application/use-cases/CreateUserUseCase';
 import type { CreateUserDto } from '../../../application/dto/CreateUserDto';
 import { GetUserByEmailUseCase } from '../../../application/use-cases/GetUserByEmailUseCase';
@@ -14,7 +23,7 @@ export class IdentityController {
     private readonly getUserByEmailUseCase: GetUserByEmailUseCase,
     private readonly getUserByIdUseCase: GetUserByIdUseCase,
     private readonly deleteUserByIdUseCase: DeleteUserByIdUseCase,
-    private readonly updateUserUseCase: UpdateUserUseCase
+    private readonly updateUserUseCase: UpdateUserUseCase,
   ) {}
 
   @Get('users')
@@ -23,8 +32,8 @@ export class IdentityController {
   }
 
   @Get('users/:id')
-  async getById(@Param("id") id: string) {
-    return await this.getUserByIdUseCase.execute(id)
+  async getById(@Param('id') id: string) {
+    return await this.getUserByIdUseCase.execute(id);
   }
 
   @Post('users')
@@ -34,14 +43,11 @@ export class IdentityController {
 
   @Delete('users/:id')
   async deleteById(@Param('id') id: string) {
-    return await this.deleteUserByIdUseCase.execute(id)
+    return await this.deleteUserByIdUseCase.execute(id);
   }
 
   @Patch('users/:id')
-  async update(
-    @Param('id') id: string,
-    @Body() dto: UpdateUserDto,
-  ) {
-    return await this.updateUserUseCase.execute(id, dto)
+  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return await this.updateUserUseCase.execute(id, dto);
   }
 }

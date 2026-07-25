@@ -26,18 +26,18 @@ export class PrismaUserRepository implements UserRepository {
 
   async getById(id: string): Promise<User | null> {
     const data = await this.prismaService.user.findUnique({
-      where: { id }
-    })
+      where: { id },
+    });
 
-    if(!data) return null
+    if (!data) return null;
 
-    return UserMapper.toDomain(data)
+    return UserMapper.toDomain(data);
   }
 
   async deleteById(id: string): Promise<void> {
     await this.prismaService.user.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
 
   async update(user: User): Promise<void> {
@@ -47,6 +47,6 @@ export class PrismaUserRepository implements UserRepository {
         email: user.email.value,
         password: user.password.value,
       },
-    })
+    });
   }
 }
