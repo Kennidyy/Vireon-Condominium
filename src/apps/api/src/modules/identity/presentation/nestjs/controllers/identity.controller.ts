@@ -17,6 +17,8 @@ import { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseC
 import type { UpdateUserDto } from '../../../application/dto/UpdateUserDto';
 import { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
 import { UserResponseDto } from '../dto/UserResponseDto';
+import { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
+import type { LoginDto } from '../../../application/dto/LoginDto';
 
 @Controller('identity')
 export class IdentityController {
@@ -27,6 +29,7 @@ export class IdentityController {
     private readonly deleteUserByIdUseCase: DeleteUserByIdUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
+    private readonly loginUseCase: LoginUseCase
   ) {}
 
   @Get('users')
@@ -60,4 +63,10 @@ export class IdentityController {
 
     return users.map((user) => new UserResponseDto(user));
   }
+
+  @Post("/login")
+  async login(@Body() dto: LoginDto) {
+    await this.loginUseCase.execute(dto)
+  }
+
 }
