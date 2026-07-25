@@ -3,6 +3,8 @@ import type { UserRepository } from '../ports/UserRepository';
 import type { PasswordHasher } from '../ports/PasswordHasher';
 import { LoginDto } from '../dto/LoginDto';
 import { Email } from '../../domain/value-objects/Email';
+import { JwtTokenSigner } from '../../infrastructure/auth/JwtTokenSigner';
+import { access } from 'fs';
 
 @Injectable()
 export class LoginUseCase {
@@ -12,6 +14,8 @@ export class LoginUseCase {
 
     @Inject('PasswordHasher')
     private readonly passwordHasher: PasswordHasher,
+
+    private readonly tokenSigner: JwtTokenSigner
   ) {}
 
   async execute(dto: LoginDto) {
@@ -32,6 +36,12 @@ export class LoginUseCase {
       throw new Error('email or password are wrong');
     }
 
-    return 'OK';
+    const token = await this.tokenSigner.sign({
+      sub: user.id,
+    })
+
+    return {
+      accessToken: token
+    };
   }
 }

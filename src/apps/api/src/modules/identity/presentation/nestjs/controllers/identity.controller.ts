@@ -1,4 +1,5 @@
 import {
+  Request,
   Body,
   Controller,
   Delete,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserUseCase } from '../../../application/use-cases/CreateUserUseCase';
 import type { CreateUserDto } from '../../../application/dto/CreateUserDto';
@@ -19,6 +21,7 @@ import { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUs
 import { UserResponseDto } from '../dto/UserResponseDto';
 import { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
 import type { LoginDto } from '../../../application/dto/LoginDto';
+import { JwtAuthGuard } from '../../../infrastructure/auth/JwtAuthGuard';
 
 @Controller('identity')
 export class IdentityController {
@@ -66,6 +69,12 @@ export class IdentityController {
 
   @Post('/login')
   async login(@Body() dto: LoginDto) {
-    await this.loginUseCase.execute(dto);
+    return await this.loginUseCase.execute(dto);
   }
+
+  @UseGuards(JwtAuthGuard)
+    @Get('me')
+    me(@Request() req: any) {
+        return req.user;
+    }
 }
