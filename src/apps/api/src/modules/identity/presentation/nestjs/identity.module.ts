@@ -4,12 +4,14 @@ import { PrismaModule } from '../../../../infrastructure/database/prisma/prisma.
 import { CreateUserUseCase } from '../../application/use-cases/CreateUserUseCase';
 import { PrismaUserRepository } from '../../infrastructure/database/prisma/PrismaUserRepository';
 import { Argon2PasswordHasher } from '../../infrastructure/crypto/Argon2PasswordHasher';
+import { GetUserByEmailUseCase } from '../../application/use-cases/GetUserByEmailUseCase';
 
 @Module({
   imports: [PrismaModule],
   controllers: [IdentityController],
   providers: [
     CreateUserUseCase,
+    GetUserByEmailUseCase,
     PrismaUserRepository,
     Argon2PasswordHasher,
     {

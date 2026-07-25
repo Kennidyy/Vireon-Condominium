@@ -29,11 +29,7 @@ export class CreateUserUseCase {
 
     const passwordHash = await this.passwordHasher.hash(password.value);
 
-    const user = User.create(
-      crypto.randomUUID(),
-      email,
-      Password.fromHash(passwordHash),
-    );
+    const user = User.create(email, Password.fromHash(passwordHash));
 
     await this.userRepository.save(user);
 

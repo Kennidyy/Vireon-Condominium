@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../../application/ports/UserRepository';
 import { PrismaService } from '../../../../../infrastructure/database/prisma/prisma.service';
 import { User } from '../../../domain/entities/User';
+import { UserMapper } from '../../mappers/UserMapper';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -9,19 +10,17 @@ export class PrismaUserRepository implements UserRepository {
 
   async save(user: User): Promise<void> {
     await this.prismaService.user.create({
-      data: {
-        id: user.id,
-        email: user.email.value,
-        password: user.password.value,
-      },
+      data: UserMapper.toPersistence(user),
     });
   }
 
-  async getByEmail(email: string): Promise<any | null> {
-    return await this.prismaService.user.findUnique({
-      where: {
-        email: email,
-      },
+  async getByEmail(email: string): Promise<User | null> {
+    const data = await this.prismaService.user.findUnique({
+      where: { email },
     });
+
+    if (!data) return null;
+
+    return UserMapper.toDomain(data);
   }
 }
