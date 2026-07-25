@@ -4,7 +4,6 @@ import type { PasswordHasher } from '../ports/PasswordHasher';
 import { LoginDto } from '../dto/LoginDto';
 import { Email } from '../../domain/value-objects/Email';
 import { JwtTokenSigner } from '../../infrastructure/auth/JwtTokenSigner';
-import { access } from 'fs';
 
 @Injectable()
 export class LoginUseCase {
@@ -38,6 +37,7 @@ export class LoginUseCase {
 
     const token = await this.tokenSigner.sign({
       sub: user.id,
+      role: user.role
     })
 
     return {
