@@ -10,9 +10,22 @@ import { DeleteUserByIdUseCase } from '../../application/use-cases/DeleteUserByI
 import { UpdateUserUseCase } from '../../application/use-cases/UpdateUserUseCase';
 import { GetAllUsersUseCase } from '../../application/use-cases/GetAllUsersUseCase';
 import { LoginUseCase } from '../../application/use-cases/LoginUseCase';
+import { JwtTokenSigner } from '../../infrastructure/auth/JwtTokenSigner';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    PrismaModule,
+  
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: '15m',
+      },
+    }),
+  
+  ],
   controllers: [IdentityController],
   providers: [
     CreateUserUseCase,
@@ -24,6 +37,8 @@ import { LoginUseCase } from '../../application/use-cases/LoginUseCase';
     LoginUseCase,
     PrismaUserRepository,
     Argon2PasswordHasher,
+    JwtTokenSigner,
+    JwtStrategy,
     {
       provide: 'UserRepository',
       useClass: PrismaUserRepository,
@@ -32,6 +47,11 @@ import { LoginUseCase } from '../../application/use-cases/LoginUseCase';
       provide: 'PasswordHasher',
       useClass: Argon2PasswordHasher,
     },
+    {
+      provide: 'TokenSigner',
+      useClass: JwtTokenSigner,
+    },
+
   ],
 })
 export class IdentityModule {}
