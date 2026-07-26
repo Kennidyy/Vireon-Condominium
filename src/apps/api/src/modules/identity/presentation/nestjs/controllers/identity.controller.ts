@@ -38,12 +38,17 @@ export class IdentityController {
     private readonly loginUseCase: LoginUseCase,
   ) {}
 
+
   @Get('users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async getByEmail(@Query('email') email: string) {
     return await this.getUserByEmailUseCase.execute(email);
   }
 
   @Get('users/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async getById(@Param('id') id: string) {
     return await this.getUserByIdUseCase.execute(id);
   }
@@ -56,16 +61,22 @@ export class IdentityController {
   }
 
   @Delete('users/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async deleteById(@Param('id') id: string) {
     return await this.deleteUserByIdUseCase.execute(id);
   }
 
   @Patch('users/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return await this.updateUserUseCase.execute(id, dto);
   }
 
   @Get('all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async getAll() {
     const users = await this.getAllUsersUseCase.execute();
 
@@ -77,8 +88,8 @@ export class IdentityController {
     return await this.loginUseCase.execute(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
-    @Get('me')
+  @Get('me')
+  @UseGuards(JwtAuthGuard, RolesGuard)
     me(@Request() req: any) {
         return req.user;
     }
