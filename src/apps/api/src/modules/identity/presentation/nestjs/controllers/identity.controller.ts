@@ -22,6 +22,9 @@ import { UserResponseDto } from '../dto/UserResponseDto';
 import { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
 import type { LoginDto } from '../../../application/dto/LoginDto';
 import { JwtAuthGuard } from '../../../infrastructure/auth/JwtAuthGuard';
+import { RolesGuard } from '../../../infrastructure/auth/RolesGuard';
+import { UserRole } from '../../../domain/enum/UserRole';
+import { Roles } from '../../../infrastructure/auth/Roles';
 
 @Controller('identity')
 export class IdentityController {
@@ -46,6 +49,8 @@ export class IdentityController {
   }
 
   @Post('users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async create(@Body() dto: CreateUserDto) {
     return await this.createUserUseCase.execute(dto);
   }
