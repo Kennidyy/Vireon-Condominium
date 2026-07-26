@@ -3,7 +3,7 @@ import type { UserRepository } from '../ports/UserRepository';
 import type { PasswordHasher } from '../ports/PasswordHasher';
 import { LoginDto } from '../dto/LoginDto';
 import { Email } from '../../domain/value-objects/Email';
-import { JwtTokenSigner } from '../../infrastructure/auth/JwtTokenSigner';
+import type {TokenSigner} from "../ports/TokenSigner";
 
 @Injectable()
 export class LoginUseCase {
@@ -14,7 +14,8 @@ export class LoginUseCase {
     @Inject('PasswordHasher')
     private readonly passwordHasher: PasswordHasher,
 
-    private readonly tokenSigner: JwtTokenSigner
+    @Inject('TokenSigner')
+    private readonly tokenSigner: TokenSigner,
   ) {}
 
   async execute(dto: LoginDto) {
