@@ -16,7 +16,7 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async execute(dto: CreateUserDto): Promise<User> {
+  async execute(dto: CreateUserDto) {
     const email = Email.create(dto.email);
 
     const exists = await this.userRepository.getByEmail(email.value);
@@ -32,7 +32,6 @@ export class CreateUserUseCase {
     const user = User.create(email, Password.fromHash(passwordHash));
 
     await this.userRepository.save(user);
-
-    return user;
+    
   }
 }
