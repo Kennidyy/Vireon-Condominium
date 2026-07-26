@@ -8,9 +8,6 @@ import { RolesGuard } from './modules/identity/infrastructure/auth/RolesGuard';
   imports: [IdentityModule],
   controllers: [],
   providers: [
-    JwtStrategy,
-    JwtAuthGuard,
-    RolesGuard
   ],
 })
 export class AppModule {}
