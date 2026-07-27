@@ -1,9 +1,9 @@
-import { DomainException } from "../../DomainException";
+import { DomainException } from '../../DomainException';
 
 export class PasswordLowerCaseException extends DomainException {
-    readonly code = 'PASSWORD_LOWER_CASE'
+  readonly code = 'PASSWORD_LOWER_CASE';
 
-    constructor() {
-        super('Password must contain at least one lowercase letter')
-    }
+  constructor() {
+    super('Password must contain at least one lowercase letter');
+  }
 }

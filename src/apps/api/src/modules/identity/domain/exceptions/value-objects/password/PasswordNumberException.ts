@@ -1,9 +1,9 @@
-import { DomainException } from "../../DomainException";
+import { DomainException } from '../../DomainException';
 
 export class PasswordNumberException extends DomainException {
-    readonly code = 'PASSWORD_NUMBER'
+  readonly code = 'PASSWORD_NUMBER';
 
-    constructor() {
-        super('Password must contain at least one number')
-    }
+  constructor() {
+    super('Password must contain at least one number');
+  }
 }

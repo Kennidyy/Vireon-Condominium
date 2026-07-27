@@ -29,7 +29,9 @@ describe('Email Value Object', () => {
     });
 
     it('should throw when email has no @', () => {
-      expect(() => Email.create('fuleco.gmail.com')).toThrow('Invalid Email Format');
+      expect(() => Email.create('fuleco.gmail.com')).toThrow(
+        'Invalid Email Format',
+      );
     });
 
     it('should throw when email has no domain', () => {

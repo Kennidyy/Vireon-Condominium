@@ -1,4 +1,4 @@
-import { DomainException } from "../../domain/exceptions/DomainException";
+import { DomainException } from '../../domain/exceptions/DomainException';
 
 export class InvalidCredentialException extends DomainException {
   constructor() {
