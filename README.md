@@ -76,10 +76,10 @@ Tests: 91
 
 Environment status:
 
-| Environment | Status |
-|---|---|
-| Fedora workstation | ✅ Passing |
-| GitHub Actions CI | ✅ Passing |
+| Environment                    | Status                                     |
+| ------------------------------ | ------------------------------------------ |
+| Fedora workstation             | ✅ Passing                                 |
+| GitHub Actions CI              | ✅ Passing                                 |
 | Ubuntu 22.04 clean environment | ⚠️ Compatibility issue under investigation |
 
 The Ubuntu environment validation was documented separately:

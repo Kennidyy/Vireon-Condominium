@@ -355,19 +355,18 @@ All errors follow this structure:
 
 Examples:
 
-| Exception | HTTP Status | Code |
-|-|-|-|
-| InvalidEmailFormatException | 400 | INVALID_EMAIL_FORMAT |
-| EmailIsRequiredException | 400 | EMAIL_IS_REQUIRED |
-| PasswordMinLengthException | 400 | PASSWORD_MIN_LENGTH |
-| EmailAlreadyInUseException | 400 | EMAIL_ALREADY_IN_USE |
-| UserNotFoundException | 400 | USER_NOT_FOUND |
-| InvalidCredentialException | 401 | INVALID_CREDENTIALS |
+| Exception                   | HTTP Status | Code                 |
+| --------------------------- | ----------- | -------------------- |
+| InvalidEmailFormatException | 400         | INVALID_EMAIL_FORMAT |
+| EmailIsRequiredException    | 400         | EMAIL_IS_REQUIRED    |
+| PasswordMinLengthException  | 400         | PASSWORD_MIN_LENGTH  |
+| EmailAlreadyInUseException  | 400         | EMAIL_ALREADY_IN_USE |
+| UserNotFoundException       | 400         | USER_NOT_FOUND       |
+| InvalidCredentialException  | 401         | INVALID_CREDENTIALS  |
 
 ---
 
 # Database Commands
-
 
 Create migration:
 
