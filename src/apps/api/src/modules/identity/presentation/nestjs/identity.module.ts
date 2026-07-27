@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { IdentityController } from './controllers/identity.controller';
 import { PrismaModule } from '../../../../infrastructure/database/prisma/prisma.module';
 import { CreateUserUseCase } from '../../application/use-cases/CreateUserUseCase';
@@ -11,18 +13,22 @@ import { UpdateUserUseCase } from '../../application/use-cases/UpdateUserUseCase
 import { GetAllUsersUseCase } from '../../application/use-cases/GetAllUsersUseCase';
 import { LoginUseCase } from '../../application/use-cases/LoginUseCase';
 import { JwtTokenSigner } from '../../infrastructure/auth/JwtTokenSigner';
-import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
 
 @Module({
   imports: [
     PrismaModule,
-
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: {
-        expiresIn: '15m',
-      },
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('auth.jwtSecret'),
+        signOptions: {
+          expiresIn: configService.get<JwtSignOptions['expiresIn']>(
+            'auth.jwtExpiresIn',
+            '15m' as JwtSignOptions['expiresIn'],
+          ),
+        },
+      }),
     }),
   ],
   controllers: [IdentityController],
