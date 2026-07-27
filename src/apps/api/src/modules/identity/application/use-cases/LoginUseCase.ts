@@ -3,7 +3,7 @@ import type { UserRepository } from '../ports/UserRepository';
 import type { PasswordHasher } from '../ports/PasswordHasher';
 import { LoginDto } from '../dto/LoginDto';
 import { Email } from '../../domain/value-objects/Email';
-import type {TokenSigner} from "../ports/TokenSigner";
+import type { TokenSigner } from '../ports/TokenSigner';
 
 @Injectable()
 export class LoginUseCase {
@@ -38,11 +38,11 @@ export class LoginUseCase {
 
     const token = await this.tokenSigner.sign({
       sub: user.id,
-      role: user.role
-    })
+      role: user.role,
+    });
 
     return {
-      accessToken: token
+      accessToken: token,
     };
   }
 }

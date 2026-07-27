@@ -28,8 +28,8 @@ describe('DeleteUserByIdUseCase', () => {
   });
 
   it('should throw when user not found', async () => {
-    await expect(
-      useCase.execute('non-existent-id'),
-    ).rejects.toThrow('User not found');
+    await expect(useCase.execute('non-existent-id')).rejects.toThrow(
+      'User not found',
+    );
   });
 });

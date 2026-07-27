@@ -21,12 +21,7 @@ export class User {
   }
 
   public static create(email: Email, password: Password): User {
-    return new User(
-      crypto.randomUUID(),
-      email,
-      password,
-      UserRole.USER,
-    );
+    return new User(crypto.randomUUID(), email, password, UserRole.USER);
   }
 
   public static restore(
@@ -35,12 +30,7 @@ export class User {
     password: string,
     role: UserRole,
   ): User {
-    return new User(
-      id,
-      Email.create(email),
-      Password.fromHash(password),
-      role,
-    );
+    return new User(id, Email.create(email), Password.fromHash(password), role);
   }
 
   changeEmail(email: Email): void {

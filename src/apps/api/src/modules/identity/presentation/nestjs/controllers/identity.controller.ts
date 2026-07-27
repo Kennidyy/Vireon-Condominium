@@ -11,16 +11,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserUseCase } from '../../../application/use-cases/CreateUserUseCase';
-import type { CreateUserDto } from '../../../application/dto/CreateUserDto';
 import { GetUserByEmailUseCase } from '../../../application/use-cases/GetUserByEmailUseCase';
 import { GetUserByIdUseCase } from '../../../application/use-cases/GetUserByIdUseCase';
 import { DeleteUserByIdUseCase } from '../../../application/use-cases/DeleteUserByIdUseCase';
 import { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseCase';
-import type { UpdateUserDto } from '../../../application/dto/UpdateUserDto';
 import { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
 import { UserResponseDto } from '../dto/UserResponseDto';
 import { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
-import type { LoginDto } from '../../../application/dto/LoginDto';
 import { JwtAuthGuard } from '../../../infrastructure/auth/JwtAuthGuard';
 import { RolesGuard } from '../../../infrastructure/auth/RolesGuard';
 import { UserRole } from '../../../domain/enum/UserRole';
@@ -40,7 +37,6 @@ export class IdentityController {
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
     private readonly loginUseCase: LoginUseCase,
   ) {}
-
 
   @Get('users')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -93,7 +89,7 @@ export class IdentityController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard, RolesGuard)
-    me(@Request() req: any) {
-        return req.user;
-    }
+  me(@Request() req: { user: { id: string; role: string } }) {
+    return req.user;
+  }
 }

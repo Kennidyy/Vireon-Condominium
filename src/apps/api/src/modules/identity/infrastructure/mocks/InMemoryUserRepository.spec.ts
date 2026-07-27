@@ -2,7 +2,6 @@ import { InMemoryUserRepository } from './InMemoryUserRepository';
 import { User } from '../../domain/entities/User';
 import { Email } from '../../domain/value-objects/Email';
 import { Password } from '../../domain/value-objects/Password';
-import { UserRole } from '../../domain/enum/UserRole';
 
 describe('InMemoryUserRepository', () => {
   let repository: InMemoryUserRepository;
@@ -75,7 +74,9 @@ describe('InMemoryUserRepository', () => {
     });
 
     it('should not throw when deleting non-existent user', async () => {
-      await expect(repository.deleteById('nonexistent-id')).resolves.toBeUndefined();
+      await expect(
+        repository.deleteById('nonexistent-id'),
+      ).resolves.toBeUndefined();
     });
   });
 

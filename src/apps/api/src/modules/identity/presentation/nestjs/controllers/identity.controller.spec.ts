@@ -1,24 +1,26 @@
 import { IdentityController } from './identity.controller';
-import { CreateUserUseCase } from '../../../application/use-cases/CreateUserUseCase';
-import { GetUserByEmailUseCase } from '../../../application/use-cases/GetUserByEmailUseCase';
-import { GetUserByIdUseCase } from '../../../application/use-cases/GetUserByIdUseCase';
-import { DeleteUserByIdUseCase } from '../../../application/use-cases/DeleteUserByIdUseCase';
-import { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseCase';
-import { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
-import { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
+import type { CreateUserUseCase } from '../../../application/use-cases/CreateUserUseCase';
+import type { GetUserByEmailUseCase } from '../../../application/use-cases/GetUserByEmailUseCase';
+import type { GetUserByIdUseCase } from '../../../application/use-cases/GetUserByIdUseCase';
+import type { DeleteUserByIdUseCase } from '../../../application/use-cases/DeleteUserByIdUseCase';
+import type { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseCase';
+import type { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
+import type { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
 import { User } from '../../../domain/entities/User';
 import { Email } from '../../../domain/value-objects/Email';
 import { Password } from '../../../domain/value-objects/Password';
 
+type MockUseCase = { execute: jest.Mock };
+
 describe('IdentityController', () => {
   let controller: IdentityController;
-  let mockCreateUser: jest.Mocked<CreateUserUseCase>;
-  let mockGetByEmail: jest.Mocked<GetUserByEmailUseCase>;
-  let mockGetById: jest.Mocked<GetUserByIdUseCase>;
-  let mockDelete: jest.Mocked<DeleteUserByIdUseCase>;
-  let mockUpdate: jest.Mocked<UpdateUserUseCase>;
-  let mockGetAll: jest.Mocked<GetAllUsersUseCase>;
-  let mockLogin: jest.Mocked<LoginUseCase>;
+  let mockCreateUser: MockUseCase;
+  let mockGetByEmail: MockUseCase;
+  let mockGetById: MockUseCase;
+  let mockDelete: MockUseCase;
+  let mockUpdate: MockUseCase;
+  let mockGetAll: MockUseCase;
+  let mockLogin: MockUseCase;
 
   const createTestUser = () => {
     const email = Email.create('test@email.com');
@@ -27,22 +29,22 @@ describe('IdentityController', () => {
   };
 
   beforeEach(() => {
-    mockCreateUser = { execute: jest.fn() } as any;
-    mockGetByEmail = { execute: jest.fn() } as any;
-    mockGetById = { execute: jest.fn() } as any;
-    mockDelete = { execute: jest.fn() } as any;
-    mockUpdate = { execute: jest.fn() } as any;
-    mockGetAll = { execute: jest.fn() } as any;
-    mockLogin = { execute: jest.fn() } as any;
+    mockCreateUser = { execute: jest.fn() };
+    mockGetByEmail = { execute: jest.fn() };
+    mockGetById = { execute: jest.fn() };
+    mockDelete = { execute: jest.fn() };
+    mockUpdate = { execute: jest.fn() };
+    mockGetAll = { execute: jest.fn() };
+    mockLogin = { execute: jest.fn() };
 
     controller = new IdentityController(
-      mockCreateUser,
-      mockGetByEmail,
-      mockGetById,
-      mockDelete,
-      mockUpdate,
-      mockGetAll,
-      mockLogin,
+      mockCreateUser as unknown as CreateUserUseCase,
+      mockGetByEmail as unknown as GetUserByEmailUseCase,
+      mockGetById as unknown as GetUserByIdUseCase,
+      mockDelete as unknown as DeleteUserByIdUseCase,
+      mockUpdate as unknown as UpdateUserUseCase,
+      mockGetAll as unknown as GetAllUsersUseCase,
+      mockLogin as unknown as LoginUseCase,
     );
   });
 
@@ -70,7 +72,10 @@ describe('IdentityController', () => {
 
   describe('getByEmail', () => {
     it('should call get by email use case', async () => {
-      mockGetByEmail.execute.mockResolvedValue({ id: 'id', email: 'test@email.com' });
+      mockGetByEmail.execute.mockResolvedValue({
+        id: 'id',
+        email: 'test@email.com',
+      });
 
       const result = await controller.getByEmail('test@email.com');
 
@@ -81,7 +86,10 @@ describe('IdentityController', () => {
 
   describe('getById', () => {
     it('should call get by id use case', async () => {
-      mockGetById.execute.mockResolvedValue({ id: 'user-id', email: 'test@email.com' });
+      mockGetById.execute.mockResolvedValue({
+        id: 'user-id',
+        email: 'test@email.com',
+      });
 
       const result = await controller.getById('user-id');
 
@@ -124,9 +132,9 @@ describe('IdentityController', () => {
 
   describe('me', () => {
     it('should return request user', () => {
-      const req = { user: { id: 'my-id', role: 'ADMIN' } };
+      const req = { user: { id: 'my-id', role: 'ADMIN' as const } };
 
-      const result = (controller as any).me(req);
+      const result = controller.me(req);
 
       expect(result).toEqual({ id: 'my-id', role: 'ADMIN' });
     });
