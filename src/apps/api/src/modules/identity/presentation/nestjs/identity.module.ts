@@ -17,14 +17,13 @@ import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
 @Module({
   imports: [
     PrismaModule,
-  
+
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: '15m',
       },
     }),
-  
   ],
   controllers: [IdentityController],
   providers: [
@@ -51,7 +50,6 @@ import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
       provide: 'TokenSigner',
       useClass: JwtTokenSigner,
     },
-
   ],
 })
 export class IdentityModule {}

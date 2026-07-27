@@ -32,6 +32,5 @@ export class CreateUserUseCase {
     const user = User.create(email, Password.fromHash(passwordHash));
 
     await this.userRepository.save(user);
-    
   }
 }

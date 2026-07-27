@@ -4,9 +4,28 @@ on:
   push:
   pull_request:
 
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/vireon_db"
+  JWT_SECRET: "123"
+
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vireon_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +38,13 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Generate Prisma Client
+        working-directory: src/apps/api
+        run: bunx prisma generate
+
+      - name: Format
+        run: bun run format
+
       - name: Format check
         run: bun run format:check
 
@@ -27,6 +53,10 @@ jobs:
 
       - name: Check Types
         run: bun run check-types
+
+      - name: Deploy Database Migrations
+        working-directory: src/apps/api
+        run: bunx prisma migrate deploy
 
       - name: Test
         run: bun run test

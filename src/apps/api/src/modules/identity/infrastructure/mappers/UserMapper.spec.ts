@@ -1,7 +1,5 @@
 import { UserMapper } from './UserMapper';
 import { User } from '../../domain/entities/User';
-import { Email } from '../../domain/value-objects/Email';
-import { Password } from '../../domain/value-objects/Password';
 import { UserRole as DomainRole } from '../../domain/enum/UserRole';
 
 describe('UserMapper', () => {
@@ -36,9 +34,12 @@ describe('UserMapper', () => {
 
   describe('toPersistence', () => {
     it('should map domain User to persistence format', () => {
-      const email = Email.create('persist@email.com');
-      const password = Password.fromHash('$hash');
-      const user = User.restore('persist-id', 'persist@email.com', '$hash', DomainRole.ADMIN);
+      const user = User.restore(
+        'persist-id',
+        'persist@email.com',
+        '$hash',
+        DomainRole.ADMIN,
+      );
 
       const data = UserMapper.toPersistence(user);
 

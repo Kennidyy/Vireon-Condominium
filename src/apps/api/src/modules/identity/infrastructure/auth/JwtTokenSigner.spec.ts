@@ -6,10 +6,11 @@ describe('JwtTokenSigner', () => {
   let jwtService: jest.Mocked<JwtService>;
   let signer: JwtTokenSigner;
 
+  let signAsyncMock: jest.Mock;
+
   beforeEach(() => {
-    jwtService = {
-      signAsync: jest.fn().mockResolvedValue('signed-jwt-token'),
-    } as any;
+    signAsyncMock = jest.fn().mockResolvedValue('signed-jwt-token');
+    jwtService = { signAsync: signAsyncMock } as jest.Mocked<JwtService>;
 
     signer = new JwtTokenSigner(jwtService);
   });
@@ -21,7 +22,7 @@ describe('JwtTokenSigner', () => {
     });
 
     expect(token).toBe('signed-jwt-token');
-    expect(jwtService.signAsync).toHaveBeenCalledWith({
+    expect(signAsyncMock).toHaveBeenCalledWith({
       sub: 'user-id-123',
       role: 'ADMIN',
     });
@@ -33,7 +34,7 @@ describe('JwtTokenSigner', () => {
       role: UserRole.USER,
     });
 
-    expect(jwtService.signAsync).toHaveBeenCalledWith({
+    expect(signAsyncMock).toHaveBeenCalledWith({
       sub: 'user-id-456',
       role: 'USER',
     });

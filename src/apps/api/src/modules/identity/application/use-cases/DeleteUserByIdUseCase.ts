@@ -9,11 +9,10 @@ export class DeleteUserByIdUseCase {
   ) {}
 
   async execute(id: string) {
+    const user = await this.userRepository.getById(id);
 
-    const user = await this.userRepository.getById(id)
-
-    if(!user) {
-      throw new Error('User not found')
+    if (!user) {
+      throw new Error('User not found');
     }
 
     await this.userRepository.deleteById(id);

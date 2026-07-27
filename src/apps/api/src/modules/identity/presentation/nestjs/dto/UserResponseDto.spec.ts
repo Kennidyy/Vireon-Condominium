@@ -22,6 +22,6 @@ describe('UserResponseDto', () => {
 
     const dto = new UserResponseDto(user);
 
-    expect((dto as any).password).toBeUndefined();
+    expect((dto as Record<string, unknown>).password).toBeUndefined();
   });
 });

@@ -4,7 +4,6 @@ import { Password } from '../../domain/value-objects/Password';
 import { UpdateUserDto } from '../dto/UpdateUserDto';
 import type { PasswordHasher } from '../ports/PasswordHasher';
 import type { UserRepository } from '../ports/UserRepository';
-import { UserRole } from '../../domain/enum/UserRole';
 
 @Injectable()
 export class UpdateUserUseCase {
@@ -34,7 +33,7 @@ export class UpdateUserUseCase {
     }
 
     if (dto.role) {
-      user.changeRole(dto.role)
+      user.changeRole(dto.role);
     }
 
     await this.userRepository.update(user);

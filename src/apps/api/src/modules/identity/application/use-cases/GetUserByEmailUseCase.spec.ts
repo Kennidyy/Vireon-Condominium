@@ -21,14 +21,14 @@ describe('GetUserByEmailUseCase', () => {
     const result = await useCase.execute('existing@email.com');
 
     expect(result).toEqual({
-      id: expect.any(String),
+      id: expect.any(String) as string,
       email: 'existing@email.com',
     });
   });
 
   it('should throw when user not found', async () => {
-    await expect(
-      useCase.execute('notfound@email.com'),
-    ).rejects.toThrow('User not found');
+    await expect(useCase.execute('notfound@email.com')).rejects.toThrow(
+      'User not found',
+    );
   });
 });
