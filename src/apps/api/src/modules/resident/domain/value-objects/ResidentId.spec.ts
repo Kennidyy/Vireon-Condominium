@@ -36,15 +36,15 @@ describe('ResidentId Value Object', () => {
     });
 
     it('should throw when value has invalid version', () => {
-      expect(() => ResidentId.create('550e8400-e29b-61d4-a716-446655440000')).toThrow(
-        'Invalid ResidentId',
-      );
+      expect(() =>
+        ResidentId.create('550e8400-e29b-61d4-a716-446655440000'),
+      ).toThrow('Invalid ResidentId');
     });
 
     it('should throw when value has invalid variant', () => {
-      expect(() => ResidentId.create('550e8400-e29b-41d4-0716-446655440000')).toThrow(
-        'Invalid ResidentId',
-      );
+      expect(() =>
+        ResidentId.create('550e8400-e29b-41d4-0716-446655440000'),
+      ).toThrow('Invalid ResidentId');
     });
   });
 

@@ -22,22 +22,22 @@ Represents the unique identifier of a `Resident` aggregate.
 
 ## Behaviors
 
-* Generate a new identifier.
-* Compare identifiers for equality.
+- Generate a new identifier.
+- Compare identifiers for equality.
 
 ---
 
 ## Business Rules
 
-* Must be immutable.
-* Must uniquely identify a `Resident`.
+- Must be immutable.
+- Must uniquely identify a `Resident`.
 
 ---
 
 ## Invariants
 
-* A `ResidentId` value never changes after creation.
-* Two `ResidentId` instances are equal if their values are equal.
+- A `ResidentId` value never changes after creation.
+- Two `ResidentId` instances are equal if their values are equal.
 
 ---
 
