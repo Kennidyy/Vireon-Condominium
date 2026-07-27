@@ -1,9 +1,9 @@
-import { PasswordIsRequiredException } from "../exceptions/value-objects/password/PasswordIsRequiredException";
-import { PasswordLowerCaseException } from "../exceptions/value-objects/password/PasswordLowerCaseException";
-import { PasswordMinLengthException } from "../exceptions/value-objects/password/PasswordMinLengthException";
-import { PasswordNumberException } from "../exceptions/value-objects/password/PasswordNumberException";
-import { PasswordSpecialException } from "../exceptions/value-objects/password/PasswordSpecialException";
-import { PasswordUpperCaseException } from "../exceptions/value-objects/password/PasswordUpperCaseException";
+import { PasswordIsRequiredException } from '../exceptions/value-objects/password/PasswordIsRequiredException';
+import { PasswordLowerCaseException } from '../exceptions/value-objects/password/PasswordLowerCaseException';
+import { PasswordMinLengthException } from '../exceptions/value-objects/password/PasswordMinLengthException';
+import { PasswordNumberException } from '../exceptions/value-objects/password/PasswordNumberException';
+import { PasswordSpecialException } from '../exceptions/value-objects/password/PasswordSpecialException';
+import { PasswordUpperCaseException } from '../exceptions/value-objects/password/PasswordUpperCaseException';
 
 export class Password {
   readonly #value: string;
@@ -31,19 +31,19 @@ export class Password {
     }
 
     if (!/[A-Z]/.test(pswd)) {
-      throw new PasswordUpperCaseException()
+      throw new PasswordUpperCaseException();
     }
 
     if (!/[a-z]/.test(pswd)) {
-      throw new PasswordLowerCaseException()
+      throw new PasswordLowerCaseException();
     }
 
     if (!/[0-9]/.test(pswd)) {
-      throw new PasswordNumberException()
+      throw new PasswordNumberException();
     }
 
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(pswd)) {
-      throw new PasswordSpecialException()
+      throw new PasswordSpecialException();
     }
   }
 

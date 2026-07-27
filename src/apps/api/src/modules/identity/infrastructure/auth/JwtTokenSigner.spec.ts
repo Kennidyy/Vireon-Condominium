@@ -3,16 +3,17 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRole } from '../../domain/enum/UserRole';
 
 describe('JwtTokenSigner', () => {
-  let jwtService: jest.Mocked<JwtService>;
   let signer: JwtTokenSigner;
 
   let signAsyncMock: jest.Mock;
 
   beforeEach(() => {
     signAsyncMock = jest.fn().mockResolvedValue('signed-jwt-token');
-    jwtService = { signAsync: signAsyncMock } as jest.Mocked<JwtService>;
 
-    signer = new JwtTokenSigner(jwtService);
+    const mockJwtService = {
+      signAsync: signAsyncMock,
+    } as unknown as JwtService;
+    signer = new JwtTokenSigner(mockJwtService);
   });
 
   it('should sign a token with given payload', async () => {

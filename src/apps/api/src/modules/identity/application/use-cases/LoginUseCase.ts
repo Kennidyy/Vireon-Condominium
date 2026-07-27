@@ -25,7 +25,7 @@ export class LoginUseCase {
     const user = await this.userRepository.getByEmail(email.value);
 
     if (!user) {
-      throw new InvalidCredentialException()
+      throw new InvalidCredentialException();
     }
 
     const passwordMatches = await this.passwordHasher.compare(
@@ -34,7 +34,7 @@ export class LoginUseCase {
     );
 
     if (!passwordMatches) {
-      throw new InvalidCredentialException()
+      throw new InvalidCredentialException();
     }
 
     const token = await this.tokenSigner.sign({
