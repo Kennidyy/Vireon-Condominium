@@ -5,7 +5,6 @@ describe('Argon2 password hasher', () => {
     const passwordHasher = new Argon2PasswordHasher();
     const pswd = 'Senha1234@#@';
     const hashedPassword = await passwordHasher.hash(pswd);
-    console.log('hashedPassword', hashedPassword);
 
     expect(hashedPassword).toBeDefined();
     expect(hashedPassword).not.toEqual(pswd);
@@ -18,7 +17,6 @@ describe('Argon2 password hasher', () => {
 
     const isMatch = await passwordHasher.compare(pswd, hashedPassword);
 
-    console.log('isMatch', isMatch);
     expect(isMatch).toBe(true);
   });
 });

@@ -1,29 +1,76 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication<App>;
+describe('Identity API (e2e)', () => {
+  let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  afterAll(async () => {
+    await app.close();
   });
 
-  afterEach(async () => {
-    await app.close();
+  describe('POST /identity/login', () => {
+    it('should return 400 on invalid email', () => {
+      return request(app.getHttpServer())
+        .post('/identity/login')
+        .send({ email: 'invalid', password: 'Short1!' })
+        .expect(400);
+    });
+
+    it('should return 400 on short password', () => {
+      return request(app.getHttpServer())
+        .post('/identity/login')
+        .send({ email: 'valid@email.com', password: 'Short1!' })
+        .expect(400);
+    });
+
+    it('should return 400 on missing fields', () => {
+      return request(app.getHttpServer())
+        .post('/identity/login')
+        .send({})
+        .expect(400);
+    });
+  });
+
+  describe('POST /identity/users', () => {
+    it('should return 401 without token', () => {
+      return request(app.getHttpServer())
+        .post('/identity/users')
+        .send({ email: 'admin@test.com', password: 'StrongPass123!' })
+        .expect(401);
+    });
+  });
+
+  describe('GET /identity/all', () => {
+    it('should return 401 without token', () => {
+      return request(app.getHttpServer())
+        .get('/identity/all')
+        .expect(401);
+    });
+  });
+
+  describe('GET /identity/me', () => {
+    it('should return 401 without token', () => {
+      return request(app.getHttpServer())
+        .get('/identity/me')
+        .expect(401);
+    });
   });
 });

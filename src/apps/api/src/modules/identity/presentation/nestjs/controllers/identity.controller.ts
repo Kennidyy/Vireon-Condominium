@@ -25,6 +25,9 @@ import { JwtAuthGuard } from '../../../infrastructure/auth/JwtAuthGuard';
 import { RolesGuard } from '../../../infrastructure/auth/RolesGuard';
 import { UserRole } from '../../../domain/enum/UserRole';
 import { Roles } from '../../../infrastructure/auth/Roles';
+import { CreateUserRequest } from '../dto/CreateUserRequest';
+import { LoginRequest } from '../dto/LoginRequest';
+import { UpdateUserRequest } from '../dto/UpdateUserRequest';
 
 @Controller('identity')
 export class IdentityController {
@@ -56,7 +59,7 @@ export class IdentityController {
   @Post('users')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async create(@Body() dto: CreateUserDto) {
+  async create(@Body() dto: CreateUserRequest) {
     return await this.createUserUseCase.execute(dto);
   }
 
@@ -70,7 +73,7 @@ export class IdentityController {
   @Patch('users/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateUserRequest) {
     return await this.updateUserUseCase.execute(id, dto);
   }
 
@@ -84,7 +87,7 @@ export class IdentityController {
   }
 
   @Post('/login')
-  async login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginRequest) {
     return await this.loginUseCase.execute(dto);
   }
 
