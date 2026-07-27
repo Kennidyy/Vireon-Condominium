@@ -58,12 +58,12 @@ describe('UpdateUserUseCase', () => {
   it('should throw when user not found', async () => {
     await expect(
       useCase.execute('non-existent-id', { email: 'any@email.com' }),
-    ).rejects.toThrow('User not Found');
+    ).rejects.toThrow('User not found');
   });
 
   it('should throw on invalid email format', async () => {
     await expect(
       useCase.execute(createdUser.id, { email: 'invalid' }),
-    ).rejects.toThrow('Invalid email');
+    ).rejects.toThrow('Invalid Email Format');
   });
 });

@@ -25,23 +25,23 @@ describe('Email Value Object', () => {
     });
 
     it('should throw when email contains only whitespace', () => {
-      expect(() => Email.create('     ')).toThrow('Invalid email');
+      expect(() => Email.create('     ')).toThrow('Invalid Email Format');
     });
 
     it('should throw when email has no @', () => {
-      expect(() => Email.create('fuleco.gmail.com')).toThrow('Invalid email');
+      expect(() => Email.create('fuleco.gmail.com')).toThrow('Invalid Email Format');
     });
 
     it('should throw when email has no domain', () => {
-      expect(() => Email.create('fufuxuxu@')).toThrow('Invalid email');
+      expect(() => Email.create('fufuxuxu@')).toThrow('Invalid Email Format');
     });
 
     it('should throw when email has no username', () => {
-      expect(() => Email.create('@nada.com')).toThrow('Invalid email');
+      expect(() => Email.create('@nada.com')).toThrow('Invalid Email Format');
     });
 
     it('should throw when email has no top level domain', () => {
-      expect(() => Email.create('exata@mente')).toThrow('Invalid email');
+      expect(() => Email.create('exata@mente')).toThrow('Invalid Email Format');
     });
   });
 

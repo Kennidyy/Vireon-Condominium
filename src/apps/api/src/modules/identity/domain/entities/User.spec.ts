@@ -63,7 +63,7 @@ describe('User Entity', () => {
     it('should validate email on restore', () => {
       expect(() =>
         User.restore('id', 'invalid', 'hash', UserRole.USER),
-      ).toThrow('Invalid email');
+      ).toThrow('Invalid Email Format');
     });
   });
 
