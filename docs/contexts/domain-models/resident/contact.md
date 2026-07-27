@@ -10,12 +10,12 @@ Represents a communication channel belonging to a resident.
 
 ## Properties
 
-| Name | Type |
-|------|------|
-| id | ContactId |
-| type | ContactType |
-| value | string |
-| isPrimary | boolean |
+| Name      | Type        |
+| --------- | ----------- |
+| id        | ContactId   |
+| type      | ContactType |
+| value     | string      |
+| isPrimary | boolean     |
 
 ## Business Rules
 

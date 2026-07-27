@@ -70,7 +70,7 @@ Reason:
 
 Associates a resident with an authenticated user.
 
-### Apartment Context *(planned)*
+### Apartment Context _(planned)_
 
 Reason:
 

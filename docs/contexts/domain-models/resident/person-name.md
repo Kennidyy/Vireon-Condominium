@@ -10,9 +10,9 @@ Represents a resident's full legal or preferred name.
 
 ## Properties
 
-| Name | Type | Required |
-|------|------|----------|
-| value | string | Yes |
+| Name  | Type   | Required |
+| ----- | ------ | -------- |
+| value | string | Yes      |
 
 ## Business Rules
 

@@ -10,8 +10,8 @@ Represents the identifier of a user managed by the Identity Context.
 
 ## Properties
 
-| Name | Type |
-|------|------|
+| Name  | Type |
+| ----- | ---- |
 | value | UUID |
 
 ## Behaviors

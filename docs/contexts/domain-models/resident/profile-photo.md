@@ -10,13 +10,13 @@ Represents the resident's profile image metadata.
 
 ## Properties
 
-| Name | Type |
-|------|------|
-| id | ProfilePhotoId |
-| storageKey | string |
-| contentType | string |
-| size | number |
-| uploadedAt | Date |
+| Name        | Type           |
+| ----------- | -------------- |
+| id          | ProfilePhotoId |
+| storageKey  | string         |
+| contentType | string         |
+| size        | number         |
+| uploadedAt  | Date           |
 
 ## Business Rules
 
