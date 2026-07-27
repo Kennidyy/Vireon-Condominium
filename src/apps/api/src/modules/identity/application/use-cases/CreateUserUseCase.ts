@@ -5,6 +5,7 @@ import { CreateUserDto } from '../dto/CreateUserDto';
 import type { PasswordHasher } from '../ports/PasswordHasher';
 import type { UserRepository } from '../ports/UserRepository';
 import { Inject, Injectable } from '@nestjs/common';
+import { EmailAlreadyInUseException } from '../exceptions/EmailAlreadyInUseException';
 
 @Injectable()
 export class CreateUserUseCase {
@@ -22,7 +23,7 @@ export class CreateUserUseCase {
     const exists = await this.userRepository.getByEmail(email.value);
 
     if (exists) {
-      throw new Error('This email is already in use');
+      throw new EmailAlreadyInUseException();
     }
 
     const password = Password.create(dto.password);

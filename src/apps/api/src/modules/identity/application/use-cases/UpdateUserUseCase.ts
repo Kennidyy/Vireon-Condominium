@@ -4,6 +4,7 @@ import { Password } from '../../domain/value-objects/Password';
 import { UpdateUserDto } from '../dto/UpdateUserDto';
 import type { PasswordHasher } from '../ports/PasswordHasher';
 import type { UserRepository } from '../ports/UserRepository';
+import { UserNotFoundException } from '../exceptions/UserNotFoundException';
 
 @Injectable()
 export class UpdateUserUseCase {
@@ -18,7 +19,7 @@ export class UpdateUserUseCase {
     const user = await this.userRepository.getById(id);
 
     if (!user) {
-      throw new Error('User not Found');
+      throw new UserNotFoundException();
     }
 
     if (dto.email) {

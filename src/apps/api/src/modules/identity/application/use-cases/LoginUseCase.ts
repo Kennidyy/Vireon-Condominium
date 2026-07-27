@@ -4,6 +4,7 @@ import type { PasswordHasher } from '../ports/PasswordHasher';
 import { LoginDto } from '../dto/LoginDto';
 import { Email } from '../../domain/value-objects/Email';
 import type { TokenSigner } from '../ports/TokenSigner';
+import { InvalidCredentialException } from '../exceptions/InvalidCredentialException';
 
 @Injectable()
 export class LoginUseCase {
@@ -24,7 +25,7 @@ export class LoginUseCase {
     const user = await this.userRepository.getByEmail(email.value);
 
     if (!user) {
-      throw new Error('email or password are wrong');
+      throw new InvalidCredentialException()
     }
 
     const passwordMatches = await this.passwordHasher.compare(
@@ -33,7 +34,7 @@ export class LoginUseCase {
     );
 
     if (!passwordMatches) {
-      throw new Error('email or password are wrong');
+      throw new InvalidCredentialException()
     }
 
     const token = await this.tokenSigner.sign({

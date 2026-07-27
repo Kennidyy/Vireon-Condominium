@@ -44,7 +44,7 @@ describe('LoginUseCase', () => {
         email: 'wrong@email.com',
         password: 'StrongPass123!',
       }),
-    ).rejects.toThrow('email or password are wrong');
+    ).rejects.toThrow('Email or password are wrong');
   });
 
   it('should throw on wrong password', async () => {
@@ -53,7 +53,7 @@ describe('LoginUseCase', () => {
         email: 'existing@email.com',
         password: 'WrongPassword123!',
       }),
-    ).rejects.toThrow('email or password are wrong');
+    ).rejects.toThrow('Email or password are wrong');
   });
 
   it('should throw on invalid email format', async () => {
