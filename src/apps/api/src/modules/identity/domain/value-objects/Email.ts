@@ -1,3 +1,6 @@
+import { EmailIsRequiredException } from "../exceptions/value-objects/email/EmailIsRequiredException";
+import { InvalidEmailFormatException } from "../exceptions/value-objects/email/InvalidEmailFormatException";
+
 export class Email {
   static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -9,13 +12,13 @@ export class Email {
 
   public static create(raw: string): Email {
     if (!raw) {
-      throw new Error('Email is required');
+      throw new EmailIsRequiredException()
     }
 
     const value = Email.normalize(raw);
 
     if (!Email.validate(value)) {
-      throw new Error('Invalid email');
+      throw new InvalidEmailFormatException()
     }
 
     return new Email(value);

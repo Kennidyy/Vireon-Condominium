@@ -62,6 +62,6 @@ describe('LoginUseCase', () => {
         email: 'invalid',
         password: 'StrongPass123!',
       }),
-    ).rejects.toThrow('Invalid email');
+    ).rejects.toThrow('Invalid Email Format');
   });
 });

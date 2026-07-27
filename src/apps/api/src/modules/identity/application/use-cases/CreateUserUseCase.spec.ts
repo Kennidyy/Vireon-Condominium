@@ -55,7 +55,7 @@ describe('CreateUserUseCase', () => {
         email: 'invalido',
         password: 'SenhAP1sfa32#$3!',
       }),
-    ).rejects.toThrow('Invalid email');
+    ).rejects.toThrow('Invalid Email Format');
   });
 
   it('should throw on weak password', async () => {

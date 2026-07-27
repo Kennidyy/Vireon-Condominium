@@ -64,6 +64,6 @@ describe('UpdateUserUseCase', () => {
   it('should throw on invalid email format', async () => {
     await expect(
       useCase.execute(createdUser.id, { email: 'invalid' }),
-    ).rejects.toThrow('Invalid email');
+    ).rejects.toThrow('Invalid Email Format');
   });
 });
