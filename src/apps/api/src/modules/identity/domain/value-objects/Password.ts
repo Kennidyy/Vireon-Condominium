@@ -1,3 +1,10 @@
+import { PasswordIsRequiredException } from '../exceptions/value-objects/password/PasswordIsRequiredException';
+import { PasswordLowerCaseException } from '../exceptions/value-objects/password/PasswordLowerCaseException';
+import { PasswordMinLengthException } from '../exceptions/value-objects/password/PasswordMinLengthException';
+import { PasswordNumberException } from '../exceptions/value-objects/password/PasswordNumberException';
+import { PasswordSpecialException } from '../exceptions/value-objects/password/PasswordSpecialException';
+import { PasswordUpperCaseException } from '../exceptions/value-objects/password/PasswordUpperCaseException';
+
 export class Password {
   readonly #value: string;
 
@@ -16,27 +23,27 @@ export class Password {
 
   public static validate(pswd: string): void {
     if (!pswd) {
-      throw new Error('Password is required');
+      throw new PasswordIsRequiredException();
     }
 
     if (pswd.length < 10) {
-      throw new Error('Password must have at least 10 characters');
+      throw new PasswordMinLengthException();
     }
 
     if (!/[A-Z]/.test(pswd)) {
-      throw new Error('Password must contain at least one uppercase letter');
+      throw new PasswordUpperCaseException();
     }
 
     if (!/[a-z]/.test(pswd)) {
-      throw new Error('Password must contain at least one lowercase letter');
+      throw new PasswordLowerCaseException();
     }
 
     if (!/[0-9]/.test(pswd)) {
-      throw new Error('Password must contain at least one number');
+      throw new PasswordNumberException();
     }
 
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(pswd)) {
-      throw new Error('Password must contain at least one special character');
+      throw new PasswordSpecialException();
     }
   }
 

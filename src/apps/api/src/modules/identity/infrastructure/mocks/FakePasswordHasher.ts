@@ -6,4 +6,10 @@ export class FakePasswordHasher implements PasswordHasher {
 
     return Promise.resolve(pswd);
   }
+
+  compare(value: string, hashed: string): Promise<boolean> {
+    const pswd = `$hashed_${value}`;
+
+    return Promise.resolve(pswd === hashed);
+  }
 }

@@ -1,0 +1,7 @@
+node_modules
+dist
+.next
+coverage
+.git
+.github
+src/apps/api/infrastructure/database/prisma/src
