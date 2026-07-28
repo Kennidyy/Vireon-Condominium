@@ -7,28 +7,28 @@ export class Resident {
 
     private static readonly MAX_CONTACTS = 10
     
+    #userId: string
     #id: ResidentId
     #name: PersonName
-    #profilePhoto: ProfilePhoto
+    //#profilePhoto: ProfilePhoto
     #contacts: Contact[] = []
-    //#userId: string  // this is the id for user identity table
 
     private constructor(
+        userId: string, //TODO: change this
         name: PersonName,
-        profilePhoto: ProfilePhoto,
     ) {
+        this.#userId = userId
         this.#id = ResidentId.generate()
         this.#name = name
-        this.#profilePhoto = profilePhoto
     }
 
     public static create(
-        name: PersonName,
-        profilePhoto: ProfilePhoto,
+        userId: string, //TODO: change this
+        name: PersonName
     ): Resident {
         return new Resident(
-            name,
-            profilePhoto
+            userId,
+            name
         )
     }
 
@@ -55,6 +55,10 @@ export class Resident {
         
     }
 
+    get userId() {
+        return this.#userId
+    }
+
     get id() {
         return this.#id.value
     }
@@ -63,10 +67,11 @@ export class Resident {
         return this.#name.value
     }
 
+    /*
     get profilePhoto() {
         return this.#profilePhoto.storageKey
     }
-
+    */
     contactList() {
     return this.#contacts.map(contact => ({
         id: contact.id,

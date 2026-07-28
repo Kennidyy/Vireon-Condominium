@@ -4,20 +4,20 @@ import { CreateResidentCommand } from "../command/CreateResidentCommand";
 import { Resident } from "../../domain/entities/Resident";
 import { PersonName } from "../../domain/value-objects/PersonName";
 import { ProfilePhoto } from "../../domain/entities/ProfilePhoto";
+import { FakeResidentRepository } from "../../infrastructure/repositories/mock/FakeResidenteRepository";
 
 @Injectable()
 export class CreateResidentUseCase {
 
     constructor(
-        @Inject('FakeResidentRepository')
-        private readonly residentRepository: ResidentRepository
+        @Inject('ResidentRepository')
+        private readonly residentRepository: FakeResidentRepository
     ) {}
 
-    async execute(dto: CreateResidentCommand): Promise<void> {
-
+    async execute(command: CreateResidentCommand): Promise<void> {
         const resident = Resident.create(
-            PersonName.create(dto.name),
-            ProfilePhoto.create(dto.profilePhoto, 'PNG', 5.00)
+            command.userId,
+            PersonName.create(command.name),
         )
 
         await this.residentRepository.save(resident) 
