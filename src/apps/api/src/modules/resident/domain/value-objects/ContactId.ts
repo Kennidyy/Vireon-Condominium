@@ -11,7 +11,7 @@ export class ContactId {
 
   public static create(value: string): ContactId {
     if (!ContactId.validate(value)) {
-      throw new Error('Invalid ResidentId');
+      throw new Error('Invalid ContactId');
     }
 
     return new ContactId(value);
