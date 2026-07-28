@@ -1,50 +1,236 @@
-import { ContactType } from "../enum/ContactType"
-import { ImageType } from "../enum/ImageType"
-import { PersonName } from "../value-objects/PersonName"
-import { Uuid } from "../value-objects/Uuid"
-import { Contact } from "./Contact"
-import { ProfilePhoto } from "./ProfilePhoto"
-import { Resident } from "./Resident"
+import { ContactType } from '../enum/ContactType';
+import { ImageType } from '../enum/ImageType';
+import { PersonName } from '../value-objects/PersonName';
+import { Uuid } from '../value-objects/Uuid';
+import { Contact } from './Contact';
+import { ProfilePhoto } from './ProfilePhoto';
+import { Resident } from './Resident';
 
-describe('faf', ()=>
-{
-  it('d', () => {
+describe('Resident Entity', () => {
+  const makeUserId = () => Uuid.generate();
+  const makeName = () => PersonName.create('João Silva');
+  const makePhoto = () =>
+    ProfilePhoto.create('photos/abc.png', ImageType.PNG, 1024);
+  const makeContact = (value = '+5511999999901', isPrimary = false) =>
+    Contact.create(ContactType.PHONE, value, isPrimary);
 
-    const userId = Uuid.generate()
+  describe('create', () => {
+    it('should create a resident', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
-    const resident = Resident.create(
-      userId,
-      PersonName.create('Nikollas Kennidy Almeida Cardoso'),
-      ProfilePhoto.create(
-        'residents/nikollas/profile/profile.png',
-        ImageType.PNG,
-        124000
-      ),
-      Array<Contact>()
-    )
+      expect(resident).toBeInstanceOf(Resident);
+    });
 
-    console.log(
-      resident.id,
-      resident.userId,
-      resident.name,
-      resident.profilePhoto,
-      resident.contactList
-    )
+    it('should assign a unique id', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
-    resident.addContact(Contact.create(
-      ContactType.EMAIL,
-      'nikollaskennidy@gmail.com',
-      true
-    ))
+      expect(resident.id).toBeDefined();
+      expect(typeof resident.id).toBe('string');
+      expect(resident.id.length).toBeGreaterThan(0);
+    });
 
-    console.log(
-      resident.id,
-      resident.userId,
-      resident.name,
-      resident.profilePhoto,
-      resident.contactList
-    )
+    it('should assign the user id', () => {
+      const userId = makeUserId();
+      const resident = Resident.create(userId, makeName(), makePhoto());
 
-  })
+      expect(resident.userId).toBe(userId.value);
+    });
 
-})
+    it('should assign the name', () => {
+      const resident = Resident.create(
+        makeUserId(),
+        PersonName.create('Maria Souza'),
+        makePhoto(),
+      );
+
+      expect(resident.name).toBe('Maria Souza');
+    });
+
+    it('should assign the profile photo', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      expect(resident.profilePhoto).toEqual({
+        id: expect.any(String),
+        storageKey: 'photos/abc.png',
+        contentType: ImageType.PNG,
+        size: 1024,
+      });
+    });
+
+    it('should start with an empty contact list by default', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      expect(resident.contactList).toHaveLength(0);
+    });
+
+    it('should accept an initial contact list', () => {
+      const contacts = [makeContact()];
+      const resident = Resident.create(
+        makeUserId(),
+        makeName(),
+        makePhoto(),
+        contacts,
+      );
+
+      expect(resident.contactList).toHaveLength(1);
+    });
+
+    it('should throw when initial contacts exceed max', () => {
+      const contacts = Array.from({ length: 11 }, (_, i) =>
+        makeContact(`+55119999999${String(i + 10).padStart(2, '0')}`),
+      );
+
+      expect(() =>
+        Resident.create(makeUserId(), makeName(), makePhoto(), contacts),
+      ).toThrow('Resident cannot have more than 10 contacts');
+    });
+  });
+
+  describe('restore', () => {
+    it('should restore a resident from persistence data', () => {
+      const id = '550e8400-e29b-41d4-a716-446655440000';
+      const userId = '660e8400-e29b-41d4-a716-446655440000';
+      const photo = makePhoto();
+      const contacts = [makeContact()];
+
+      const resident = Resident.restore(id, userId, 'João Silva', photo, contacts);
+
+      expect(resident.id).toBe(id);
+      expect(resident.userId).toBe(userId);
+      expect(resident.name).toBe('João Silva');
+      expect(resident.profilePhoto.storageKey).toBe('photos/abc.png');
+      expect(resident.contactList).toHaveLength(1);
+    });
+  });
+
+  describe('changeName', () => {
+    it('should change the name', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      resident.changeName('Novo Nome');
+
+      expect(resident.name).toBe('Novo Nome');
+    });
+
+    it('should throw on invalid name', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      expect(() => resident.changeName('')).toThrow('Name is required');
+    });
+  });
+
+  describe('changeProfilePhoto', () => {
+    it('should change the profile photo', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+      const newPhoto = ProfilePhoto.create(
+        'photos/new.png',
+        ImageType.JPEG,
+        512,
+      );
+
+      resident.changeProfilePhoto(newPhoto);
+
+      expect(resident.profilePhoto.storageKey).toBe('photos/new.png');
+      expect(resident.profilePhoto.contentType).toBe(ImageType.JPEG);
+      expect(resident.profilePhoto.size).toBe(512);
+    });
+  });
+
+  describe('addContact', () => {
+    it('should add a contact to the list', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+      const contact = makeContact();
+
+      resident.addContact(contact);
+
+      expect(resident.contactList).toHaveLength(1);
+      expect(resident.contactList[0].value).toBe('+5511999999901');
+    });
+
+    it('should throw when exceeding the maximum of 10 contacts', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      for (let i = 0; i < 10; i++) {
+        const suffix = String(i + 10).padStart(2, '0');
+        resident.addContact(makeContact(`+55119999999${suffix}`));
+      }
+
+      expect(() => resident.addContact(makeContact('+5511999999920'))).toThrow(
+        'Resident cannot have more than 10 contacts',
+      );
+    });
+  });
+
+  describe('changeContactValue', () => {
+    it('should update the contact value by id', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+      const contact = makeContact();
+
+      resident.addContact(contact);
+      resident.changeContactValue(contact.id, '+5511999999902');
+
+      expect(contact.value).toBe('+5511999999902');
+    });
+
+    it('should throw when contact is not found', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      expect(() =>
+        resident.changeContactValue('non-existent-id', '+5511999999902'),
+      ).toThrow('Contact not found');
+    });
+  });
+
+  describe('setPrimaryContact', () => {
+    it('should set the contact as primary', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+      const contact = makeContact('+5511999999901', false);
+
+      resident.addContact(contact);
+      resident.setPrimaryContact(contact.id);
+
+      expect(contact.isPrimary).toBe(true);
+    });
+
+    it('should unset primary from other contacts', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+      const contact1 = makeContact('+5511999999901', true);
+      const contact2 = makeContact('+5511999999902', false);
+
+      resident.addContact(contact1);
+      resident.addContact(contact2);
+      resident.setPrimaryContact(contact2.id);
+
+      expect(contact1.isPrimary).toBe(false);
+      expect(contact2.isPrimary).toBe(true);
+    });
+
+    it('should throw when contact is not found', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      expect(() =>
+        resident.setPrimaryContact('non-existent-id'),
+      ).toThrow('Contact not found');
+    });
+  });
+
+  describe('removeContact', () => {
+    it('should remove a contact by id', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+      const contact = makeContact();
+
+      resident.addContact(contact);
+      resident.removeContact(contact.id);
+
+      expect(resident.contactList).toHaveLength(0);
+    });
+
+    it('should throw when contact is not found', () => {
+      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
+
+      expect(() => resident.removeContact('non-existent-id')).toThrow(
+        'Contact not found',
+      );
+    });
+  });
+});
