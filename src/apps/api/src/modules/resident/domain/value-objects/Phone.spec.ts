@@ -27,15 +27,21 @@ describe('Phone Value Object', () => {
     });
 
     it('should throw when using non-Brazilian country code', () => {
-      expect(() => Phone.create('+14155552671')).toThrow('Invalid phone format');
+      expect(() => Phone.create('+14155552671')).toThrow(
+        'Invalid phone format',
+      );
     });
 
     it('should throw when missing 9 digit prefix', () => {
-      expect(() => Phone.create('+551199856958')).toThrow('Invalid phone format');
+      expect(() => Phone.create('+551199856958')).toThrow(
+        'Invalid phone format',
+      );
     });
 
     it('should throw when phone has too few digits', () => {
-      expect(() => Phone.create('+55119998569')).toThrow('Invalid phone format');
+      expect(() => Phone.create('+55119998569')).toThrow(
+        'Invalid phone format',
+      );
     });
 
     it('should throw when phone has too many digits', () => {

@@ -46,21 +46,21 @@ describe('Contact Entity', () => {
     });
 
     it('should reject empty email', () => {
-      expect(() =>
-        Contact.create(ContactType.EMAIL, ''),
-      ).toThrow('Email is required');
+      expect(() => Contact.create(ContactType.EMAIL, '')).toThrow(
+        'Email is required',
+      );
     });
 
     it('should reject whitespace-only email', () => {
-      expect(() =>
-        Contact.create(ContactType.EMAIL, '   '),
-      ).toThrow('Email is required');
+      expect(() => Contact.create(ContactType.EMAIL, '   ')).toThrow(
+        'Email is required',
+      );
     });
 
     it('should reject invalid email format', () => {
-      expect(() =>
-        Contact.create(ContactType.EMAIL, 'not-an-email'),
-      ).toThrow('Invalid Email Format');
+      expect(() => Contact.create(ContactType.EMAIL, 'not-an-email')).toThrow(
+        'Invalid Email Format',
+      );
     });
 
     it('should reject email without domain', () => {
@@ -88,27 +88,27 @@ describe('Contact Entity', () => {
     });
 
     it('should reject phone without country code', () => {
-      expect(() =>
-        Contact.create(ContactType.PHONE, '11999999999'),
-      ).toThrow('Invalid phone format');
+      expect(() => Contact.create(ContactType.PHONE, '11999999999')).toThrow(
+        'Invalid phone format',
+      );
     });
 
     it('should reject phone with non-Brazilian country code', () => {
-      expect(() =>
-        Contact.create(ContactType.PHONE, '+14155552671'),
-      ).toThrow('Invalid phone format');
+      expect(() => Contact.create(ContactType.PHONE, '+14155552671')).toThrow(
+        'Invalid phone format',
+      );
     });
 
     it('should reject phone without 9 digit prefix', () => {
-      expect(() =>
-        Contact.create(ContactType.PHONE, '+551199856958'),
-      ).toThrow('Invalid phone format');
+      expect(() => Contact.create(ContactType.PHONE, '+551199856958')).toThrow(
+        'Invalid phone format',
+      );
     });
 
     it('should reject phone with too few digits', () => {
-      expect(() =>
-        Contact.create(ContactType.PHONE, '+55119998569'),
-      ).toThrow('Invalid phone format');
+      expect(() => Contact.create(ContactType.PHONE, '+55119998569')).toThrow(
+        'Invalid phone format',
+      );
     });
   });
 

@@ -34,15 +34,15 @@ describe('ContactId Value Object', () => {
     });
 
     it('should throw when value has invalid version', () => {
-      expect(() => ContactId.create('550e8400-e29b-61d4-a716-446655440000')).toThrow(
-        'Invalid ContactId',
-      );
+      expect(() =>
+        ContactId.create('550e8400-e29b-61d4-a716-446655440000'),
+      ).toThrow('Invalid ContactId');
     });
 
     it('should throw when value has invalid variant', () => {
-      expect(() => ContactId.create('550e8400-e29b-41d4-0716-446655440000')).toThrow(
-        'Invalid ContactId',
-      );
+      expect(() =>
+        ContactId.create('550e8400-e29b-41d4-0716-446655440000'),
+      ).toThrow('Invalid ContactId');
     });
   });
 
