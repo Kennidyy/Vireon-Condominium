@@ -1,83 +1,163 @@
 import { PersonName } from "../value-objects/PersonName";
-import { ResidentId } from "../value-objects/ResidentId";
+import { Uuid } from "../value-objects/Uuid";
 import { Contact } from "./Contact";
 import { ProfilePhoto } from "./ProfilePhoto";
 
 export class Resident {
+    private static readonly MAX_CONTACTS = 10;
 
-    private static readonly MAX_CONTACTS = 10
-    
-    #userId: string
-    #id: ResidentId
-    #name: PersonName
-    //#profilePhoto: ProfilePhoto
-    #contacts: Contact[] = []
+    readonly #id: Uuid;
+    readonly #userId: Uuid;
+
+    #name: PersonName;
+    #profilePhoto: ProfilePhoto;
+    #contacts: Contact[];
 
     private constructor(
-        userId: string, //TODO: change this
+        id: Uuid,
+        userId: Uuid,
         name: PersonName,
+        profilePhoto: ProfilePhoto,
+        contacts: Contact[],
     ) {
-        this.#userId = userId
-        this.#id = ResidentId.generate()
-        this.#name = name
+        this.#id = id;
+        this.#userId = userId;
+        this.#name = name;
+        this.#profilePhoto = profilePhoto;
+        this.#contacts = contacts;
     }
 
     public static create(
-        userId: string, //TODO: change this
-        name: PersonName
+        userId: Uuid,
+        name: PersonName,
+        profilePhoto: ProfilePhoto,
+        contacts: Contact[] = [],
     ): Resident {
-        return new Resident(
-            userId,
-            name
-        )
-    }
-
-    public addContact(newContact: Contact): void {
-        if(this.#contacts.length > Resident.MAX_CONTACTS) {
-            throw new Error('Resident cannot have more than 10 contacts')
+        if (contacts.length > Resident.MAX_CONTACTS) {
+            throw new Error(
+                `Resident cannot have more than ${Resident.MAX_CONTACTS} contacts`,
+            );
         }
 
-        this.#contacts.push(newContact)
+        return new Resident(
+            Uuid.generate(),
+            userId,
+            name,
+            profilePhoto,
+            contacts,
+        );
     }
 
-    public changeContact(
-        newContact: Contact,
-        oldContact: Contact
+    public static restore(
+        id: string,
+        userId: string,
+        name: string,
+        profilePhoto: ProfilePhoto,
+        contacts: Contact[],
+    ): Resident {
+        return new Resident(
+            Uuid.create(id),
+            Uuid.create(userId),
+            PersonName.create(name),
+            profilePhoto,
+            contacts,
+        );
+    }
+
+    public changeName(newName: string): void {
+        this.#name = PersonName.create(newName);
+    }
+
+    public changeProfilePhoto(
+        newPhoto: ProfilePhoto,
     ): void {
-        oldContact.changeValue(newContact.value)
+        this.#profilePhoto = newPhoto;
+    }
+
+    public addContact(contact: Contact): void {
+        if (this.#contacts.length >= Resident.MAX_CONTACTS) {
+            throw new Error(
+                `Resident cannot have more than ${Resident.MAX_CONTACTS} contacts`,
+            );
+        }
+
+        this.#contacts.push(contact);
+    }
+
+    public changeContactValue(
+        contactId: string,
+        newValue: string,
+    ): void {
+        const contact = this.#contacts.find(
+            contact => contact.id === contactId,
+        );
+
+        if (!contact) {
+            throw new Error("Contact not found");
+        }
+
+        contact.changeValue(newValue);
+    }
+
+    public setPrimaryContact(
+        contactId: string,
+    ): void {
+        const contact = this.#contacts.find(
+            contact => contact.id === contactId,
+        );
+
+        if (!contact) {
+            throw new Error("Contact not found");
+        }
+
+        this.#contacts.forEach(contact => {
+            contact.changePrimaryStatus(false);
+        });
+
+        contact.changePrimaryStatus(true);
     }
 
     public removeContact(
-        contact: Contact
-    ) {
+        contactId: string,
+    ): void {
+        const index = this.#contacts.findIndex(
+            contact => contact.id === contactId,
+        );
 
-        return this.#contacts.indexOf(contact)
-        
+        if (index === -1) {
+            throw new Error("Contact not found");
+        }
+
+        this.#contacts.splice(index, 1);
     }
 
-    get userId() {
-        return this.#userId
+    get id(): string {
+        return this.#id.value;
     }
 
-    get id() {
-        return this.#id.value
+    get userId(): string {
+        return this.#userId.value;
     }
 
-    get name() {
-        return this.#name.value
+    get name(): string {
+        return this.#name.value;
     }
 
-    /*
     get profilePhoto() {
-        return this.#profilePhoto.storageKey
+        return {
+            id: this.#profilePhoto.id,
+            storageKey: this.#profilePhoto.storageKey,
+            contentType: this.#profilePhoto.contentType,
+            size: this.#profilePhoto.size,
+        };
     }
-    */
-    contactList() {
-    return this.#contacts.map(contact => ({
-        id: contact.id,
-        value: contact.value,
-        type: contact.type,
-        isPrimary: contact.isPrimary,
-    }));
-}
+
+    get contactList() {
+        return this.#contacts.map(contact => ({
+            id: contact.id,
+            value: contact.value,
+            type: contact.type,
+            isPrimary: contact.isPrimary,
+        }));
+    }
 }

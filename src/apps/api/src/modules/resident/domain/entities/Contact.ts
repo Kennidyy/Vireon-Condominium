@@ -1,17 +1,18 @@
 import { ContactType } from '../enum/ContactType';
-import { ContactId } from '../value-objects/ContactId';
 import { Email } from '../value-objects/Email';
 import { Phone } from '../value-objects/Phone';
+import { Uuid } from '../value-objects/Uuid';
 
 export class Contact {
-  readonly #id: ContactId;
+
+  readonly #id: Uuid;
   readonly #type: ContactType;
 
   #value: string;
   #isPrimary: boolean;
 
   private constructor(
-    id: ContactId,
+    id: Uuid,
     type: ContactType,
     value: string,
     isPrimary: boolean,
@@ -31,8 +32,27 @@ export class Contact {
 
     Contact.validate(value, type);
 
-    return new Contact(ContactId.generate(), type, value, isPrimary);
+    return new Contact(
+      Uuid.generate(),
+      type,
+      value,
+      isPrimary
+    );
   }
+
+  public static restore(
+        id: string,
+        type: ContactType,
+        value: string,
+        isPrimary: boolean
+    ): Contact {
+        return new Contact(
+            Uuid.create(id),
+            type,
+            value,
+            isPrimary
+        );
+    }
 
   public changeValue(rawValue: string): void {
     const value = rawValue.trim();

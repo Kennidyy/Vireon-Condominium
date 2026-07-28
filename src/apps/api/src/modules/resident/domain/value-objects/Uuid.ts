@@ -1,20 +1,21 @@
-export class ProfilePhotoId {
+export class Uuid {
+
   readonly #value: string;
 
   private constructor(value: string) {
     this.#value = value;
   }
 
-  public static generate(): ProfilePhotoId {
-    return new ProfilePhotoId(crypto.randomUUID());
+  public static generate(): Uuid {
+    return new Uuid(crypto.randomUUID());
   }
 
-  public static create(value: string): ProfilePhotoId {
-    if (!ProfilePhotoId.validate(value)) {
-      throw new Error('Invalid ProfilePhotoId');
+  public static create(value: string): Uuid {
+    if (!Uuid.validate(value)) {
+      throw new Error('Invalid Uuid');
     }
 
-    return new ProfilePhotoId(value);
+    return new Uuid(value);
   }
 
   private static validate(value: string): boolean {
@@ -27,7 +28,7 @@ export class ProfilePhotoId {
     return this.#value;
   }
 
-  equals(other: ProfilePhotoId): boolean {
+  equals(other: Uuid): boolean {
     return this.#value === other.value;
   }
 }

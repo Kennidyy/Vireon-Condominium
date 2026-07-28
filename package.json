@@ -32,5 +32,8 @@
   "workspaces": [
     "src/apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "uuidv7": "^1.2.1"
+  }
 }
