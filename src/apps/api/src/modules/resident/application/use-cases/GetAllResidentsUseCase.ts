@@ -1,13 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { FakeResidentRepository } from "../../infrastructure/repositories/mock/FakeResidenteRepository";
 import { Resident } from "../../domain/entities/Resident";
 import { ResidentResponseDto } from "../../presentation/nestjs/dto/ResidentResponseDto";
+import { PrismaResidentRepository } from "../../infrastructure/repositories/PrismaResidentRepository";
 
 @Injectable()
 export class GetAllResidentsUseCase {
     constructor(
         @Inject('ResidentRepository')
-        private readonly residentRepository: FakeResidentRepository
+        private readonly residentRepository: PrismaResidentRepository
     ) {}
 
     async execute(): Promise<ResidentResponseDto[]> {

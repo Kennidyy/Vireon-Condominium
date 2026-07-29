@@ -49,6 +49,14 @@ export class ProfilePhoto {
         );
     }
 
+    static default() {
+        return ProfilePhoto.create(
+            'defaults/profile.jpg',
+            ImageType.JPEG,
+            124000
+        ) 
+    }
+
     get id(): string {
         return this.#id.value
     }

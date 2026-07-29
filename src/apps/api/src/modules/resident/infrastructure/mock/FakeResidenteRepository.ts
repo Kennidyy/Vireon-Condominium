@@ -1,5 +1,5 @@
-import { ResidentRepository } from "../../../application/ports/ResidentRespository";
-import { Resident } from "../../../domain/entities/Resident";
+import { ResidentRepository } from "../../application/ports/ResidentRespository";
+import { Resident } from "../../domain/entities/Resident";
 
 export class FakeResidentRepository implements ResidentRepository {
 
@@ -29,8 +29,8 @@ export class FakeResidentRepository implements ResidentRepository {
         return resident ?? null
     }
 
-    async getAll(): Promise<Resident> {
-        return this.residents[0]
+    async getAll(): Promise<Resident[]> {
+        return this.residents
     }
 
     async delete(id: string): Promise<void> {

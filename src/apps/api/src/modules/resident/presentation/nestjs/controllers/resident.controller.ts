@@ -1,13 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { CreateResidentUseCase } from '../../../application/use-cases/CreateResidentUseCase';
 import { CreateResidentRequest } from '../dto/CreateResidentRequest';
-import { CreateResidentCommand } from '../../../application/command/CreateResidentCommand';
-import { FakeResidentRepository } from '../../../infrastructure/repositories/mock/FakeResidenteRepository';
 import { GetAllResidentsUseCase } from '../../../application/use-cases/GetAllResidentsUseCase';
-import { UpdateUserRequest } from '../../../../identity/presentation/nestjs/dto/UpdateUserRequest';
-import { UpdateResidentCommand } from '../../../application/command/UpdateResidentCommand';
+import { UpdateResidentCommand } from '../../../application/command/UpdateResidentNameCommand';
 import { UpdateResidentRequest } from '../dto/UpdateResidentRequest';
-import { UpdateResidentUseCase } from '../../../application/use-cases/UpdateResidentUseCase';
+import { UpdateResidentUseCase } from '../../../application/use-cases/UpdateResidentNameUseCase';
+import { ProfilePhoto } from '../../../domain/entities/ProfilePhoto';
+import { ImageType } from '../../../domain/enum/ImageType';
+import { CreateResidentCommand } from '../../../application/command/CreateResidentCommand';
 
 @Controller('residents')
 export class ResidentController {
@@ -18,13 +19,17 @@ export class ResidentController {
         private readonly updateResidentUseCase: UpdateResidentUseCase
     ) {}
 
-    @Post()
-    async create(@Body() request: CreateResidentRequest) {
+    @Post(':id')
+    async create(
+        @Param('id') id: string,
+        @Body() dto: CreateResidentRequest
+    ) {
         const command = new CreateResidentCommand(
-            request.userId,
-            request.name
+            id,
+            dto.name
         )
-        await this.createResidentUseCase.execute(command)
+
+        return this.createResidentUseCase.execute(command);
     }
 
     @Get() 
@@ -32,17 +37,16 @@ export class ResidentController {
         return this.getAllResidentsUseCase.execute()
     }
 
-    @Patch(':id')
+    @Patch('name/:id')
     async update(
         @Param('id') id: string,
         @Body() request: UpdateResidentRequest
     ) {
 
         const command = new UpdateResidentCommand(
-            request.id,
             request.name
         )
-        await this.updateResidentUseCase.execute(command)
+        await this.updateResidentUseCase.execute(id, command)
     }
 
 }

@@ -6,6 +6,7 @@ import { PersonName } from "../../domain/value-objects/PersonName";
 import { ProfilePhoto } from "../../domain/entities/ProfilePhoto";
 import { ImageType } from "../../domain/enum/ImageType";
 import { Uuid } from "../../domain/value-objects/Uuid";
+import { PrismaResidentRepository } from "../../infrastructure/repositories/PrismaResidentRepository";
 
 @Injectable()
 export class CreateResidentUseCase {
@@ -15,14 +16,18 @@ export class CreateResidentUseCase {
         private readonly residentRepository: ResidentRepository
     ) {}
 
-    async execute(command: CreateResidentCommand): Promise<void> {
+    async execute(command: CreateResidentCommand): Promise<Resident> {
+
+        //TODO: Handle already existing resident
         const resident = Resident.create(
-            Uuid.create(command.id),
+            Uuid.create(command.userId),
             PersonName.create(command.name),
-            ProfilePhoto.create('default', ImageType.PNG, 1024),
+            ProfilePhoto.default()
         )
 
         await this.residentRepository.save(resident)
+
+        return resident
     }
 
 }

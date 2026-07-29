@@ -1,19 +1,22 @@
 import { Module } from '@nestjs/common';
-import { FakeResidentRepository } from '../../infrastructure/repositories/mock/FakeResidenteRepository';
 import { CreateResidentUseCase } from '../../application/use-cases/CreateResidentUseCase';
 import { ResidentController } from './controllers/resident.controller';
 import { GetAllResidentsUseCase } from '../../application/use-cases/GetAllResidentsUseCase';
+import { UpdateResidentUseCase } from '../../application/use-cases/UpdateResidentNameUseCase';
+import { PrismaResidentRepository } from '../../infrastructure/repositories/PrismaResidentRepository';
+import { PrismaModule } from '../../../../infrastructure/database/prisma/prisma.module';
 
 @Module({
+    imports: [PrismaModule],
     controllers: [ResidentController],
     providers: [
-        FakeResidentRepository,
         CreateResidentUseCase,
         GetAllResidentsUseCase,
+        UpdateResidentUseCase,
 
         {
             provide: 'ResidentRepository',
-            useClass: FakeResidentRepository
+            useClass: PrismaResidentRepository
         },
     ]
 })

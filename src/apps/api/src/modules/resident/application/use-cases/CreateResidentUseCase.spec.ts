@@ -1,4 +1,4 @@
-import { FakeResidentRepository } from '../../infrastructure/repositories/mock/FakeResidenteRepository';
+import { FakeResidentRepository } from '../../infrastructure/mock/FakeResidenteRepository';
 import { CreateResidentUseCase } from './CreateResidentUseCase';
 import { CreateResidentCommand } from '../command/CreateResidentCommand';
 
