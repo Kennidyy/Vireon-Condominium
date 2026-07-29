@@ -11,11 +11,12 @@ export class ProfilePhoto {
     readonly #size: number;
 
     private constructor(
+        id: Uuid,
         storageKey: string,
         contentType: ImageType,
         size: number
     ) {
-        this.#id = Uuid.generate();
+        this.#id = id;
         this.#storageKey = storageKey;
         this.#contentType = contentType;
         this.#size = size;
@@ -43,10 +44,27 @@ export class ProfilePhoto {
         }
 
         return new ProfilePhoto(
+            Uuid.generate(),
             storageKey,
             contentType,
             size
         );
+    }
+
+    public static restore(
+        id: string,
+        storageKey: string,
+        contentType: ImageType,
+        size: number
+    ) {
+
+        return new ProfilePhoto(
+            Uuid.create(id),
+            storageKey,
+            contentType,
+            size
+        )
+        
     }
 
     static default() {

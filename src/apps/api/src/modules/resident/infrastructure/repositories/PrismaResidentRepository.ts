@@ -3,6 +3,7 @@ import { PrismaService } from "../../../../infrastructure/database/prisma/prisma
 import { ResidentRepository } from "../../application/ports/ResidentRespository";
 import { Resident } from "../../domain/entities/Resident";
 import { ResidentMapper } from "../mappers/ResidentMapper";
+import { User } from "../../../identity/domain/entities/User";
 
 @Injectable()
 export class PrismaResidentRepository implements ResidentRepository {
@@ -33,7 +34,29 @@ export class PrismaResidentRepository implements ResidentRepository {
     }
 
     async getAll(): Promise<Resident[]> {
-        throw new Error("Method not implemented.");
+        const residents = await this.prismaService.resident.findMany({
+            include: {
+                user: true,
+                profilePhoto: true,
+                contacts: true
+            }
+        })
+
+        return residents.map((resident) => {
+
+            if (!resident.profilePhoto) {
+                throw new Error("Resident without profile photo");
+            }
+
+            return ResidentMapper.toDomain(
+                resident.id,
+                resident.userId,
+                resident.name,
+                resident.profilePhoto,
+                resident.contacts
+            )
+        }
+        )
     }
 
     async delete(id: string): Promise<void> {

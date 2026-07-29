@@ -1,5 +1,14 @@
+import {
+        ContactType as PrismaContactType,
+        Contact as PrismaContact,
+        ImageType as PrismaImageType,
+        ProfilePhoto as PrismaProfilePhoto,
+    } from "@prisma/client";
 import { Resident } from "../../domain/entities/Resident";
-
+import { ImageType } from "../../domain/enum/ImageType";
+import { ProfilePhoto } from "../../domain/entities/ProfilePhoto";
+import { Contact } from "../../domain/entities/Contact";
+import { ContactType } from "../../domain/enum/ContactType";
 export class ResidentMapper {
     static toPersistance(resident: Resident) {
         const photo = resident.profilePhoto
@@ -26,6 +35,59 @@ export class ResidentMapper {
                     size: photo.size
                 }
             }
+        }
+    }
+
+    static toDomain(
+        id: string,
+        userId: string,
+        name: string,
+        prismaProfilePhoto: PrismaProfilePhoto,
+        prismaContact: PrismaContact[]
+    ) {
+        const photo = ProfilePhoto.restore(
+            prismaProfilePhoto.id,
+            prismaProfilePhoto.storageKey,
+            ResidentMapper.toDomainImageType(prismaProfilePhoto.contentType),
+            prismaProfilePhoto.size
+        );
+
+        const contacts = prismaContact.map(contact => {
+            return Contact.restore(
+                contact.id,
+                ResidentMapper.toDomainContactType(contact.type),
+                contact.value,
+                contact.isPrimary
+            )
+        })
+        
+
+        return Resident.restore(
+            id,
+            userId,
+            name,
+            photo,
+            contacts
+        );
+    }
+
+    private static toDomainContactType(contactType: PrismaContactType) {
+        switch(contactType) {
+            case PrismaContactType.EMAIL:
+                return ContactType.EMAIL
+
+            case PrismaContactType.PHONE:
+                return ContactType.PHONE
+        }
+    }
+
+    private static toDomainImageType(imageType: PrismaImageType) {
+        switch(imageType) {
+            case PrismaImageType.PNG:
+                return ImageType.PNG
+
+            case PrismaImageType.JPEG:
+                return ImageType.JPEG
         }
     }
 

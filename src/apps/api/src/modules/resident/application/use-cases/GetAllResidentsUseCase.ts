@@ -2,6 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { Resident } from "../../domain/entities/Resident";
 import { ResidentResponseDto } from "../../presentation/nestjs/dto/ResidentResponseDto";
 import { PrismaResidentRepository } from "../../infrastructure/repositories/PrismaResidentRepository";
+import { ResidentMapper } from "../../infrastructure/mappers/ResidentMapper";
 
 @Injectable()
 export class GetAllResidentsUseCase {
@@ -10,14 +11,7 @@ export class GetAllResidentsUseCase {
         private readonly residentRepository: PrismaResidentRepository
     ) {}
 
-    async execute(): Promise<ResidentResponseDto[]> {
-        const residents = await this.residentRepository.getAll()
-
-        return residents.map(resident => 
-            new ResidentResponseDto(
-                resident.id,
-                resident.name
-            )
-        )
+    async execute(): Promise<Resident[]> {
+        return await this.residentRepository.getAll()
     }
 }
