@@ -1,6 +1,6 @@
 import { JwtTokenSigner } from './JwtTokenSigner';
 import { JwtService } from '@nestjs/jwt';
-import { UserRole } from '../../domain/enum/UserRole';
+import { UserRole } from '../../../identity/domain/enum/UserRole';
 
 describe('JwtTokenSigner', () => {
   let signer: JwtTokenSigner;

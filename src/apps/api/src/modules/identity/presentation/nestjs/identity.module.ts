@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { IdentityController } from './controllers/identity.controller';
 import { PrismaModule } from '../../../../infrastructure/database/prisma/prisma.module';
 import { CreateUserUseCase } from '../../application/use-cases/CreateUserUseCase';
@@ -11,25 +9,11 @@ import { GetUserByIdUseCase } from '../../application/use-cases/GetUserByIdUseCa
 import { DeleteUserByIdUseCase } from '../../application/use-cases/DeleteUserByIdUseCase';
 import { UpdateUserUseCase } from '../../application/use-cases/UpdateUserUseCase';
 import { GetAllUsersUseCase } from '../../application/use-cases/GetAllUsersUseCase';
-import { LoginUseCase } from '../../application/use-cases/LoginUseCase';
-import { JwtTokenSigner } from '../../infrastructure/auth/JwtTokenSigner';
-import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
+import { UserIdentityProvider } from '../../infrastructure/providers/UserIdentityProvider';
 
 @Module({
   imports: [
     PrismaModule,
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('auth.jwtSecret'),
-        signOptions: {
-          expiresIn: configService.get<JwtSignOptions['expiresIn']>(
-            'auth.jwtExpiresIn',
-            '15m' as JwtSignOptions['expiresIn'],
-          ),
-        },
-      }),
-    }),
   ],
   controllers: [IdentityController],
   providers: [
@@ -39,11 +23,9 @@ import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
     DeleteUserByIdUseCase,
     UpdateUserUseCase,
     GetAllUsersUseCase,
-    LoginUseCase,
     PrismaUserRepository,
     Argon2PasswordHasher,
-    JwtTokenSigner,
-    JwtStrategy,
+    UserIdentityProvider,
     {
       provide: 'UserRepository',
       useClass: PrismaUserRepository,
@@ -52,10 +34,10 @@ import { JwtStrategy } from '../../infrastructure/auth/JwtStrategy';
       provide: 'PasswordHasher',
       useClass: Argon2PasswordHasher,
     },
-    {
-      provide: 'TokenSigner',
-      useClass: JwtTokenSigner,
-    },
   ],
+
+  exports: [
+    UserIdentityProvider
+  ]
 })
 export class IdentityModule {}

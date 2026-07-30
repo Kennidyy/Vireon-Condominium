@@ -1,4 +1,4 @@
-import { UserRole } from '../../domain/enum/UserRole';
+import { UserRole } from '../../../identity/domain/enum/UserRole';
 
 export interface TokenPayload {
   sub: string;
