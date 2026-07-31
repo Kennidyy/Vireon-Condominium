@@ -43,7 +43,7 @@ describe('Resident Entity', () => {
       const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
       expect(resident.profilePhoto).toEqual({
-        id: expect.any(String),
+        id: expect.any(String) as string,
         storageKey: 'photos/abc.png',
         contentType: ImageType.PNG,
         size: 1024,
@@ -200,9 +200,9 @@ describe('Resident Entity', () => {
     it('should throw when contact is not found', () => {
       const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
-      expect(() =>
-        resident.setPrimaryContact('non-existent-id'),
-      ).toThrow('Contact not found');
+      expect(() => resident.setPrimaryContact('non-existent-id')).toThrow(
+        'Contact not found',
+      );
     });
   });
 

@@ -6,7 +6,6 @@ import { resolve } from 'path';
 
 config({ path: resolve(__dirname, '../../../.env') });
 
-
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
 });

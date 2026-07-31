@@ -19,7 +19,6 @@ describe('IdentityController', () => {
   let mockDelete: MockUseCase;
   let mockUpdate: MockUseCase;
   let mockGetAll: MockUseCase;
-  let mockLogin: MockUseCase;
 
   const createTestUser = () => {
     const email = Email.create('test@email.com');
@@ -34,7 +33,6 @@ describe('IdentityController', () => {
     mockDelete = { execute: jest.fn() };
     mockUpdate = { execute: jest.fn() };
     mockGetAll = { execute: jest.fn() };
-    mockLogin = { execute: jest.fn() };
 
     controller = new IdentityController(
       mockCreateUser as unknown as CreateUserUseCase,

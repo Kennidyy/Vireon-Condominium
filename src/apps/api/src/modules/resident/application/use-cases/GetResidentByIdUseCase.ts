@@ -1,20 +1,20 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import type { ResidentRepository } from "../ports/ResidentRespository";
+import { Inject, Injectable } from '@nestjs/common';
+import type { ResidentRepository } from '../ports/ResidentRespository';
 
 @Injectable()
 export class GetResidentByIdUseCase {
-    constructor(
-        @Inject('ResidentRepository')
-        private readonly residentRepository: ResidentRepository
-    ) {}
+  constructor(
+    @Inject('ResidentRepository')
+    private readonly residentRepository: ResidentRepository,
+  ) {}
 
-    async execute(id: string) {
-        const resident = await this.residentRepository.getById(id)
+  async execute(id: string) {
+    const resident = await this.residentRepository.getById(id);
 
-        if(!resident) {
-            throw new Error('Resident not found')
-        }
-
-        return resident
+    if (!resident) {
+      throw new Error('Resident not found');
     }
+
+    return resident;
+  }
 }

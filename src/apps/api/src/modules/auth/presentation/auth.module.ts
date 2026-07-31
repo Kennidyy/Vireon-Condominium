@@ -12,50 +12,45 @@ import { UserIdentityProvider } from '../../identity/infrastructure/providers/Us
 import { JwtStrategy } from '../infrastructure/strategy/JwtStrategy';
 
 @Module({
-    imports: [
-        IdentityModule,
-         JwtModule.registerAsync({
-              inject: [ConfigService],
-              useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('auth.jwtSecret'),
-                signOptions: {
-                  expiresIn: configService.get<JwtSignOptions['expiresIn']>(
-                    'auth.jwtExpiresIn',
-                    '15m' as JwtSignOptions['expiresIn'],
-                  ),
-                },
-              }),
-            }),
-    ],
-
-    providers: [
-        LoginUserUseCase,
-        JwtTokenSigner,
-        JwtAuthGuard,
-        JwtStrategy,
-        RolesGuard,
-
-        {
-          provide: 'IdentityProvider',
-          useExisting: UserIdentityProvider
+  imports: [
+    IdentityModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('auth.jwtSecret'),
+        signOptions: {
+          expiresIn: configService.get<JwtSignOptions['expiresIn']>(
+            'auth.jwtExpiresIn',
+            '15m' as JwtSignOptions['expiresIn'],
+          ),
         },
-        {
-          provide: 'AuthPasswordHasher',
-          useClass: Argon2PasswordHasher
-        },
-        {
-          provide: 'TokenSigner',
-          useClass: JwtTokenSigner
-        }
-    ],
+      }),
+    }),
+  ],
 
-    controllers: [
-        AuthController,
-    ],
+  providers: [
+    LoginUserUseCase,
+    JwtTokenSigner,
+    JwtAuthGuard,
+    JwtStrategy,
+    RolesGuard,
 
-    exports: [
-        JwtAuthGuard,
-        RolesGuard,
-    ]
+    {
+      provide: 'IdentityProvider',
+      useExisting: UserIdentityProvider,
+    },
+    {
+      provide: 'AuthPasswordHasher',
+      useClass: Argon2PasswordHasher,
+    },
+    {
+      provide: 'TokenSigner',
+      useClass: JwtTokenSigner,
+    },
+  ],
+
+  controllers: [AuthController],
+
+  exports: [JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}

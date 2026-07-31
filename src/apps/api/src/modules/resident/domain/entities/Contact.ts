@@ -4,7 +4,6 @@ import { Phone } from '../value-objects/Phone';
 import { Uuid } from '../value-objects/Uuid';
 
 export class Contact {
-
   readonly #id: Uuid;
   readonly #type: ContactType;
 
@@ -32,27 +31,17 @@ export class Contact {
 
     Contact.validate(value, type);
 
-    return new Contact(
-      Uuid.generate(),
-      type,
-      value,
-      isPrimary
-    );
+    return new Contact(Uuid.generate(), type, value, isPrimary);
   }
 
   public static restore(
-        id: string,
-        type: ContactType,
-        value: string,
-        isPrimary: boolean
-    ): Contact {
-        return new Contact(
-            Uuid.create(id),
-            type,
-            value,
-            isPrimary
-        );
-    }
+    id: string,
+    type: ContactType,
+    value: string,
+    isPrimary: boolean,
+  ): Contact {
+    return new Contact(Uuid.create(id), type, value, isPrimary);
+  }
 
   public changeValue(rawValue: string): void {
     const value = rawValue.trim();

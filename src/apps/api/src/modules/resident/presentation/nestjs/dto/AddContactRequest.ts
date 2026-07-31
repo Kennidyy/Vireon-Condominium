@@ -1,9 +1,9 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class AddContactRequest {
-    @IsString()
-    type!: string;
+  @IsString()
+  type!: string;
 
-    @IsString()
-    value!: string;
+  @IsString()
+  value!: string;
 }

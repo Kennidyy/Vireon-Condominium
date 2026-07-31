@@ -1,8 +1,6 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateResidentRequest {
-
-
   @IsString()
   @IsNotEmpty()
   name!: string;
@@ -17,6 +15,4 @@ export class CreateResidentRequest {
 
   @IsOptional()
   size?: number;
-
-
 }

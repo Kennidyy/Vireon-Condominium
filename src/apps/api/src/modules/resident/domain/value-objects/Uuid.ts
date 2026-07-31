@@ -1,5 +1,4 @@
 export class Uuid {
-
   readonly #value: string;
 
   private constructor(value: string) {

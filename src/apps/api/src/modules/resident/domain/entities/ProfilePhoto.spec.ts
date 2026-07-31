@@ -48,9 +48,9 @@ describe('ProfilePhoto Entity', () => {
     });
 
     it('should reject empty storage key', () => {
-      expect(() =>
-        ProfilePhoto.create('', ImageType.PNG, 100),
-      ).toThrow('Storage key is mandatory');
+      expect(() => ProfilePhoto.create('', ImageType.PNG, 100)).toThrow(
+        'Storage key is mandatory',
+      );
     });
   });
 

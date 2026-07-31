@@ -15,29 +15,25 @@ import { SetPrimaryContactUseCase } from '../../application/use-cases/SetPrimary
 import { RemoveContactUseCase } from '../../application/use-cases/RemoveContactUseCase';
 
 @Module({
-    imports: [
-        PrismaModule
-    ],
-    controllers: [ResidentController],
-    providers: [
-        DeleteResidentUseCase,
-        GetByNameUseCase,
-        CreateResidentUseCase,
-        GetAllResidentsUseCase,
-        UpdateResidentUseCase,
-        GetResidentByIdUseCase,
-        UpdateProfilePhotoUseCase,
-        AddContactUseCase,
-        UpdateContactValueUseCase,
-        SetPrimaryContactUseCase,
-        RemoveContactUseCase,
+  imports: [PrismaModule],
+  controllers: [ResidentController],
+  providers: [
+    DeleteResidentUseCase,
+    GetByNameUseCase,
+    CreateResidentUseCase,
+    GetAllResidentsUseCase,
+    UpdateResidentUseCase,
+    GetResidentByIdUseCase,
+    UpdateProfilePhotoUseCase,
+    AddContactUseCase,
+    UpdateContactValueUseCase,
+    SetPrimaryContactUseCase,
+    RemoveContactUseCase,
 
-        {
-            provide: 'ResidentRepository',
-            useClass: PrismaResidentRepository
-        },
-    ]
+    {
+      provide: 'ResidentRepository',
+      useClass: PrismaResidentRepository,
+    },
+  ],
 })
-export class ResidentModule {
-    
-}
+export class ResidentModule {}

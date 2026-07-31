@@ -1,93 +1,72 @@
-import { ImageType } from "../enum/ImageType";
-import {Uuid } from "../value-objects/Uuid";
+import { ImageType } from '../enum/ImageType';
+import { Uuid } from '../value-objects/Uuid';
 
 export class ProfilePhoto {
+  private static readonly MAX_SIZE = 5 * 1024 * 1024;
 
-    private static readonly MAX_SIZE = 5 * 1024 * 1024;
+  readonly #id: Uuid;
+  readonly #storageKey: string;
+  readonly #contentType: ImageType;
+  readonly #size: number;
 
-    readonly #id: Uuid;
-    readonly #storageKey: string;
-    readonly #contentType: ImageType;
-    readonly #size: number;
+  private constructor(
+    id: Uuid,
+    storageKey: string,
+    contentType: ImageType,
+    size: number,
+  ) {
+    this.#id = id;
+    this.#storageKey = storageKey;
+    this.#contentType = contentType;
+    this.#size = size;
+  }
 
-    private constructor(
-        id: Uuid,
-        storageKey: string,
-        contentType: ImageType,
-        size: number
-    ) {
-        this.#id = id;
-        this.#storageKey = storageKey;
-        this.#contentType = contentType;
-        this.#size = size;
+  public static create(
+    storageKey: string,
+    contentType: ImageType,
+    size: number,
+  ): ProfilePhoto {
+    if (contentType !== ImageType.PNG && contentType !== ImageType.JPEG) {
+      throw new Error('Invalid image type');
     }
 
-    public static create(
-        storageKey: string,
-        contentType: ImageType,
-        size: number
-    ): ProfilePhoto {
-
-        if (
-            contentType !== ImageType.PNG &&
-            contentType !== ImageType.JPEG
-        ) {
-            throw new Error('Invalid image type');
-        }
-
-        if (size > ProfilePhoto.MAX_SIZE) {
-            throw new Error('Image exceeds max size');
-        }
-
-        if (!storageKey) {
-            throw new Error('Storage key is mandatory');
-        }
-
-        return new ProfilePhoto(
-            Uuid.generate(),
-            storageKey,
-            contentType,
-            size
-        );
+    if (size > ProfilePhoto.MAX_SIZE) {
+      throw new Error('Image exceeds max size');
     }
 
-    public static restore(
-        id: string,
-        storageKey: string,
-        contentType: ImageType,
-        size: number
-    ) {
-
-        return new ProfilePhoto(
-            Uuid.create(id),
-            storageKey,
-            contentType,
-            size
-        )
-        
+    if (!storageKey) {
+      throw new Error('Storage key is mandatory');
     }
 
-    static default() {
-        return ProfilePhoto.create(
-            'defaults/profile.jpg',
-            ImageType.JPEG,
-            124000
-        ) 
-    }
+    return new ProfilePhoto(Uuid.generate(), storageKey, contentType, size);
+  }
 
-    get id(): string {
-        return this.#id.value
-    }
+  public static restore(
+    id: string,
+    storageKey: string,
+    contentType: ImageType,
+    size: number,
+  ) {
+    return new ProfilePhoto(Uuid.create(id), storageKey, contentType, size);
+  }
 
-    get storageKey(): string {
-        return this.#storageKey
-    }
+  static default() {
+    return ProfilePhoto.create('defaults/profile.jpg', ImageType.JPEG, 124000);
+  }
 
-    get contentType(): string {
-        return this.#contentType
-    }
+  get id(): string {
+    return this.#id.value;
+  }
 
-    get size(): number {
-        return this.#size
-    }
+  get storageKey(): string {
+    return this.#storageKey;
+  }
+
+  get contentType(): string {
+    return this.#contentType;
+  }
+
+  get size(): number {
+    return this.#size;
+  }
 }

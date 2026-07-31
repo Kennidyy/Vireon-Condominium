@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateResidentUseCase } from '../../../application/use-cases/CreateResidentUseCase';
 import { CreateResidentRequest } from '../dto/CreateResidentRequest';
 import { GetAllResidentsUseCase } from '../../../application/use-cases/GetAllResidentsUseCase';
@@ -6,7 +17,10 @@ import { UpdateResidentCommand } from '../../../application/command/UpdateReside
 import { UpdateResidentRequest } from '../dto/UpdateResidentRequest';
 import { UpdateResidentUseCase } from '../../../application/use-cases/UpdateResidentNameUseCase';
 import { CreateResidentCommand } from '../../../application/command/CreateResidentCommand';
-import { ContactResponseDto, ResidentResponseDto } from '../dto/ResidentResponseDto';
+import {
+  ContactResponseDto,
+  ResidentResponseDto,
+} from '../dto/ResidentResponseDto';
 import { JwtAuthGuard } from '../../../../auth/infrastructure/guards/JwtAuthGuard';
 import { Roles } from '../../../../auth/infrastructure/decorators/Roles';
 import { UserRole } from '../../../../auth/domain/enum/UserRole';
@@ -32,203 +46,170 @@ import { RemoveContactCommand } from '../../../application/command/RemoveContact
 
 @Controller('residents')
 export class ResidentController {
+  constructor(
+    private readonly createResidentUseCase: CreateResidentUseCase,
+    private readonly getResidentByName: GetByNameUseCase,
+    private readonly getAllResidentsUseCase: GetAllResidentsUseCase,
+    private readonly updateResidentUseCase: UpdateResidentUseCase,
+    private readonly deleteResidentUseCase: DeleteResidentUseCase,
+    private readonly getResidentByIdUseCase: GetResidentByIdUseCase,
+    private readonly updateProfilePhotoUseCase: UpdateProfilePhotoUseCase,
+    private readonly addContactUseCase: AddContactUseCase,
+    private readonly updateContactValueUseCase: UpdateContactValueUseCase,
+    private readonly setPrimaryContactUseCase: SetPrimaryContactUseCase,
+    private readonly removeContactUseCase: RemoveContactUseCase,
+  ) {}
 
-    constructor(
-        private readonly createResidentUseCase: CreateResidentUseCase,
-        private readonly getResidentByName: GetByNameUseCase,
-        private readonly getAllResidentsUseCase: GetAllResidentsUseCase,
-        private readonly updateResidentUseCase: UpdateResidentUseCase,
-        private readonly deleteResidentUseCase: DeleteResidentUseCase,
-        private readonly getResidentByIdUseCase: GetResidentByIdUseCase,
-        private readonly updateProfilePhotoUseCase: UpdateProfilePhotoUseCase,
-        private readonly addContactUseCase: AddContactUseCase,
-        private readonly updateContactValueUseCase: UpdateContactValueUseCase,
-        private readonly setPrimaryContactUseCase: SetPrimaryContactUseCase,
-        private readonly removeContactUseCase: RemoveContactUseCase
-    ) {}
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  async create(
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreateResidentRequest,
+  ) {
+    const command = new CreateResidentCommand(req.user.id, dto.name);
 
-    @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER, UserRole.ADMIN)
-    async create(
-        @Req() req: AuthenticatedRequest,
-        @Body() dto: CreateResidentRequest
-    ) {
-        const command = new CreateResidentCommand(
-            req.user.id,
-            dto.name
-        )
+    await this.createResidentUseCase.execute(command);
+  }
 
-         this.createResidentUseCase.execute(command);
-    }
+  @Patch()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  async update(
+    @Req() req: AuthenticatedRequest,
+    @Body() request: UpdateResidentRequest,
+  ) {
+    const id = req.user.id;
 
-    
-    @Patch()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER, UserRole.ADMIN)
-    async update(
-        @Req() req: AuthenticatedRequest,
-        @Body() request: UpdateResidentRequest
-    ) {
+    const command = new UpdateResidentCommand(id, request.name);
+    await this.updateResidentUseCase.execute(command);
+  }
 
-        const id = req.user.id
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async delete(@Param('id') id: string) {
+    const command = new DeleteResidentCommand(id);
 
-        const command = new UpdateResidentCommand(
-            id,
-            request.name
-        )
-         await this.updateResidentUseCase.execute(command)
-    }
+    await this.deleteResidentUseCase.execute(command);
+  }
 
+  @Get()
+  async getByName(@Query('name') name: string) {
+    const residents = await this.getResidentByName.execute(name);
 
-    @Delete(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
-    async delete(
-        @Param('id') id: string
-     ) {
-        const command = new DeleteResidentCommand(
-            id
-        )
+    return residents.map(
+      (resident) =>
+        new ResidentResponseDto(
+          resident.id,
+          resident.name,
+          resident.profilePhoto.storageKey,
+          resident.contactList.map(
+            (contact) =>
+              new ContactResponseDto(
+                contact.id,
+                contact.type,
+                contact.value,
+                contact.isPrimary,
+              ),
+          ),
+        ),
+    );
+  }
 
-        await this.deleteResidentUseCase.execute(command)
-    }
+  @Get('all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getAll() {
+    const residents = this.getAllResidentsUseCase.execute();
 
-    
-    @Get()
-    async getByName(
-        @Query("name") name: string,
-    ) {
-        const residents = await this.getResidentByName.execute(name);
+    //TODO: Create a response mapper
+    return (await residents).map(
+      (resident) =>
+        new ResidentResponseDto(
+          resident.id,
+          resident.name,
+          resident.profilePhoto.storageKey,
+          resident.contactList.map(
+            (contact) =>
+              new ContactResponseDto(
+                contact.id,
+                contact.type,
+                contact.value,
+                contact.isPrimary,
+              ),
+          ),
+        ),
+    );
+  }
 
-        return residents.map(resident =>
-            new ResidentResponseDto(
-                resident.id,
-                resident.name,
-                resident.profilePhoto.storageKey,
-                resident.contactList.map(contact =>
-                    new ContactResponseDto(
-                        contact.id,
-                        contact.type,
-                        contact.value,
-                        contact.isPrimary
-                    )
-                )
-            )
-        )
-    }
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async getById(@Param('id') id: string) {
+    return this.getResidentByIdUseCase.execute(id);
+  }
 
-    @Get('all')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
-    async getAll(){
-        const residents = this.getAllResidentsUseCase.execute()
+  @Patch(':id/photo')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async updatePhoto(
+    @Param('id') id: string,
+    @Body() dto: UpdateProfilePhotoRequest,
+  ) {
+    const command = new UpdateProfilePhotoCommand(
+      id,
+      dto.storageKey,
+      dto.contentType,
+      dto.size,
+    );
 
-        //TODO: Create a response mapper
-        return (await residents).map(resident => 
-            new ResidentResponseDto(
-                resident.id,
-                resident.name,
-                resident.profilePhoto.storageKey,
-                resident.contactList.map(contact => 
-                    new ContactResponseDto(
-                        contact.id,
-                        contact.type,
-                        contact.value,
-                        contact.isPrimary
-                    )
-                )
-            )
-        )
-    }
+    return this.updateProfilePhotoUseCase.execute(command);
+  }
 
-    @Get(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
-    async getById(
-        @Param('id') id: string
-    ) {
-        return this.getResidentByIdUseCase.execute(id)
-    }
+  @Post(':id/contacts')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  async addContact(@Param('id') id: string, @Body() dto: AddContactRequest) {
+    const command = new AddContactCommand(id, dto.type, dto.value);
 
-    @Patch(':id/photo')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
-    async updatePhoto(
-        @Param('id') id: string,
-        @Body() dto: UpdateProfilePhotoRequest
-    ) {
-        const command = new UpdateProfilePhotoCommand(
-            id,
-            dto.storageKey,
-            dto.contentType,
-            dto.size
-        )
+    return this.addContactUseCase.execute(command);
+  }
 
-        return this.updateProfilePhotoUseCase.execute(command)
-    }
+  @Patch(':id/contacts/:contactId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  async updateContactValue(
+    @Param('id') id: string,
+    @Param('contactId') contactId: string,
+    @Body() dto: UpdateContactValueRequest,
+  ) {
+    const command = new UpdateContactValueCommand(id, contactId, dto.value);
 
-    @Post(':id/contacts')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER, UserRole.ADMIN)
-    async addContact(
-        @Param('id') id: string,
-        @Body() dto: AddContactRequest
-    ) {
-        const command = new AddContactCommand(
-            id,
-            dto.type,
-            dto.value
-        )
+    return this.updateContactValueUseCase.execute(command);
+  }
 
-        return this.addContactUseCase.execute(command)
-    }
+  @Patch(':id/contacts/:contactId/primary')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  async setPrimaryContact(
+    @Param('id') id: string,
+    @Param('contactId') contactId: string,
+  ) {
+    const command = new SetPrimaryContactCommand(id, contactId);
 
-    @Patch(':id/contacts/:contactId')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER, UserRole.ADMIN)
-    async updateContactValue(
-        @Param('id') id: string,
-        @Param('contactId') contactId: string,
-        @Body() dto: UpdateContactValueRequest
-    ) {
-        const command = new UpdateContactValueCommand(
-            id,
-            contactId,
-            dto.value
-        )
+    return this.setPrimaryContactUseCase.execute(command);
+  }
 
-        return this.updateContactValueUseCase.execute(command)
-    }
+  @Delete(':id/contacts/:contactId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  async removeContact(
+    @Param('id') id: string,
+    @Param('contactId') contactId: string,
+  ) {
+    const command = new RemoveContactCommand(id, contactId);
 
-    @Patch(':id/contacts/:contactId/primary')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER, UserRole.ADMIN)
-    async setPrimaryContact(
-        @Param('id') id: string,
-        @Param('contactId') contactId: string
-    ) {
-        const command = new SetPrimaryContactCommand(
-            id,
-            contactId
-        )
-
-        return this.setPrimaryContactUseCase.execute(command)
-    }
-
-    @Delete(':id/contacts/:contactId')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.USER, UserRole.ADMIN)
-    async removeContact(
-        @Param('id') id: string,
-        @Param('contactId') contactId: string
-    ) {
-        const command = new RemoveContactCommand(
-            id,
-            contactId
-        )
-
-        return this.removeContactUseCase.execute(command)
-    }
-
+    return this.removeContactUseCase.execute(command);
+  }
 }

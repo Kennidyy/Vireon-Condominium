@@ -12,9 +12,7 @@ import { GetAllUsersUseCase } from '../../application/use-cases/GetAllUsersUseCa
 import { UserIdentityProvider } from '../../infrastructure/providers/UserIdentityProvider';
 
 @Module({
-  imports: [
-    PrismaModule,
-  ],
+  imports: [PrismaModule],
   controllers: [IdentityController],
   providers: [
     CreateUserUseCase,
@@ -36,8 +34,6 @@ import { UserIdentityProvider } from '../../infrastructure/providers/UserIdentit
     },
   ],
 
-  exports: [
-    UserIdentityProvider
-  ]
+  exports: [UserIdentityProvider],
 })
 export class IdentityModule {}
