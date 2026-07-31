@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ResidentRepository } from '../ports/ResidentRespository';
 import { RemoveContactCommand } from '../command/RemoveContactCommand';
+import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 
 @Injectable()
 export class RemoveContactUseCase {
@@ -13,7 +14,7 @@ export class RemoveContactUseCase {
     const resident = await this.residentRepository.getById(command.id);
 
     if (!resident) {
-      throw new Error('Resident not found');
+      throw new ResidentNotFoundException();
     }
 
     resident.removeContact(command.contactId);

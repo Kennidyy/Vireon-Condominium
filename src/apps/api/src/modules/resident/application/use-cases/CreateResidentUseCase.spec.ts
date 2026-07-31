@@ -1,6 +1,10 @@
 import { FakeResidentRepository } from '../../infrastructure/mock/FakeResidentRepository';
 import { CreateResidentUseCase } from './CreateResidentUseCase';
 import { CreateResidentCommand } from '../command/CreateResidentCommand';
+import { ResidentAlreadyExistsException } from '../exceptions/ResidentAlreadyExistsException';
+import { InvalidUuidException } from '../../domain/exceptions/value-objects/uuid/InvalidUuidException';
+import { PersonNameIsRequiredException } from '../../domain/exceptions/value-objects/person-name/PersonNameIsRequiredException';
+import { InvalidPersonNameException } from '../../domain/exceptions/value-objects/person-name/InvalidPersonNameException';
 
 describe('CreateResidentUseCase', () => {
   let repository: FakeResidentRepository;
@@ -31,7 +35,7 @@ describe('CreateResidentUseCase', () => {
       useCase.execute(
         new CreateResidentCommand('550e8400-e29b-41d4-a716-446655440000', ''),
       ),
-    ).rejects.toThrow('Name is required');
+    ).rejects.toThrow(PersonNameIsRequiredException);
   });
 
   it('should throw on name with numbers', async () => {
@@ -42,12 +46,25 @@ describe('CreateResidentUseCase', () => {
           'Joã0 Silva',
         ),
       ),
-    ).rejects.toThrow('Name cannot contain numbers');
+    ).rejects.toThrow(InvalidPersonNameException);
   });
 
   it('should throw on invalid user id', async () => {
     await expect(
       useCase.execute(new CreateResidentCommand('not-a-uuid', 'João Silva')),
-    ).rejects.toThrow('Invalid Uuid');
+    ).rejects.toThrow(InvalidUuidException);
+  });
+
+  it('should throw when resident already exists', async () => {
+    const command = new CreateResidentCommand(
+      '550e8400-e29b-41d4-a716-446655440000',
+      'João Silva',
+    );
+
+    await useCase.execute(command);
+
+    await expect(useCase.execute(command)).rejects.toThrow(
+      ResidentAlreadyExistsException,
+    );
   });
 });

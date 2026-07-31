@@ -3,6 +3,7 @@ import type { ResidentRepository } from '../ports/ResidentRespository';
 import { AddContactCommand } from '../command/AddContactCommand';
 import { Contact } from '../../domain/entities/Contact';
 import { ContactType } from '../../domain/enum/ContactType';
+import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 
 @Injectable()
 export class AddContactUseCase {
@@ -15,7 +16,7 @@ export class AddContactUseCase {
     const resident = await this.residentRepository.getById(command.id);
 
     if (!resident) {
-      throw new Error('Resident not found');
+      throw new ResidentNotFoundException();
     }
 
     const contact = Contact.create(

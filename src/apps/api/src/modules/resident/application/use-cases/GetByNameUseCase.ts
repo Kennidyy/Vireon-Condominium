@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ResidentRepository } from '../ports/ResidentRespository';
+import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 
 @Injectable()
 export class GetByNameUseCase {
@@ -12,7 +13,7 @@ export class GetByNameUseCase {
     const residents = await this.residentRepository.getByName(name);
 
     if (residents.length === 0) {
-      throw new Error('Resident not found');
+      throw new ResidentNotFoundException();
     }
 
     return residents;

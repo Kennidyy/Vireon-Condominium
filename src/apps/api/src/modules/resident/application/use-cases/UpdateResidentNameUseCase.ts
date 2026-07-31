@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UpdateResidentCommand } from '../command/UpdateResidentNameCommand';
 import type { ResidentRepository } from '../ports/ResidentRespository';
+import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 
 @Injectable()
 export class UpdateResidentUseCase {
@@ -13,7 +14,7 @@ export class UpdateResidentUseCase {
     const resident = await this.residentRepository.getById(command.id);
 
     if (!resident) {
-      throw new Error('Resident not found');
+      throw new ResidentNotFoundException();
     }
 
     resident.changeName(command.name);

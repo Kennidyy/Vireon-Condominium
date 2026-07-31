@@ -3,6 +3,7 @@ import type { ResidentRepository } from '../ports/ResidentRespository';
 import { UpdateProfilePhotoCommand } from '../command/UpdateProfilePhotoCommand';
 import { ProfilePhoto } from '../../domain/entities/ProfilePhoto';
 import { ImageType } from '../../domain/enum/ImageType';
+import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 
 @Injectable()
 export class UpdateProfilePhotoUseCase {
@@ -15,7 +16,7 @@ export class UpdateProfilePhotoUseCase {
     const resident = await this.residentRepository.getById(command.id);
 
     if (!resident) {
-      throw new Error('Resident not found');
+      throw new ResidentNotFoundException();
     }
 
     const photo = ProfilePhoto.create(
