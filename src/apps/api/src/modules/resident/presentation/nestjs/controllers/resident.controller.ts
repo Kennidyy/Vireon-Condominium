@@ -17,10 +17,6 @@ import { UpdateResidentCommand } from '../../../application/command/UpdateReside
 import { UpdateResidentRequest } from '../dto/UpdateResidentRequest';
 import { UpdateResidentUseCase } from '../../../application/use-cases/UpdateResidentNameUseCase';
 import { CreateResidentCommand } from '../../../application/command/CreateResidentCommand';
-import {
-  ContactResponseDto,
-  ResidentResponseDto,
-} from '../dto/ResidentResponseDto';
 import { JwtAuthGuard } from '../../../../auth/infrastructure/guards/JwtAuthGuard';
 import { Roles } from '../../../../auth/infrastructure/decorators/Roles';
 import { UserRole } from '../../../../auth/domain/enum/UserRole';
@@ -43,6 +39,7 @@ import { SetPrimaryContactUseCase } from '../../../application/use-cases/SetPrim
 import { SetPrimaryContactCommand } from '../../../application/command/SetPrimaryContactCommand';
 import { RemoveContactUseCase } from '../../../application/use-cases/RemoveContactUseCase';
 import { RemoveContactCommand } from '../../../application/command/RemoveContactCommand';
+import { ResidentResponseMapper } from '../mappers/ResidentResponseMapper';
 
 @Controller('residents')
 export class ResidentController {
@@ -98,56 +95,25 @@ export class ResidentController {
   async getByName(@Query('name') name: string) {
     const residents = await this.getResidentByName.execute(name);
 
-    return residents.map(
-      (resident) =>
-        new ResidentResponseDto(
-          resident.id,
-          resident.name,
-          resident.profilePhoto.storageKey,
-          resident.contactList.map(
-            (contact) =>
-              new ContactResponseDto(
-                contact.id,
-                contact.type,
-                contact.value,
-                contact.isPrimary,
-              ),
-          ),
-        ),
-    );
+    return ResidentResponseMapper.toResponseList(residents);
   }
 
   @Get('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getAll() {
-    const residents = this.getAllResidentsUseCase.execute();
+    const residents = await this.getAllResidentsUseCase.execute();
 
-    //TODO: Create a response mapper
-    return (await residents).map(
-      (resident) =>
-        new ResidentResponseDto(
-          resident.id,
-          resident.name,
-          resident.profilePhoto.storageKey,
-          resident.contactList.map(
-            (contact) =>
-              new ContactResponseDto(
-                contact.id,
-                contact.type,
-                contact.value,
-                contact.isPrimary,
-              ),
-          ),
-        ),
-    );
+    return ResidentResponseMapper.toResponseList(residents);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   async getById(@Param('id') id: string) {
-    return this.getResidentByIdUseCase.execute(id);
+    const resident = await this.getResidentByIdUseCase.execute(id);
+
+    return ResidentResponseMapper.toResponse(resident);
   }
 
   @Patch(':id/photo')
@@ -164,7 +130,9 @@ export class ResidentController {
       dto.size,
     );
 
-    return this.updateProfilePhotoUseCase.execute(command);
+    const resident = await this.updateProfilePhotoUseCase.execute(command);
+
+    return ResidentResponseMapper.toResponse(resident);
   }
 
   @Post(':id/contacts')
@@ -173,7 +141,9 @@ export class ResidentController {
   async addContact(@Param('id') id: string, @Body() dto: AddContactRequest) {
     const command = new AddContactCommand(id, dto.type, dto.value);
 
-    return this.addContactUseCase.execute(command);
+    const resident = await this.addContactUseCase.execute(command);
+
+    return ResidentResponseMapper.toResponse(resident);
   }
 
   @Patch(':id/contacts/:contactId')
@@ -186,7 +156,9 @@ export class ResidentController {
   ) {
     const command = new UpdateContactValueCommand(id, contactId, dto.value);
 
-    return this.updateContactValueUseCase.execute(command);
+    const resident = await this.updateContactValueUseCase.execute(command);
+
+    return ResidentResponseMapper.toResponse(resident);
   }
 
   @Patch(':id/contacts/:contactId/primary')
@@ -198,7 +170,9 @@ export class ResidentController {
   ) {
     const command = new SetPrimaryContactCommand(id, contactId);
 
-    return this.setPrimaryContactUseCase.execute(command);
+    const resident = await this.setPrimaryContactUseCase.execute(command);
+
+    return ResidentResponseMapper.toResponse(resident);
   }
 
   @Delete(':id/contacts/:contactId')
@@ -210,6 +184,8 @@ export class ResidentController {
   ) {
     const command = new RemoveContactCommand(id, contactId);
 
-    return this.removeContactUseCase.execute(command);
+    const resident = await this.removeContactUseCase.execute(command);
+
+    return ResidentResponseMapper.toResponse(resident);
   }
 }
