@@ -5,7 +5,6 @@ import type { GetUserByIdUseCase } from '../../../application/use-cases/GetUserB
 import type { DeleteUserByIdUseCase } from '../../../application/use-cases/DeleteUserByIdUseCase';
 import type { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseCase';
 import type { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
-import type { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
 import { User } from '../../../domain/entities/User';
 import { Email } from '../../../domain/value-objects/Email';
 import { Password } from '../../../domain/value-objects/Password';
@@ -20,7 +19,6 @@ describe('IdentityController', () => {
   let mockDelete: MockUseCase;
   let mockUpdate: MockUseCase;
   let mockGetAll: MockUseCase;
-  let mockLogin: MockUseCase;
 
   const createTestUser = () => {
     const email = Email.create('test@email.com');
@@ -35,7 +33,6 @@ describe('IdentityController', () => {
     mockDelete = { execute: jest.fn() };
     mockUpdate = { execute: jest.fn() };
     mockGetAll = { execute: jest.fn() };
-    mockLogin = { execute: jest.fn() };
 
     controller = new IdentityController(
       mockCreateUser as unknown as CreateUserUseCase,
@@ -44,20 +41,7 @@ describe('IdentityController', () => {
       mockDelete as unknown as DeleteUserByIdUseCase,
       mockUpdate as unknown as UpdateUserUseCase,
       mockGetAll as unknown as GetAllUsersUseCase,
-      mockLogin as unknown as LoginUseCase,
     );
-  });
-
-  describe('login', () => {
-    it('should call login use case', async () => {
-      const dto = { email: 'user@email.com', password: 'StrongPass123!' };
-      mockLogin.execute.mockResolvedValue({ accessToken: 'token' });
-
-      const result = await controller.login(dto);
-
-      expect(mockLogin.execute).toHaveBeenCalledWith(dto);
-      expect(result).toEqual({ accessToken: 'token' });
-    });
   });
 
   describe('create', () => {
