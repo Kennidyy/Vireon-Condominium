@@ -123,7 +123,7 @@ export class ResidentMapper {
       case 'image/jpeg':
         return 'JPEG';
       default:
-        return 'PNG';
+        throw new Error(`Unsupported image content type: ${contentType}`);
     }
   }
 }
