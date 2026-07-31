@@ -1,5 +1,9 @@
 import { ProfilePhoto } from './ProfilePhoto';
 import { ImageType } from '../enum/ImageType';
+import { ImageExceedsMaxSizeException } from '../exceptions/entities/profile-photo/ImageExceedsMaxSizeException';
+import { InvalidImageTypeException } from '../exceptions/entities/profile-photo/InvalidImageTypeException';
+import { StorageKeyIsRequiredException } from '../exceptions/entities/profile-photo/StorageKeyIsRequiredException';
+import { InvalidUuidException } from '../exceptions/value-objects/uuid/InvalidUuidException';
 
 describe('ProfilePhoto Entity', () => {
   describe('create', () => {
@@ -29,7 +33,7 @@ describe('ProfilePhoto Entity', () => {
     it('should reject invalid image type', () => {
       expect(() =>
         ProfilePhoto.create('photos/abc.gif', 'image/gif' as ImageType, 100),
-      ).toThrow('Invalid image type');
+      ).toThrow(InvalidImageTypeException);
     });
 
     it('should reject size exceeding max size', () => {
@@ -37,7 +41,7 @@ describe('ProfilePhoto Entity', () => {
 
       expect(() =>
         ProfilePhoto.create('photos/abc.png', ImageType.PNG, max + 1),
-      ).toThrow('Image exceeds max size');
+      ).toThrow(ImageExceedsMaxSizeException);
     });
 
     it('should accept size exactly at max size', () => {
@@ -49,8 +53,45 @@ describe('ProfilePhoto Entity', () => {
 
     it('should reject empty storage key', () => {
       expect(() => ProfilePhoto.create('', ImageType.PNG, 100)).toThrow(
-        'Storage key is mandatory',
+        StorageKeyIsRequiredException,
       );
+    });
+  });
+
+  describe('restore', () => {
+    it('should restore a profile photo from persistence data', () => {
+      const photo = ProfilePhoto.restore(
+        'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        'photos/abc.png',
+        ImageType.PNG,
+        1024,
+      );
+
+      expect(photo.id).toBe('f47ac10b-58cc-4372-a567-0e02b2c3d479');
+      expect(photo.storageKey).toBe('photos/abc.png');
+      expect(photo.contentType).toBe(ImageType.PNG);
+      expect(photo.size).toBe(1024);
+    });
+
+    it('should throw when restoring with an invalid id', () => {
+      expect(() =>
+        ProfilePhoto.restore(
+          'invalid-id',
+          'photos/abc.png',
+          ImageType.PNG,
+          100,
+        ),
+      ).toThrow(InvalidUuidException);
+    });
+  });
+
+  describe('default', () => {
+    it('should create the default profile photo', () => {
+      const photo = ProfilePhoto.default();
+
+      expect(photo.storageKey).toBe('defaults/profile.jpg');
+      expect(photo.contentType).toBe(ImageType.JPEG);
+      expect(photo.size).toBe(124000);
     });
   });
 

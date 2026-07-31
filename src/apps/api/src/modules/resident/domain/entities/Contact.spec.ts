@@ -1,4 +1,8 @@
 import { ContactType } from '../enum/ContactType';
+import { EmailIsRequiredException } from '../exceptions/value-objects/email/EmailIsRequiredException';
+import { InvalidEmailFormatException } from '../exceptions/value-objects/email/InvalidEmailFormatException';
+import { InvalidPhoneException } from '../exceptions/value-objects/phone/InvalidPhoneException';
+import { PhoneIsRequiredException } from '../exceptions/value-objects/phone/PhoneIsRequiredException';
 import { Contact } from './Contact';
 
 describe('Contact Entity', () => {
@@ -47,68 +51,84 @@ describe('Contact Entity', () => {
 
     it('should reject empty email', () => {
       expect(() => Contact.create(ContactType.EMAIL, '')).toThrow(
-        'Email is required',
+        EmailIsRequiredException,
       );
     });
 
     it('should reject whitespace-only email', () => {
       expect(() => Contact.create(ContactType.EMAIL, '   ')).toThrow(
-        'Email is required',
+        EmailIsRequiredException,
       );
     });
 
     it('should reject invalid email format', () => {
       expect(() => Contact.create(ContactType.EMAIL, 'not-an-email')).toThrow(
-        'Invalid Email Format',
+        InvalidEmailFormatException,
       );
     });
 
     it('should reject email without domain', () => {
       expect(() => Contact.create(ContactType.EMAIL, 'user@')).toThrow(
-        'Invalid Email Format',
+        InvalidEmailFormatException,
       );
     });
 
     it('should reject email without username', () => {
       expect(() => Contact.create(ContactType.EMAIL, '@domain.com')).toThrow(
-        'Invalid Email Format',
+        InvalidEmailFormatException,
       );
     });
 
     it('should reject empty phone', () => {
       expect(() => Contact.create(ContactType.PHONE, '')).toThrow(
-        'Phone number is required',
+        PhoneIsRequiredException,
       );
     });
 
     it('should reject whitespace-only phone', () => {
       expect(() => Contact.create(ContactType.PHONE, '   ')).toThrow(
-        'Phone number is required',
+        PhoneIsRequiredException,
       );
     });
 
     it('should reject phone without country code', () => {
       expect(() => Contact.create(ContactType.PHONE, '11999999999')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
     });
 
     it('should reject phone with non-Brazilian country code', () => {
       expect(() => Contact.create(ContactType.PHONE, '+14155552671')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
     });
 
     it('should reject phone without 9 digit prefix', () => {
       expect(() => Contact.create(ContactType.PHONE, '+551199856958')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
     });
 
     it('should reject phone with too few digits', () => {
       expect(() => Contact.create(ContactType.PHONE, '+55119998569')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
+    });
+  });
+
+  describe('restore', () => {
+    it('should restore a contact from persistence data', () => {
+      const contact = Contact.restore(
+        'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+        ContactType.EMAIL,
+        'user@example.com',
+        true,
+      );
+
+      expect(contact.id).toBe('f47ac10b-58cc-4372-a567-0e02b2c3d479');
+      expect(contact.type).toBe(ContactType.EMAIL);
+      expect(contact.value).toBe('user@example.com');
+      expect(contact.isPrimary).toBe(true);
     });
   });
 
@@ -133,7 +153,7 @@ describe('Contact Entity', () => {
       const contact = Contact.create(ContactType.EMAIL, 'old@email.com');
 
       expect(() => contact.changeValue('not-an-email')).toThrow(
-        'Invalid Email Format',
+        InvalidEmailFormatException,
       );
     });
 
@@ -141,7 +161,7 @@ describe('Contact Entity', () => {
       const contact = Contact.create(ContactType.PHONE, '+5511999999999');
 
       expect(() => contact.changeValue('invalid')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
     });
   });

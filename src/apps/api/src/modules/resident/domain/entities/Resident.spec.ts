@@ -1,5 +1,9 @@
 import { ContactType } from '../enum/ContactType';
 import { ImageType } from '../enum/ImageType';
+import { ContactNotFoundException } from '../exceptions/entities/resident/ContactNotFoundException';
+import { ResidentMaxContactsExceededException } from '../exceptions/entities/resident/ResidentMaxContactsExceededException';
+import { InvalidUuidException } from '../exceptions/value-objects/uuid/InvalidUuidException';
+import { PersonNameIsRequiredException } from '../exceptions/value-objects/person-name/PersonNameIsRequiredException';
 import { PersonName } from '../value-objects/PersonName';
 import { Uuid } from '../value-objects/Uuid';
 import { Contact } from './Contact';
@@ -75,7 +79,7 @@ describe('Resident Entity', () => {
 
       expect(() =>
         Resident.create(makeUserId(), makeName(), makePhoto(), contacts),
-      ).toThrow('Resident cannot have more than 10 contacts');
+      ).toThrow(ResidentMaxContactsExceededException);
     });
   });
 
@@ -93,6 +97,12 @@ describe('Resident Entity', () => {
       expect(resident.profilePhoto.storageKey).toBe('photos/abc.png');
       expect(resident.contactList).toHaveLength(1);
     });
+
+    it('should throw when restoring with an invalid id', () => {
+      expect(() =>
+        Resident.restore('invalid-id', 'João Silva', makePhoto(), []),
+      ).toThrow(InvalidUuidException);
+    });
   });
 
   describe('changeName', () => {
@@ -107,7 +117,9 @@ describe('Resident Entity', () => {
     it('should throw on invalid name', () => {
       const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
-      expect(() => resident.changeName('')).toThrow('Name is required');
+      expect(() => resident.changeName('')).toThrow(
+        PersonNameIsRequiredException,
+      );
     });
   });
 
@@ -148,7 +160,7 @@ describe('Resident Entity', () => {
       }
 
       expect(() => resident.addContact(makeContact('+5511999999920'))).toThrow(
-        'Resident cannot have more than 10 contacts',
+        ResidentMaxContactsExceededException,
       );
     });
   });
@@ -169,7 +181,7 @@ describe('Resident Entity', () => {
 
       expect(() =>
         resident.changeContactValue('non-existent-id', '+5511999999902'),
-      ).toThrow('Contact not found');
+      ).toThrow(ContactNotFoundException);
     });
   });
 
@@ -201,7 +213,7 @@ describe('Resident Entity', () => {
       const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
       expect(() => resident.setPrimaryContact('non-existent-id')).toThrow(
-        'Contact not found',
+        ContactNotFoundException,
       );
     });
   });
@@ -221,7 +233,7 @@ describe('Resident Entity', () => {
       const resident = Resident.create(makeUserId(), makeName(), makePhoto());
 
       expect(() => resident.removeContact('non-existent-id')).toThrow(
-        'Contact not found',
+        ContactNotFoundException,
       );
     });
   });

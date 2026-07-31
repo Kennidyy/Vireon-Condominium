@@ -1,5 +1,8 @@
 import { ImageType } from '../enum/ImageType';
 import { Uuid } from '../value-objects/Uuid';
+import { ImageExceedsMaxSizeException } from '../exceptions/entities/profile-photo/ImageExceedsMaxSizeException';
+import { InvalidImageTypeException } from '../exceptions/entities/profile-photo/InvalidImageTypeException';
+import { StorageKeyIsRequiredException } from '../exceptions/entities/profile-photo/StorageKeyIsRequiredException';
 
 export class ProfilePhoto {
   private static readonly MAX_SIZE = 5 * 1024 * 1024;
@@ -27,15 +30,15 @@ export class ProfilePhoto {
     size: number,
   ): ProfilePhoto {
     if (contentType !== ImageType.PNG && contentType !== ImageType.JPEG) {
-      throw new Error('Invalid image type');
+      throw new InvalidImageTypeException();
     }
 
     if (size > ProfilePhoto.MAX_SIZE) {
-      throw new Error('Image exceeds max size');
+      throw new ImageExceedsMaxSizeException();
     }
 
     if (!storageKey) {
-      throw new Error('Storage key is mandatory');
+      throw new StorageKeyIsRequiredException();
     }
 
     return new ProfilePhoto(Uuid.generate(), storageKey, contentType, size);

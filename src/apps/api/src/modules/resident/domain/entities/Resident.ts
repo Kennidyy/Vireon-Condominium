@@ -1,6 +1,8 @@
 import { PersonName } from '../value-objects/PersonName';
 import { Uuid } from '../value-objects/Uuid';
 import { Contact } from './Contact';
+import { ContactNotFoundException } from '../exceptions/entities/resident/ContactNotFoundException';
+import { ResidentMaxContactsExceededException } from '../exceptions/entities/resident/ResidentMaxContactsExceededException';
 import { ProfilePhoto } from './ProfilePhoto';
 
 export class Resident {
@@ -31,9 +33,7 @@ export class Resident {
     contacts: Contact[] = [],
   ): Resident {
     if (contacts.length > Resident.MAX_CONTACTS) {
-      throw new Error(
-        `Resident cannot have more than ${Resident.MAX_CONTACTS} contacts`,
-      );
+      throw new ResidentMaxContactsExceededException();
     }
 
     return new Resident(userId, name, profilePhoto, contacts);
@@ -63,9 +63,7 @@ export class Resident {
 
   public addContact(contact: Contact): void {
     if (this.#contacts.length >= Resident.MAX_CONTACTS) {
-      throw new Error(
-        `Resident cannot have more than ${Resident.MAX_CONTACTS} contacts`,
-      );
+      throw new ResidentMaxContactsExceededException();
     }
 
     this.#contacts.push(contact);
@@ -75,7 +73,7 @@ export class Resident {
     const contact = this.#contacts.find((contact) => contact.id === contactId);
 
     if (!contact) {
-      throw new Error('Contact not found');
+      throw new ContactNotFoundException();
     }
 
     contact.changeValue(newValue);
@@ -85,7 +83,7 @@ export class Resident {
     const contact = this.#contacts.find((contact) => contact.id === contactId);
 
     if (!contact) {
-      throw new Error('Contact not found');
+      throw new ContactNotFoundException();
     }
 
     this.#contacts.forEach((contact) => {
@@ -101,7 +99,7 @@ export class Resident {
     );
 
     if (index === -1) {
-      throw new Error('Contact not found');
+      throw new ContactNotFoundException();
     }
 
     this.#contacts.splice(index, 1);
