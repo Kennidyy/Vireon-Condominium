@@ -21,18 +21,11 @@ describe('Resident Entity', () => {
       expect(resident).toBeInstanceOf(Resident);
     });
 
-    it('should assign a unique id', () => {
-      const resident = Resident.create(makeUserId(), makeName(), makePhoto());
-
-      expect(resident.id).toBeDefined();
-      expect(typeof resident.id).toBe('string');
-      expect(resident.id.length).toBeGreaterThan(0);
-    });
-
-    it('should assign the user id', () => {
+    it('should assign the user id as the resident id', () => {
       const userId = makeUserId();
       const resident = Resident.create(userId, makeName(), makePhoto());
 
+      expect(resident.id).toBe(userId.value);
       expect(resident.userId).toBe(userId.value);
     });
 
@@ -88,15 +81,14 @@ describe('Resident Entity', () => {
 
   describe('restore', () => {
     it('should restore a resident from persistence data', () => {
-      const id = '550e8400-e29b-41d4-a716-446655440000';
-      const userId = '660e8400-e29b-41d4-a716-446655440000';
+      const id = '660e8400-e29b-41d4-a716-446655440000';
       const photo = makePhoto();
       const contacts = [makeContact()];
 
-      const resident = Resident.restore(id, userId, 'João Silva', photo, contacts);
+      const resident = Resident.restore(id, 'João Silva', photo, contacts);
 
       expect(resident.id).toBe(id);
-      expect(resident.userId).toBe(userId);
+      expect(resident.userId).toBe(id);
       expect(resident.name).toBe('João Silva');
       expect(resident.profilePhoto.storageKey).toBe('photos/abc.png');
       expect(resident.contactList).toHaveLength(1);

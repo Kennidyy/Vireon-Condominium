@@ -10,12 +10,11 @@ import { ProfilePhoto } from "../../domain/entities/ProfilePhoto";
 import { Contact } from "../../domain/entities/Contact";
 import { ContactType } from "../../domain/enum/ContactType";
 export class ResidentMapper {
-    static toPersistance(resident: Resident) {
+    static toPersistence(resident: Resident) {
         const photo = resident.profilePhoto
 
         return {
             id: resident.id,
-            userId: resident.userId,
             name: resident.name,
 
             contacts: {
@@ -38,9 +37,42 @@ export class ResidentMapper {
         }
     }
 
+    static toUpdatePersistence(resident: Resident) {
+        const photo = resident.profilePhoto
+
+        return {
+            name: resident.name,
+
+            contacts: {
+                deleteMany: {},
+                create: resident.contactList.map(contact => ({
+                    id: contact.id,
+                    type: contact.type,
+                    value: contact.value,
+                    isPrimary: contact.isPrimary
+                })),
+            },
+
+            profilePhoto: {
+                upsert: {
+                    create: {
+                        id: photo.id,
+                        storageKey: photo.storageKey,
+                        contentType: ResidentMapper.imageTypeToPrisma(photo.contentType),
+                        size: photo.size,
+                    },
+                    update: {
+                        storageKey: photo.storageKey,
+                        contentType: ResidentMapper.imageTypeToPrisma(photo.contentType),
+                        size: photo.size,
+                    },
+                },
+            },
+        }
+    }
+
     static toDomain(
         id: string,
-        userId: string,
         name: string,
         prismaProfilePhoto: PrismaProfilePhoto,
         prismaContact: PrismaContact[]
@@ -64,7 +96,6 @@ export class ResidentMapper {
 
         return Resident.restore(
             id,
-            userId,
             name,
             photo,
             contacts

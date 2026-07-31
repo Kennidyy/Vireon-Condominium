@@ -38,10 +38,9 @@ model User {
 model Resident {
 
   id String @id
-  userId String @unique
   name String
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [id], references: [id])
 
   contacts Contact[]
 

@@ -1,4 +1,4 @@
-import { FakeResidentRepository } from '../../infrastructure/mock/FakeResidenteRepository';
+import { FakeResidentRepository } from '../../infrastructure/mock/FakeResidentRepository';
 import { CreateResidentUseCase } from './CreateResidentUseCase';
 import { CreateResidentCommand } from '../command/CreateResidentCommand';
 
@@ -16,7 +16,8 @@ describe('CreateResidentUseCase', () => {
       new CreateResidentCommand('550e8400-e29b-41d4-a716-446655440000', 'João Silva'),
     );
 
-    const resident = await repository.findByName('João Silva');
+    const residents = await repository.getByName('João Silva');
+    const resident = residents[0];
     expect(resident).not.toBeNull();
     expect(resident!.name).toBe('João Silva');
     expect(resident!.userId).toBe('550e8400-e29b-41d4-a716-446655440000');

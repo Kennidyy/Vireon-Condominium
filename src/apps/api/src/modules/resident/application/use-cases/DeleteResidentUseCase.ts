@@ -1,15 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Resident } from "../../domain/entities/Resident";
 import type { ResidentRepository } from "../ports/ResidentRespository";
+import { DeleteResidentCommand } from "../command/DeleteResidentCommand";
 
 @Injectable()
-export class GetAllResidentsUseCase {
+export class DeleteResidentUseCase {
     constructor(
         @Inject('ResidentRepository')
         private readonly residentRepository: ResidentRepository
-    ) {}
+    ){}
 
-    async execute(): Promise<Resident[]> {
-        return await this.residentRepository.getAll()
+    async execute(command: DeleteResidentCommand) {
+        return await this.residentRepository.delete(command.id)
     }
 }

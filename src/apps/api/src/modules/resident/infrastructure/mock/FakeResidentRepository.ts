@@ -10,18 +10,19 @@ export class FakeResidentRepository implements ResidentRepository {
     }
 
     async update(resident: Resident): Promise<void> {
-        console.log('sfaf')
+        const index = this.residents.findIndex(r => r.id === resident.id)
+        if (index >= 0) {
+            this.residents[index] = resident
+        }
     }
 
-    async findByName(name: string): Promise<Resident | null> {
-        const resident = this.residents.find(resident => {
-            return resident.name === name
+    async getByName(name: string): Promise<Resident[]> {
+        return this.residents.filter(resident => {
+            return resident.name.toLowerCase().includes(name.toLowerCase())
         })
-
-        return resident ?? null
     }
 
-    async findById(id: string): Promise<Resident | null> {
+    async getById(id: string): Promise<Resident | null> {
         const resident = this.residents.find(resident => {
             return resident.id === id
         })

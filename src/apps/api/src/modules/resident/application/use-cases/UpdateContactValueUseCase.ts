@@ -1,22 +1,22 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { UpdateResidentCommand } from "../command/UpdateResidentNameCommand";
 import type { ResidentRepository } from "../ports/ResidentRespository";
+import { UpdateContactValueCommand } from "../command/UpdateContactValueCommand";
 
 @Injectable()
-export class UpdateResidentUseCase {
+export class UpdateContactValueUseCase {
     constructor(
         @Inject('ResidentRepository')
         private readonly residentRepository: ResidentRepository
     ) {}
 
-    async execute(command: UpdateResidentCommand) {
+    async execute(command: UpdateContactValueCommand) {
         const resident = await this.residentRepository.getById(command.id)
 
         if(!resident) {
             throw new Error('Resident not found')
         }
 
-        resident.changeName(command.name)
+        resident.changeContactValue(command.contactId, command.value)
 
         await this.residentRepository.update(resident)
 

@@ -1,12 +1,10 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { ConflictException, Inject, Injectable } from "@nestjs/common";
 import type { ResidentRepository } from "../ports/ResidentRespository";
 import { CreateResidentCommand } from "../command/CreateResidentCommand";
 import { Resident } from "../../domain/entities/Resident";
 import { PersonName } from "../../domain/value-objects/PersonName";
 import { ProfilePhoto } from "../../domain/entities/ProfilePhoto";
-import { ImageType } from "../../domain/enum/ImageType";
 import { Uuid } from "../../domain/value-objects/Uuid";
-import { PrismaResidentRepository } from "../../infrastructure/repositories/PrismaResidentRepository";
 
 @Injectable()
 export class CreateResidentUseCase {
@@ -18,9 +16,14 @@ export class CreateResidentUseCase {
 
     async execute(command: CreateResidentCommand): Promise<Resident> {
 
-        //TODO: Handle already existing resident
+        const exists = await this.residentRepository.getById(command.id)
+
+        if(exists) {
+            throw new Error('Resident already exists')
+        }
+
         const resident = Resident.create(
-            Uuid.create(command.userId),
+            Uuid.create(command.id),
             PersonName.create(command.name),
             ProfilePhoto.default()
         )

@@ -7,7 +7,6 @@ export class Resident {
     private static readonly MAX_CONTACTS = 10;
 
     readonly #id: Uuid;
-    readonly #userId: Uuid;
 
     #name: PersonName;
     #profilePhoto: ProfilePhoto;
@@ -15,13 +14,11 @@ export class Resident {
 
     private constructor(
         id: Uuid,
-        userId: Uuid,
         name: PersonName,
         profilePhoto: ProfilePhoto,
         contacts: Contact[],
     ) {
         this.#id = id;
-        this.#userId = userId;
         this.#name = name;
         this.#profilePhoto = profilePhoto;
         this.#contacts = contacts;
@@ -40,7 +37,6 @@ export class Resident {
         }
 
         return new Resident(
-            Uuid.generate(),
             userId,
             name,
             profilePhoto,
@@ -50,14 +46,12 @@ export class Resident {
 
     public static restore(
         id: string,
-        userId: string,
         name: string,
         profilePhoto: ProfilePhoto,
         contacts: Contact[],
     ): Resident {
         return new Resident(
             Uuid.create(id),
-            Uuid.create(userId),
             PersonName.create(name),
             profilePhoto,
             contacts,
@@ -136,7 +130,7 @@ export class Resident {
     }
 
     get userId(): string {
-        return this.#userId.value;
+        return this.#id.value;
     }
 
     get name(): string {
