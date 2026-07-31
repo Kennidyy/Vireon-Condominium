@@ -1,3 +1,6 @@
+import { InvalidPersonNameException } from '../exceptions/value-objects/person-name/InvalidPersonNameException';
+import { PersonNameIsRequiredException } from '../exceptions/value-objects/person-name/PersonNameIsRequiredException';
+import { PersonNameTooLargeException } from '../exceptions/value-objects/person-name/PersonNameTooLargeException';
 import { PersonName } from './PersonName';
 
 describe('PersonName Value Object', () => {
@@ -21,22 +24,26 @@ describe('PersonName Value Object', () => {
     });
 
     it('should throw when name is empty', () => {
-      expect(() => PersonName.create('')).toThrow('Name is required');
+      expect(() => PersonName.create('')).toThrow(
+        PersonNameIsRequiredException,
+      );
     });
 
     it('should throw when name contains only whitespace', () => {
-      expect(() => PersonName.create('     ')).toThrow('Name is required');
+      expect(() => PersonName.create('     ')).toThrow(
+        PersonNameIsRequiredException,
+      );
     });
 
     it('should throw when name contains numbers', () => {
       expect(() => PersonName.create('Elon M0sca')).toThrow(
-        'Name cannot contain numbers',
+        InvalidPersonNameException,
       );
     });
 
     it('should throw when name is larger than 255 characters', () => {
       expect(() => PersonName.create('a'.repeat(256))).toThrow(
-        'Name is too large',
+        PersonNameTooLargeException,
       );
     });
   });

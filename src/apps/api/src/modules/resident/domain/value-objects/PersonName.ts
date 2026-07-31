@@ -1,3 +1,7 @@
+import { InvalidPersonNameException } from '../exceptions/value-objects/person-name/InvalidPersonNameException';
+import { PersonNameIsRequiredException } from '../exceptions/value-objects/person-name/PersonNameIsRequiredException';
+import { PersonNameTooLargeException } from '../exceptions/value-objects/person-name/PersonNameTooLargeException';
+
 export class PersonName {
   readonly #value: string;
 
@@ -21,15 +25,15 @@ export class PersonName {
     const NAME_REGEX = /^[\p{L}' -]+$/u;
 
     if (!value) {
-      throw new Error('Name is required');
+      throw new PersonNameIsRequiredException();
     }
 
     if (!NAME_REGEX.test(value)) {
-      throw new Error('Name cannot contain numbers');
+      throw new InvalidPersonNameException();
     }
 
     if (value.length > 255) {
-      throw new Error('Name is too large');
+      throw new PersonNameTooLargeException();
     }
   }
 

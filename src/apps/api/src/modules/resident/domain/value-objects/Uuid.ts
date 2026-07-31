@@ -1,3 +1,5 @@
+import { InvalidUuidException } from '../exceptions/value-objects/uuid/InvalidUuidException';
+
 export class Uuid {
   readonly #value: string;
 
@@ -11,7 +13,7 @@ export class Uuid {
 
   public static create(value: string): Uuid {
     if (!Uuid.validate(value)) {
-      throw new Error('Invalid Uuid');
+      throw new InvalidUuidException();
     }
 
     return new Uuid(value);

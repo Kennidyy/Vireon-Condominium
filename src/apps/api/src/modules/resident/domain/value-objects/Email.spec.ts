@@ -1,4 +1,6 @@
 import { Email } from './Email';
+import { EmailIsRequiredException } from '../exceptions/value-objects/email/EmailIsRequiredException';
+import { InvalidEmailFormatException } from '../exceptions/value-objects/email/InvalidEmailFormatException';
 
 describe('Email Value Object', () => {
   describe('Constructor', () => {
@@ -21,29 +23,35 @@ describe('Email Value Object', () => {
     });
 
     it('should throw when email is empty', () => {
-      expect(() => Email.create('')).toThrow('Email is required');
+      expect(() => Email.create('')).toThrow(EmailIsRequiredException);
     });
 
     it('should throw when email contains only whitespace', () => {
-      expect(() => Email.create('     ')).toThrow('Invalid Email Format');
+      expect(() => Email.create('     ')).toThrow(InvalidEmailFormatException);
     });
 
     it('should throw when email has no @', () => {
       expect(() => Email.create('fuleco.gmail.com')).toThrow(
-        'Invalid Email Format',
+        InvalidEmailFormatException,
       );
     });
 
     it('should throw when email has no domain', () => {
-      expect(() => Email.create('fufuxuxu@')).toThrow('Invalid Email Format');
+      expect(() => Email.create('fufuxuxu@')).toThrow(
+        InvalidEmailFormatException,
+      );
     });
 
     it('should throw when email has no username', () => {
-      expect(() => Email.create('@nada.com')).toThrow('Invalid Email Format');
+      expect(() => Email.create('@nada.com')).toThrow(
+        InvalidEmailFormatException,
+      );
     });
 
     it('should throw when email has no top level domain', () => {
-      expect(() => Email.create('exata@mente')).toThrow('Invalid Email Format');
+      expect(() => Email.create('exata@mente')).toThrow(
+        InvalidEmailFormatException,
+      );
     });
   });
 

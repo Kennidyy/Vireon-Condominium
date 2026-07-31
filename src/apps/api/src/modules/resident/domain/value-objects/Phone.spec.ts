@@ -1,3 +1,5 @@
+import { InvalidPhoneException } from '../exceptions/value-objects/phone/InvalidPhoneException';
+import { PhoneIsRequiredException } from '../exceptions/value-objects/phone/PhoneIsRequiredException';
 import { Phone } from './Phone';
 
 describe('Phone Value Object', () => {
@@ -15,38 +17,34 @@ describe('Phone Value Object', () => {
     });
 
     it('should throw when phone is empty', () => {
-      expect(() => Phone.create('')).toThrow('Phone number is required');
+      expect(() => Phone.create('')).toThrow(PhoneIsRequiredException);
     });
 
     it('should throw when phone contains only whitespace', () => {
-      expect(() => Phone.create('     ')).toThrow('Phone number is required');
+      expect(() => Phone.create('     ')).toThrow(PhoneIsRequiredException);
     });
 
     it('should throw when missing country code', () => {
-      expect(() => Phone.create('11999999999')).toThrow('Invalid phone format');
+      expect(() => Phone.create('11999999999')).toThrow(InvalidPhoneException);
     });
 
     it('should throw when using non-Brazilian country code', () => {
-      expect(() => Phone.create('+14155552671')).toThrow(
-        'Invalid phone format',
-      );
+      expect(() => Phone.create('+14155552671')).toThrow(InvalidPhoneException);
     });
 
     it('should throw when missing 9 digit prefix', () => {
       expect(() => Phone.create('+551199856958')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
     });
 
     it('should throw when phone has too few digits', () => {
-      expect(() => Phone.create('+55119998569')).toThrow(
-        'Invalid phone format',
-      );
+      expect(() => Phone.create('+55119998569')).toThrow(InvalidPhoneException);
     });
 
     it('should throw when phone has too many digits', () => {
       expect(() => Phone.create('+551199999999900')).toThrow(
-        'Invalid phone format',
+        InvalidPhoneException,
       );
     });
   });

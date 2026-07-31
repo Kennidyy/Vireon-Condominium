@@ -1,3 +1,6 @@
+import { InvalidPhoneException } from '../exceptions/value-objects/phone/InvalidPhoneException';
+import { PhoneIsRequiredException } from '../exceptions/value-objects/phone/PhoneIsRequiredException';
+
 export class Phone {
   static readonly BRAZIL_MOBILE_REGEX = /^\+55\d{2}9\d{8}$/;
 
@@ -21,11 +24,11 @@ export class Phone {
 
   private static validate(value: string): void {
     if (!value) {
-      throw new Error('Phone number is required');
+      throw new PhoneIsRequiredException();
     }
 
     if (!this.BRAZIL_MOBILE_REGEX.test(value)) {
-      throw new Error('Invalid phone format');
+      throw new InvalidPhoneException();
     }
   }
 
