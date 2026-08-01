@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UpdateResidentCommand } from '../command/UpdateResidentNameCommand';
-import type { ResidentRepository } from '../ports/ResidentRespository';
+import type { ResidentRepository } from '../ports/ResidentRepository';
 import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 
 @Injectable()
