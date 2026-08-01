@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ResidentRepository } from '../ports/ResidentRespository';
+import type { ResidentRepository } from '../ports/ResidentRepository';
 import { AddContactCommand } from '../command/AddContactCommand';
 import { Contact } from '../../domain/entities/Contact';
 import { ContactType } from '../../domain/enum/ContactType';

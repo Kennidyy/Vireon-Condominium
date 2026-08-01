@@ -1,4 +1,4 @@
-import { ResidentRepository } from '../../application/ports/ResidentRespository';
+import { ResidentRepository } from '../../application/ports/ResidentRepository';
 import { Resident } from '../../domain/entities/Resident';
 
 export class FakeResidentRepository implements ResidentRepository {

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ResidentRepository } from '../ports/ResidentRespository';
+import type { ResidentRepository } from '../ports/ResidentRepository';
 import { RemoveContactCommand } from '../command/RemoveContactCommand';
 import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
 

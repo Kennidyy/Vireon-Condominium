@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ResidentRepository } from '../ports/ResidentRespository';
+import type { ResidentRepository } from '../ports/ResidentRepository';
 import { CreateResidentCommand } from '../command/CreateResidentCommand';
 import { Resident } from '../../domain/entities/Resident';
 import { PersonName } from '../../domain/value-objects/PersonName';
