@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
+import { JwtSecretNotDefinedException } from '../../domain/exceptions/JwtSecretNotDefinedException';
 
 interface JwtPayload {
   sub: string;
@@ -14,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const jwtSecret = configService.get<string>('auth.jwtSecret');
 
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET is not defined');
+      throw new JwtSecretNotDefinedException();
     }
 
     super({
