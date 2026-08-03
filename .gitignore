@@ -4,7 +4,7 @@
 node_modules
 .pnp
 .pnp.js
-
+bruno
 # Local env files
 .env
 .env.local
@@ -36,5 +36,8 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Internal reports (secret)
+docs/relatorios/
 
 **/PRIVATE_NOTES.md

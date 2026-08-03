@@ -4,6 +4,8 @@ import { IdentityModule } from './modules/identity/presentation/nestjs/identity.
 import appConfig from './config/app.config';
 import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
+import { ResidentModule } from './modules/resident/presentation/nestjs/resident.module';
+import { AuthModule } from './modules/auth/presentation/auth.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import databaseConfig from './config/database.config';
       load: [appConfig, authConfig, databaseConfig],
     }),
     IdentityModule,
+    ResidentModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

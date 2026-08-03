@@ -1,0 +1,137 @@
+import { PersonName } from '../value-objects/PersonName';
+import { Uuid } from '../value-objects/Uuid';
+import { Contact } from './Contact';
+import { ContactNotFoundException } from '../exceptions/entities/resident/ContactNotFoundException';
+import { ResidentMaxContactsExceededException } from '../exceptions/entities/resident/ResidentMaxContactsExceededException';
+import { ProfilePhoto } from './ProfilePhoto';
+
+export class Resident {
+  private static readonly MAX_CONTACTS = 10;
+
+  readonly #id: Uuid;
+
+  #name: PersonName;
+  #profilePhoto: ProfilePhoto;
+  #contacts: Contact[];
+
+  private constructor(
+    id: Uuid,
+    name: PersonName,
+    profilePhoto: ProfilePhoto,
+    contacts: Contact[],
+  ) {
+    this.#id = id;
+    this.#name = name;
+    this.#profilePhoto = profilePhoto;
+    this.#contacts = contacts;
+  }
+
+  public static create(
+    userId: Uuid,
+    name: PersonName,
+    profilePhoto: ProfilePhoto,
+    contacts: Contact[] = [],
+  ): Resident {
+    if (contacts.length > Resident.MAX_CONTACTS) {
+      throw new ResidentMaxContactsExceededException();
+    }
+
+    return new Resident(userId, name, profilePhoto, contacts);
+  }
+
+  public static restore(
+    id: string,
+    name: string,
+    profilePhoto: ProfilePhoto,
+    contacts: Contact[],
+  ): Resident {
+    return new Resident(
+      Uuid.create(id),
+      PersonName.create(name),
+      profilePhoto,
+      contacts,
+    );
+  }
+
+  public changeName(newName: string): void {
+    this.#name = PersonName.create(newName);
+  }
+
+  public changeProfilePhoto(newPhoto: ProfilePhoto): void {
+    this.#profilePhoto = newPhoto;
+  }
+
+  public addContact(contact: Contact): void {
+    if (this.#contacts.length >= Resident.MAX_CONTACTS) {
+      throw new ResidentMaxContactsExceededException();
+    }
+
+    this.#contacts.push(contact);
+  }
+
+  public changeContactValue(contactId: string, newValue: string): void {
+    const contact = this.#contacts.find((contact) => contact.id === contactId);
+
+    if (!contact) {
+      throw new ContactNotFoundException();
+    }
+
+    contact.changeValue(newValue);
+  }
+
+  public setPrimaryContact(contactId: string): void {
+    const contact = this.#contacts.find((contact) => contact.id === contactId);
+
+    if (!contact) {
+      throw new ContactNotFoundException();
+    }
+
+    this.#contacts.forEach((contact) => {
+      contact.changePrimaryStatus(false);
+    });
+
+    contact.changePrimaryStatus(true);
+  }
+
+  public removeContact(contactId: string): void {
+    const index = this.#contacts.findIndex(
+      (contact) => contact.id === contactId,
+    );
+
+    if (index === -1) {
+      throw new ContactNotFoundException();
+    }
+
+    this.#contacts.splice(index, 1);
+  }
+
+  get id(): string {
+    return this.#id.value;
+  }
+
+  get userId(): string {
+    return this.#id.value;
+  }
+
+  get name(): string {
+    return this.#name.value;
+  }
+
+  get profilePhoto() {
+    return {
+      id: this.#profilePhoto.id,
+      storageKey: this.#profilePhoto.storageKey,
+      contentType: this.#profilePhoto.contentType,
+      size: this.#profilePhoto.size,
+    };
+  }
+
+  get contactList() {
+    return this.#contacts.map((contact) => ({
+      id: contact.id,
+      value: contact.value,
+      type: contact.type,
+      isPrimary: contact.isPrimary,
+    }));
+  }
+}
