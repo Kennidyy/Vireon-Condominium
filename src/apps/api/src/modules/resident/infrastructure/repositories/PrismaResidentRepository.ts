@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../../infrastructure/database/prisma/prisma.service';
-import { ResidentRepository } from '../../application/ports/ResidentRespository';
+import { ResidentRepository } from '../../application/ports/ResidentRepository';
 import { Resident } from '../../domain/entities/Resident';
 import { ResidentMapper } from '../mappers/ResidentMapper';
 

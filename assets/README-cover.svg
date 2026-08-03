@@ -1,0 +1,152 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1200 360"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">Vireon Condominium</title>
+  <desc id="desc">
+    Vireon Condominium version 0.2.0 banner with the project symbol,
+    development status, and implemented modules.
+  </desc>
+
+  <rect width="1200" height="360" fill="#F8FAFC" />
+
+  <path
+    d="M0 359H1200"
+    stroke="#CBD5E1"
+    stroke-width="2"
+  />
+
+  <path
+    d="M826 0H1200V360H1030L826 156Z"
+    fill="#CCFBF1"
+  />
+
+  <path
+    d="M1030 360H1200V190L1030 360Z"
+    fill="#0F766E"
+  />
+
+  <!-- Brand symbol -->
+  <g transform="translate(74 46)">
+    <rect
+      width="268"
+      height="268"
+      rx="20"
+      fill="#FFFFFF"
+      stroke="#CBD5E1"
+      stroke-width="2"
+    />
+
+    <!-- Original symbol viewBox: 0 0 215 215 -->
+    <g transform="translate(37.5 37.5) scale(0.9)">
+      <g fill="#0F172A">
+        <path d="M188.573 0V214.456H26.4108V0H188.573ZM37.5034 203.363H177.481V11.0925H37.5034V203.363Z" />
+
+        <path d="M115.151 48.86V214.456H63.6501V48.86H115.151ZM74.7427 203.363H104.059V59.9526H74.7427V203.363Z" />
+
+        <path d="M115.151 27.4673V188.045H103.795V22.4492L115.151 27.4673Z" />
+
+        <path d="M154.768 73.9503V214.456H81.6095V73.9503H154.768ZM92.702 203.363H143.675V85.0429H92.702V203.363Z" />
+
+        <path d="M148.413 100.426C147.595 101.747 145.889 102.184 144.543 101.442L144.414 101.366L117.884 84.9357L117.812 84.8898C116.322 83.9071 116.06 81.8127 117.281 80.4926L121.714 75.7021C122.533 74.817 123.814 74.5299 124.932 74.9806L140.475 81.2438C140.671 81.3228 140.858 81.4228 141.032 81.5422L152.136 89.1536C153.416 90.0311 153.78 91.7601 152.963 93.0796L148.413 100.426Z" />
+
+        <path d="M107.212 75.0717C106.394 76.3931 104.688 76.8296 103.342 76.0876L103.213 76.0119L76.683 59.5813L76.611 59.5354C75.1209 58.5527 74.8588 56.4583 76.0804 55.1382L80.5132 50.3477C81.3322 49.4626 82.6129 49.1755 83.7314 49.6262L99.2743 55.8894C99.4701 55.9683 99.6568 56.0684 99.8309 56.1878L110.935 63.7992C112.215 64.6767 112.579 66.4057 111.762 67.7252L107.212 75.0717Z" />
+
+        <path d="M154.768 99.3047V214.456H124.131V99.3047H154.768ZM135.223 203.363H143.675V110.397H135.223V203.363Z" />
+
+        <path d="M214.72 214.456H0V203.363H214.72V214.456Z" />
+      </g>
+
+      <!-- Accent stars -->
+      <g fill="#0F766E">
+        <path d="M81.4774 20.8646L82.7016 28.7521L90.5892 29.9763L82.7016 31.2005L81.4774 39.088L80.2533 31.2005L72.3657 29.9763L80.2533 28.7521L81.4774 20.8646Z" />
+
+        <path d="M82.7016 28.7521L90.5892 29.9763L82.7016 31.2005L81.4774 39.088L80.2533 31.2005L72.3657 29.9763L80.2533 28.7521L81.4774 20.8646L82.7016 28.7521ZM80.4847 28.9836L74.0881 29.9763L80.4847 30.969L81.4774 37.3654L82.4702 30.969L88.8665 29.9763L82.4702 28.9836L81.4774 22.5869L80.4847 28.9836Z" />
+
+        <path d="M139.317 40.6727L141.003 51.5324L151.862 53.2178L141.003 54.9033L139.317 65.763L137.632 54.9033L126.772 53.2178L137.632 51.5324L139.317 40.6727Z" />
+
+        <path d="M141.003 51.5324L151.862 53.2178L141.003 54.9033L139.317 65.763L137.632 54.9033L126.772 53.2178L137.632 51.5324L139.317 40.6727L141.003 51.5324ZM137.863 51.7637L128.494 53.2178L137.863 54.672L139.317 64.0406L140.771 54.672L150.14 53.2178L140.771 51.7637L139.317 42.3948L137.863 51.7637Z" />
+      </g>
+    </g>
+  </g>
+
+  <!-- Banner content -->
+  <g
+    font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+  >
+    <text
+      x="390"
+      y="82"
+      fill="#0F766E"
+      font-size="15"
+      font-weight="700"
+      letter-spacing="2.4"
+    >
+      VIREON · V0.2.0
+    </text>
+
+    <text
+      x="390"
+      y="145"
+      fill="#0F172A"
+      font-size="48"
+      font-weight="700"
+      letter-spacing="-1.4"
+    >
+      Vireon Condominium
+    </text>
+
+    <text
+      x="390"
+      y="194"
+      fill="#334155"
+      font-size="27"
+      font-weight="500"
+    >
+      Condominium management with
+    </text>
+
+    <text
+      x="390"
+      y="230"
+      fill="#334155"
+      font-size="27"
+      font-weight="500"
+    >
+      explicit domain boundaries.
+    </text>
+
+    <rect
+      x="390"
+      y="264"
+      width="194"
+      height="34"
+      rx="17"
+      fill="#CCFBF1"
+      stroke="#5EEAD4"
+    />
+
+    <text
+      x="487"
+      y="286"
+      fill="#115E59"
+      font-size="13"
+      font-weight="700"
+      text-anchor="middle"
+      letter-spacing="1.2"
+    >
+      PRE-1.0 DEVELOPMENT
+    </text>
+
+    <text
+      x="606"
+      y="286"
+      fill="#64748B"
+      font-size="14"
+    >
+      NestJS modular monolith · Identity · Auth · Resident
+    </text>
+  </g>
+</svg>

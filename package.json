@@ -10,10 +10,14 @@
     "check-types": "turbo run check-types",
     "test": "turbo run test",
     "eval": "bun run format && bun run lint && bun run check-types && bun run format:check && bun run test",
-    "db:up": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/database/docker/docker-compose.yaml up -d",
-    "db:down": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/database/docker/docker-compose.yaml down",
-    "db:logs": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/database/docker/docker-compose.yaml logs -f",
-    "db:restart": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/database/docker/docker-compose.yaml restart"
+    "infra:up": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml up -d",
+    "infra:down": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml down",
+    "infra:logs": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml logs -f",
+    "infra:restart": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml restart",
+    "db:up": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml up -d database",
+    "db:stop": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml stop database",
+    "db:logs": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml logs -f database",
+    "db:restart": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml restart database"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
