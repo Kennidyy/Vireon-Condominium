@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="architecture-title architecture-desc">
+  <title id="architecture-title">Vireon application architecture and dependency flow</title>
+  <desc id="architecture-desc">An HTTP client connects to one NestJS modular monolith containing the Identity, Auth, and Resident modules. Identity and Resident follow presentation, application, and domain layers and use repository ports implemented by Prisma adapters. Auth uses Identity providers and exports JWT and role guards consumed by Resident presentation. Both Prisma adapters connect to one PostgreSQL database.</desc>
+
+  <defs>
+    <marker id="architecture-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#0F766E"/>
+    </marker>
+    <style>
+      .canvas { fill: #F8FAFC; }
+      .frame { fill: none; stroke: #CBD5E1; stroke-width: 2; }
+      .group { fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 2; }
+      .node { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 2; }
+      .node-soft { fill: #CCFBF1; stroke: #0F766E; stroke-width: 2; }
+      .title { fill: #0F172A; font: 700 25px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .subtitle { fill: #475569; font: 400 14px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .frame-title { fill: #0F172A; font: 700 17px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .module-title { fill: #0F766E; font: 700 15px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .4px; }
+      .label { fill: #0F172A; font: 600 14px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .secondary { fill: #475569; font: 400 13px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .small { fill: #475569; font: 500 12px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .code { fill: #0F172A; font: 600 13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .connector { fill: none; stroke: #0F766E; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#architecture-arrow); }
+      .dependency { fill: none; stroke: #0F766E; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 6 6; marker-end: url(#architecture-arrow); }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1200" height="680"/>
+
+  <text class="title" x="40" y="45">Application architecture</text>
+  <text class="subtitle" x="40" y="72">One NestJS process with explicit module boundaries, layered domain code, and shared relational infrastructure.</text>
+
+  <rect class="node-soft" x="40" y="116" width="150" height="60" rx="10"/>
+  <text class="label" x="115" y="143" text-anchor="middle">HTTP client</text>
+  <text class="secondary" x="115" y="161" text-anchor="middle">JSON over HTTP</text>
+
+  <path class="connector" d="M190 146 H215"/>
+
+  <rect class="frame" x="215" y="94" width="945" height="556" rx="12"/>
+  <text class="frame-title" x="240" y="124">NestJS modular monolith</text>
+  <text class="secondary" x="240" y="145">HTTP routing, dependency injection, validation, and module wiring remain framework-managed.</text>
+  <rect class="node-soft" x="915" y="111" width="220" height="36" rx="10"/>
+  <text class="label" x="1025" y="134" text-anchor="middle">single application process</text>
+
+  <!-- Module boundaries -->
+  <rect class="group" x="240" y="180" width="275" height="355" rx="12"/>
+  <rect class="group" x="535" y="180" width="255" height="355" rx="12"/>
+  <rect class="group" x="810" y="180" width="325" height="355" rx="12"/>
+
+  <text class="module-title" x="258" y="207">IDENTITY</text>
+  <text class="module-title" x="550" y="207">AUTH</text>
+  <text class="module-title" x="828" y="207">RESIDENT</text>
+
+  <!-- Identity internal flow -->
+  <path class="connector" d="M377.5 263 V273"/>
+  <path class="connector" d="M377.5 311 V321"/>
+  <path class="connector" d="M497 292 H507 V388 H497"/>
+  <path class="connector" d="M377.5 417 V407"/>
+
+  <rect class="node" x="258" y="225" width="239" height="38" rx="10"/>
+  <text class="label" x="377.5" y="249" text-anchor="middle">Presentation</text>
+
+  <rect class="node" x="258" y="273" width="239" height="38" rx="10"/>
+  <text class="label" x="377.5" y="297" text-anchor="middle">Application use cases</text>
+
+  <rect class="node-soft" x="258" y="321" width="239" height="38" rx="10"/>
+  <text class="label" x="377.5" y="345" text-anchor="middle">Domain model</text>
+
+  <rect class="node" x="258" y="369" width="239" height="38" rx="10"/>
+  <text class="code" x="377.5" y="393" text-anchor="middle">UserRepository</text>
+
+  <rect class="node" x="258" y="417" width="239" height="38" rx="10"/>
+  <text class="code" x="377.5" y="441" text-anchor="middle">PrismaUserRepository</text>
+
+  <rect class="node" x="258" y="476" width="239" height="22" rx="10"/>
+  <text class="code" x="377.5" y="491" text-anchor="middle">UserIdentityProvider</text>
+  <rect class="node" x="258" y="506" width="239" height="22" rx="10"/>
+  <text class="code" x="377.5" y="521" text-anchor="middle">Argon2PasswordHasher</text>
+
+  <!-- Auth implementation -->
+  <rect class="node" x="550" y="225" width="104" height="38" rx="10"/>
+  <text class="label" x="602" y="249" text-anchor="middle">Controller</text>
+  <rect class="node" x="665" y="225" width="107" height="38" rx="10"/>
+  <text class="code" x="718.5" y="241" text-anchor="middle">JwtAuthGuard</text>
+  <text class="code" x="718.5" y="254" text-anchor="middle">RolesGuard</text>
+
+  <path class="connector" d="M602 263 V273"/>
+  <path class="connector" d="M661 311 V321"/>
+  <path class="connector" d="M699 388 H718 V263"/>
+
+  <rect class="node" x="550" y="273" width="222" height="38" rx="10"/>
+  <text class="code" x="661" y="297" text-anchor="middle">LoginUserUseCase</text>
+
+  <rect class="node" x="550" y="321" width="222" height="38" rx="10"/>
+  <text class="code" x="661" y="339" text-anchor="middle">JwtTokenSigner</text>
+  <text class="secondary" x="661" y="353" text-anchor="middle">implements TokenSigner</text>
+
+  <rect class="node" x="550" y="369" width="149" height="38" rx="10"/>
+  <text class="code" x="624.5" y="393" text-anchor="middle">JwtStrategy</text>
+
+  <rect class="node" x="550" y="476" width="222" height="22" rx="10"/>
+  <text class="code" x="661" y="491" text-anchor="middle">IdentityProvider</text>
+  <rect class="node" x="550" y="506" width="222" height="22" rx="10"/>
+  <text class="code" x="661" y="521" text-anchor="middle">AuthPasswordHasher</text>
+
+  <!-- Resident internal flow -->
+  <path class="connector" d="M972.5 263 V273"/>
+  <path class="connector" d="M972.5 311 V321"/>
+  <path class="connector" d="M1117 292 H1127 V388 H1117"/>
+  <path class="connector" d="M972.5 417 V407"/>
+
+  <rect class="node" x="828" y="225" width="289" height="38" rx="10"/>
+  <text class="label" x="972.5" y="249" text-anchor="middle">Presentation</text>
+
+  <rect class="node" x="828" y="273" width="289" height="38" rx="10"/>
+  <text class="label" x="972.5" y="297" text-anchor="middle">Application use cases</text>
+
+  <rect class="node-soft" x="828" y="321" width="289" height="38" rx="10"/>
+  <text class="label" x="972.5" y="345" text-anchor="middle">Resident aggregate and value objects</text>
+
+  <rect class="node" x="828" y="369" width="289" height="38" rx="10"/>
+  <text class="code" x="972.5" y="393" text-anchor="middle">ResidentRepository</text>
+
+  <rect class="node" x="828" y="417" width="289" height="38" rx="10"/>
+  <text class="code" x="972.5" y="441" text-anchor="middle">PrismaResidentRepository</text>
+
+  <rect class="node" x="828" y="476" width="289" height="52" rx="10"/>
+  <text class="label" x="972.5" y="497" text-anchor="middle">Profile-photo metadata</text>
+  <text class="secondary" x="972.5" y="515" text-anchor="middle">No file transfer or object storage</text>
+
+  <!-- Cross-module dependencies -->
+  <path class="dependency" d="M550 487 H497"/>
+  <path class="dependency" d="M550 517 H497"/>
+
+  <path class="dependency" d="M828 244 H772"/>
+  <text class="small" x="800" y="232" text-anchor="middle">GUARDED BY</text>
+
+  <!-- Shared database -->
+  <path class="connector" d="M377.5 455 V462 H248 V548 H570 V562"/>
+  <path class="connector" d="M972.5 455 V462 H1127 V548 H800 V562"/>
+  <rect class="node-soft" x="460" y="562" width="450" height="54" rx="12"/>
+  <text class="label" x="685" y="585" text-anchor="middle">PostgreSQL</text>
+  <text class="secondary" x="685" y="603" text-anchor="middle">one shared database accessed through Prisma adapters</text>
+
+  <line x1="240" y1="632" x2="264" y2="632" stroke="#0F766E" stroke-width="2" stroke-dasharray="6 6"/>
+  <text class="small" x="272" y="636">cross-module dependency</text>
+  <text class="small" x="1118" y="636" text-anchor="end">Domain models are isolated; the application is not fully framework-independent.</text>
+</svg>
