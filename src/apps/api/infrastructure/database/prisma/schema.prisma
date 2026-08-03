@@ -11,14 +11,69 @@ enum UserRole {
   ADMIN
 }
 
+enum ContactType {
+  EMAIL
+  PHONE
+}
+
+enum ImageType {
+  PNG
+  JPEG
+}
+
 model User {
   id        String    @id
   email     String    @unique
   password  String
   role      UserRole  @default(USER)
 
+  resident Resident?
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   @@map("users")
+}
+
+model Resident {
+
+  id String @id
+  name String
+
+  user User @relation(fields: [id], references: [id])
+
+  contacts Contact[]
+
+  profilePhoto ProfilePhoto?
+
+  @@map("residents")
+}
+
+model Contact {
+  id String @id
+
+  residentId String
+
+  type ContactType
+  value String
+  isPrimary Boolean @default(false)
+
+  resident Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  @@map("contacts")
+
+}
+
+model ProfilePhoto {
+  id String @id
+
+  residentId String @unique
+
+  storageKey String
+  contentType ImageType
+  size Int
+
+  resident Resident @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  @@map("profile_photos")
 }

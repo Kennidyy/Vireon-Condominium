@@ -17,15 +17,12 @@ import { DeleteUserByIdUseCase } from '../../../application/use-cases/DeleteUser
 import { UpdateUserUseCase } from '../../../application/use-cases/UpdateUserUseCase';
 import { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUsersUseCase';
 import { UserResponseDto } from '../dto/UserResponseDto';
-import { LoginUseCase } from '../../../application/use-cases/LoginUseCase';
-import { JwtAuthGuard } from '../../../infrastructure/auth/JwtAuthGuard';
-import { RolesGuard } from '../../../infrastructure/auth/RolesGuard';
 import { UserRole } from '../../../domain/enum/UserRole';
-import { Roles } from '../../../infrastructure/auth/Roles';
 import { CreateUserRequest } from '../dto/CreateUserRequest';
-import { LoginRequest } from '../dto/LoginRequest';
 import { UpdateUserRequest } from '../dto/UpdateUserRequest';
-
+import { JwtAuthGuard } from '../../../../auth/infrastructure/guards/JwtAuthGuard';
+import { RolesGuard } from '../../../../auth/infrastructure/guards/RolesGuard';
+import { Roles } from '../../../../auth/infrastructure/decorators/Roles';
 @Controller('identity')
 export class IdentityController {
   constructor(
@@ -35,7 +32,6 @@ export class IdentityController {
     private readonly deleteUserByIdUseCase: DeleteUserByIdUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly getAllUsersUseCase: GetAllUsersUseCase,
-    private readonly loginUseCase: LoginUseCase,
   ) {}
 
   @Get('users')
@@ -80,11 +76,6 @@ export class IdentityController {
     const users = await this.getAllUsersUseCase.execute();
 
     return users.map((user) => new UserResponseDto(user));
-  }
-
-  @Post('/login')
-  async login(@Body() dto: LoginRequest) {
-    return await this.loginUseCase.execute(dto);
   }
 
   @Get('me')
