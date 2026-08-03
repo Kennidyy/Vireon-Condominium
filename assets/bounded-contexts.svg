@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="contexts-title contexts-desc">
+  <title id="contexts-title">Vireon module and context boundaries</title>
+  <desc id="contexts-desc">Identity and Resident are domain contexts, while Auth is a source module responsible for login and route security. Auth consumes Identity data, while Resident presentation consumes Auth guards and the authenticated subject. Resident currently reuses the exact User identifier as a temporary shortcut. Object storage is postponed and broader condominium operations are planned, not implemented.</desc>
+
+  <defs>
+    <marker id="contexts-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#0F766E"/>
+    </marker>
+    <style>
+      .canvas { fill: #F8FAFC; }
+      .boundary { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 2; }
+      .header { fill: #CCFBF1; stroke: #0F766E; stroke-width: 2; }
+      .item { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 2; }
+      .future { fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 2; stroke-dasharray: 7 7; }
+      .temporary { fill: #CCFBF1; stroke: #0F766E; stroke-width: 2; }
+      .title { fill: #0F172A; font: 700 25px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .subtitle { fill: #475569; font: 400 14px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .context-title { fill: #0F766E; font: 700 17px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .4px; }
+      .eyebrow { fill: #475569; font: 700 12px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 1px; }
+      .label { fill: #0F172A; font: 600 14px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .secondary { fill: #475569; font: 400 13px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .small { fill: #475569; font: 600 12px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .code { fill: #0F172A; font: 600 13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .dependency { fill: none; stroke: #0F766E; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 6 6; marker-end: url(#contexts-arrow); }
+      .relation { fill: none; stroke: #0F766E; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect class="canvas" width="1200" height="680"/>
+
+  <text class="title" x="40" y="45">Module and context boundaries</text>
+  <text class="subtitle" x="40" y="72">Ownership is explicit. Dashed relationships cross module boundaries; dashed cards describe work outside the current delivery.</text>
+
+  <!-- Implemented ownership boundaries -->
+  <rect class="boundary" x="40" y="106" width="330" height="350" rx="12"/>
+  <rect class="header" x="40" y="106" width="330" height="64" rx="12"/>
+  <rect fill="#CCFBF1" x="40" y="146" width="330" height="24"/>
+  <text class="context-title" x="62" y="135">IDENTITY CONTEXT</text>
+  <text class="secondary" x="62" y="155">User identity and credentials</text>
+  <text class="eyebrow" x="62" y="196">OWNS</text>
+
+  <rect class="item" x="62" y="211" width="286" height="42" rx="10"/>
+  <text class="code" x="82" y="237">User.id</text>
+  <text class="secondary" x="150" y="237">user identifier</text>
+  <rect class="item" x="62" y="263" width="286" height="42" rx="10"/>
+  <text class="label" x="82" y="289">Email address</text>
+  <rect class="item" x="62" y="315" width="286" height="42" rx="10"/>
+  <text class="label" x="82" y="341">Password representation</text>
+  <rect class="item" x="62" y="367" width="286" height="42" rx="10"/>
+  <text class="label" x="82" y="393">User role</text>
+  <text class="secondary" x="62" y="429">Defines the User lifecycle</text>
+  <text class="secondary" x="62" y="447">and persistence boundary.</text>
+
+  <rect class="boundary" x="435" y="106" width="330" height="350" rx="12"/>
+  <rect class="header" x="435" y="106" width="330" height="64" rx="12"/>
+  <rect fill="#CCFBF1" x="435" y="146" width="330" height="24"/>
+  <text class="context-title" x="457" y="135">AUTH MODULE</text>
+  <text class="secondary" x="457" y="155">Authentication and route access</text>
+  <text class="eyebrow" x="457" y="196">OWNS</text>
+
+  <rect class="item" x="457" y="211" width="286" height="42" rx="10"/>
+  <text class="label" x="477" y="237">Login orchestration</text>
+  <rect class="item" x="457" y="263" width="286" height="42" rx="10"/>
+  <text class="label" x="477" y="289">JWT signing and validation</text>
+  <rect class="item" x="457" y="315" width="286" height="42" rx="10"/>
+  <text class="label" x="477" y="341">Route guards and role checks</text>
+  <rect class="item" x="457" y="367" width="286" height="42" rx="10"/>
+  <text class="label" x="477" y="393">Authenticated subject</text>
+  <text class="secondary" x="457" y="429">Consumes identity data;</text>
+  <text class="secondary" x="457" y="447">does not own User records.</text>
+
+  <rect class="boundary" x="830" y="106" width="330" height="350" rx="12"/>
+  <rect class="header" x="830" y="106" width="330" height="64" rx="12"/>
+  <rect fill="#CCFBF1" x="830" y="146" width="330" height="24"/>
+  <text class="context-title" x="852" y="135">RESIDENT CONTEXT</text>
+  <text class="secondary" x="852" y="155">Resident profile and aggregate behavior</text>
+  <text class="eyebrow" x="852" y="196">OWNS</text>
+
+  <rect class="item" x="852" y="211" width="286" height="42" rx="10"/>
+  <text class="label" x="872" y="237">Resident name</text>
+  <rect class="item" x="852" y="263" width="286" height="42" rx="10"/>
+  <text class="label" x="872" y="289">Contacts</text>
+  <rect class="item" x="852" y="315" width="286" height="42" rx="10"/>
+  <text class="label" x="872" y="341">Profile-photo metadata</text>
+  <rect class="item" x="852" y="367" width="286" height="42" rx="10"/>
+  <text class="label" x="872" y="393">Aggregate operations</text>
+  <text class="secondary" x="852" y="429">Owns metadata only,</text>
+  <text class="secondary" x="852" y="447">not stored file bytes.</text>
+
+  <!-- Cross-context dependencies -->
+  <path class="dependency" d="M435 238 H370"/>
+  <text class="small" x="402.5" y="226" text-anchor="middle">USES DATA</text>
+
+  <path class="dependency" d="M830 336 H765"/>
+  <text class="small" x="797.5" y="315" text-anchor="middle">USES GUARDS</text>
+  <text class="small" x="797.5" y="327" text-anchor="middle">AND SUBJECT</text>
+
+  <!-- Temporary identifier shortcut -->
+  <path class="relation" d="M205 456 V486 H384"/>
+  <path class="relation" d="M995 456 V486 H816"/>
+  <rect class="temporary" x="384" y="470" width="432" height="68" rx="12"/>
+  <text class="eyebrow" x="600" y="491" text-anchor="middle">TEMPORARY INTEGRATION SHORTCUT</text>
+  <text class="code" x="600" y="512" text-anchor="middle">Resident.id = User.id</text>
+  <text class="secondary" x="600" y="528" text-anchor="middle">Exact value reuse today; not a permanent domain invariant.</text>
+
+  <!-- Explicitly non-implemented scope -->
+  <rect class="future" x="40" y="568" width="550" height="82" rx="12"/>
+  <text class="eyebrow" x="62" y="592">POSTPONED</text>
+  <text class="label" x="62" y="615">Object storage and profile-photo file transfer</text>
+  <text class="secondary" x="62" y="634">Current implementation retains metadata only.</text>
+
+  <rect class="future" x="610" y="568" width="550" height="82" rx="12"/>
+  <text class="eyebrow" x="632" y="592">PLANNED</text>
+  <text class="label" x="632" y="615">Broader condominium operations</text>
+  <text class="secondary" x="632" y="634">Outside the implemented scope of this delivery.</text>
+</svg>
