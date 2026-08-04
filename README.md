@@ -41,7 +41,7 @@ Vireon Condominium is an early-stage condominium management project. The current
 | Authentication                   | Implemented with known error-handling limitations | JWT login, bearer-token validation, and role guards                                                        |
 | Resident                         | Implemented                                       | Resident profile, contacts, profile-photo metadata, use cases, HTTP routes, Prisma adapter, and unit tests |
 | Profile-photo metadata           | Implemented                                       | Storage key, MIME type, and declared byte size are validated and persisted                                 |
-| Object storage and file transfer | Postponed                              | No runtime storage service, binary upload, object verification, signed read, or cleanup flow is present    |
+| Object storage and file transfer | Postponed                                         | No runtime storage service, binary upload, object verification, signed read, or cleanup flow is present    |
 | Authorization                    | Partially implemented                             | Routes use JWT and role guards; resident ownership is not checked on contact mutation routes               |
 | Verification                     | Partially implemented                             | Unit tests exist across Resident layers; no active integration or end-to-end test suite is present         |
 | Broader condominium operations   | Planned                                           | Condominium, unit, membership, communication, occurrence, and related workflows are not implemented        |
