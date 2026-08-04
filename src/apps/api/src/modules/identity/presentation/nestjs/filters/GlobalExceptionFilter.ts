@@ -9,17 +9,25 @@ import {
 import { Response, Request } from 'express';
 import { DomainException } from '../../../domain/exceptions/DomainException';
 import { InvalidCredentialException } from '../../../application/exceptions/InvalidCredentialException';
+import { InvalidCredentialsException } from '../../../../../auth/application/exceptions/InvalidCredentialsException';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);
+
+  private isInvalidCredentials(exception: unknown) {
+    return (
+      exception instanceof InvalidCredentialException ||
+      exception instanceof InvalidCredentialsException
+    );
+  }
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    if (exception instanceof InvalidCredentialException) {
+    if (this.isInvalidCredentials(exception)) {
       this.logger.warn(
         `UNAUTHORIZED [${request.method}] ${request.url} — ${exception.message}`,
       );
