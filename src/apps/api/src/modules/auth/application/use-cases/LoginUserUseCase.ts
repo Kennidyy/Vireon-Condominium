@@ -3,6 +3,7 @@ import type { IdentityProvider } from '../ports/IdentityProvider';
 import { LoginUserCommand } from '../command/LoginUserCommand';
 import type { AuthPasswordHasher } from '../ports/AuthPasswordHasher';
 import type { TokenSigner } from '../ports/TokenSigner';
+import { InvalidCredentialException } from '../../../identity/application/exceptions/InvalidCredentialException';
 
 @Injectable()
 export class LoginUserUseCase {
@@ -19,7 +20,7 @@ export class LoginUserUseCase {
     const user = await this.identityProvider.getByEmail(command.email);
 
     if (!user) {
-      throw new Error('Wrong credentials');
+      throw new InvalidCredentialException();
     }
 
     const validPassword = await this.authPasswordHasher.compare(
@@ -28,7 +29,7 @@ export class LoginUserUseCase {
     );
 
     if (!validPassword) {
-      throw new Error('Wrong credentials');
+      throw new InvalidCredentialException();
     }
 
     const token = await this.tokenSigner.sign({
