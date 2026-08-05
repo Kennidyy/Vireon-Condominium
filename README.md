@@ -5,7 +5,8 @@
 <h1 align="center">Vireon Condominium</h1>
 
 <p align="center">
-  <strong>Domain-oriented condominium management built as a NestJS modular monolith.</strong>
+  <strong>Domain-oriented con
+  dominium management built as a NestJS modular monolith.</strong>
 </p>
 
 <p align="center">
