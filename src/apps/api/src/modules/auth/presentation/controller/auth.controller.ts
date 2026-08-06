@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { LoginUserUseCase } from '../../application/use-cases/LoginUserUseCase';
 import { AuthUserRequestDto } from '../dto/AuthUserRequestDto';
 import { LoginUserCommand } from '../../application/command/LoginUserCommand';
@@ -8,6 +8,7 @@ export class AuthController {
   constructor(private readonly loginUserUseCase: LoginUserUseCase) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body() dto: AuthUserRequestDto) {
     const command = new LoginUserCommand(dto.email, dto.password);
 
