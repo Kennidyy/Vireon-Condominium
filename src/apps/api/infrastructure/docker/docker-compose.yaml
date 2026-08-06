@@ -18,5 +18,22 @@ services:
       retries: 5
       start_period: 10s
 
+  database-e2e:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: vireon_e2e
+      POSTGRES_PASSWORD: vireon_e2e
+      POSTGRES_DB: vireon_e2e
+    ports:
+      - '5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vireon_e2e -d vireon_e2e']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 2s
+
 volumes:
   postgres_data:
