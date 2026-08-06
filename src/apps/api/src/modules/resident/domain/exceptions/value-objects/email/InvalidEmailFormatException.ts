@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class InvalidEmailFormatException extends DomainException {
   readonly code = 'INVALID_EMAIL_FORMAT';

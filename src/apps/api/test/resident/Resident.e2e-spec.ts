@@ -99,11 +99,12 @@ describe('Resident E2E', () => {
         .post('/residents')
         .set(bearer(user.token))
         .send({ name: 'Maria Souza' })
-        .expect(500);
+        .expect(409);
 
       expect(response.body).toEqual({
-        statusCode: 500,
-        message: 'Internal server error',
+        statusCode: 409,
+        code: 'RESIDENT_ALREADY_EXISTS',
+        message: 'Resident already exists',
       });
     });
 
@@ -126,9 +127,9 @@ describe('Resident E2E', () => {
         .post('/residents')
         .set(bearer(user.token))
         .send({ name: 'Joao@Silva' })
-        .expect(500);
+        .expect(400);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(400);
     });
 
     it('should reject non-whitelisted fields', async () => {
@@ -191,9 +192,9 @@ describe('Resident E2E', () => {
     it('should reject a search without matches', async () => {
       const response = await request(app.getHttpServer())
         .get(`/residents?name=${encodeURIComponent('inexistent-name')}`)
-        .expect(500);
+        .expect(404);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(404);
     });
   });
 
@@ -263,9 +264,9 @@ describe('Resident E2E', () => {
       const response = await request(app.getHttpServer())
         .get(`/residents/${crypto.randomUUID()}`)
         .set(bearer(adminToken))
-        .expect(500);
+        .expect(404);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(404);
     });
 
     it('should delete a resident as admin', async () => {
@@ -279,9 +280,9 @@ describe('Resident E2E', () => {
       const lookup = await request(app.getHttpServer())
         .get(`/residents/${user.id}`)
         .set(bearer(adminToken))
-        .expect(500);
+        .expect(404);
 
-      expect(lookup.body.statusCode).toBe(500);
+      expect(lookup.body.statusCode).toBe(404);
     });
   });
 
@@ -313,9 +314,9 @@ describe('Resident E2E', () => {
           contentType: 'GIF',
           size: 1024,
         })
-        .expect(500);
+        .expect(400);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(400);
     });
 
     it('should reject a photo that exceeds the size limit', async () => {
@@ -329,9 +330,9 @@ describe('Resident E2E', () => {
           contentType: 'image/png',
           size: 6 * 1024 * 1024,
         })
-        .expect(500);
+        .expect(400);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(400);
     });
 
     it('should forbid a USER-role account from updating the photo', async () => {
@@ -391,9 +392,9 @@ describe('Resident E2E', () => {
         .post(`/residents/${user.id}/contacts`)
         .set(bearer(user.token))
         .send({ type: 'EMAIL', value: 'not-an-email' })
-        .expect(500);
+        .expect(400);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(400);
     });
 
     it('should reject an invalid phone contact', async () => {
@@ -403,9 +404,9 @@ describe('Resident E2E', () => {
         .post(`/residents/${user.id}/contacts`)
         .set(bearer(user.token))
         .send({ type: 'PHONE', value: '11987654321' })
-        .expect(500);
+        .expect(400);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(400);
     });
 
     it('should update a contact value', async () => {
@@ -450,9 +451,9 @@ describe('Resident E2E', () => {
         .patch(`/residents/${user.id}/contacts/${contactId}`)
         .set(bearer(user.token))
         .send({ value: 'not-an-email' })
-        .expect(500);
+        .expect(400);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(400);
     });
 
     it('should set a primary contact', async () => {
@@ -492,9 +493,9 @@ describe('Resident E2E', () => {
       const response = await request(app.getHttpServer())
         .patch(`/residents/${user.id}/contacts/${crypto.randomUUID()}/primary`)
         .set(bearer(user.token))
-        .expect(500);
+        .expect(404);
 
-      expect(response.body.statusCode).toBe(500);
+      expect(response.body.statusCode).toBe(404);
     });
 
     it('should remove a contact', async () => {
@@ -533,9 +534,9 @@ describe('Resident E2E', () => {
         .post(`/residents/${user.id}/contacts`)
         .set(bearer(user.token))
         .send({ type: 'EMAIL', value: 'contato11@example.com' })
-        .expect(500);
+        .expect(400);
 
-      expect(eleventh.body.statusCode).toBe(500);
+      expect(eleventh.body.statusCode).toBe(400);
     });
 
     it('should allow an admin to mutate any resident’s contacts', async () => {

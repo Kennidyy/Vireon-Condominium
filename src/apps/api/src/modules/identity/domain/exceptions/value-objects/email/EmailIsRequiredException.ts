@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class EmailIsRequiredException extends DomainException {
   readonly code = 'EMAIL_IS_REQUIRED';

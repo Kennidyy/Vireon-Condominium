@@ -83,10 +83,10 @@ describe('Identity E2E', () => {
       .post('/identity/users')
       .set(bearer(adminToken))
       .send({ email: user.email, password: user.password })
-      .expect(400);
+      .expect(409);
 
     expect(response.body).toEqual({
-      statusCode: 400,
+      statusCode: 409,
       code: 'EMAIL_ALREADY_IN_USE',
       message: 'This email is already in use',
     });
@@ -194,10 +194,10 @@ describe('Identity E2E', () => {
     const response = await request(app.getHttpServer())
       .get(`/identity/users?email=${encodeURIComponent('missing@vireon.test')}`)
       .set(bearer(adminToken))
-      .expect(400);
+      .expect(404);
 
     expect(response.body).toEqual({
-      statusCode: 400,
+      statusCode: 404,
       code: 'USER_NOT_FOUND',
       message: 'User not found',
     });
@@ -218,10 +218,10 @@ describe('Identity E2E', () => {
     const response = await request(app.getHttpServer())
       .get(`/identity/users/${crypto.randomUUID()}`)
       .set(bearer(adminToken))
-      .expect(400);
+      .expect(404);
 
     expect(response.body).toEqual({
-      statusCode: 400,
+      statusCode: 404,
       code: 'USER_NOT_FOUND',
       message: 'User not found',
     });
@@ -292,9 +292,9 @@ describe('Identity E2E', () => {
     const oldEmailLogin = await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: user.email, password: user.password })
-      .expect(500);
+      .expect(401);
 
-    expect(oldEmailLogin.body.statusCode).toBe(500);
+    expect(oldEmailLogin.body.statusCode).toBe(401);
   });
 
   it('should update a user password', async () => {
@@ -310,9 +310,9 @@ describe('Identity E2E', () => {
     const oldPasswordLogin = await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: user.email, password: user.password })
-      .expect(500);
+      .expect(401);
 
-    expect(oldPasswordLogin.body.statusCode).toBe(500);
+    expect(oldPasswordLogin.body.statusCode).toBe(401);
 
     const newPasswordLogin = await loginRequest(
       app,
@@ -349,10 +349,10 @@ describe('Identity E2E', () => {
       .patch(`/identity/users/${crypto.randomUUID()}`)
       .set(bearer(adminToken))
       .send({ email: 'anyone@vireon.test' })
-      .expect(400);
+      .expect(404);
 
     expect(response.body).toEqual({
-      statusCode: 400,
+      statusCode: 404,
       code: 'USER_NOT_FOUND',
       message: 'User not found',
     });
@@ -371,26 +371,26 @@ describe('Identity E2E', () => {
     const userById = await request(app.getHttpServer())
       .get(`/identity/users/${user.id}`)
       .set(bearer(adminToken))
-      .expect(400);
+      .expect(404);
 
     expect(userById.body.code).toBe('USER_NOT_FOUND');
 
     const userLogin = await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: user.email, password: user.password })
-      .expect(500);
+      .expect(401);
 
-    expect(userLogin.body.statusCode).toBe(500);
+    expect(userLogin.body.statusCode).toBe(401);
   });
 
   it('should reject deleting an unknown user', async () => {
     const response = await request(app.getHttpServer())
       .delete(`/identity/users/${crypto.randomUUID()}`)
       .set(bearer(adminToken))
-      .expect(400);
+      .expect(404);
 
     expect(response.body).toEqual({
-      statusCode: 400,
+      statusCode: 404,
       code: 'USER_NOT_FOUND',
       message: 'User not found',
     });

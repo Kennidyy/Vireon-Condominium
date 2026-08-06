@@ -7,8 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { DomainException } from '../../../domain/exceptions/DomainException';
-import { InvalidCredentialException } from '../../../application/exceptions/InvalidCredentialException';
+import { DomainException } from '../../domain/exceptions/DomainException';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -19,16 +18,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    if (exception instanceof InvalidCredentialException) {
-      this.logger.warn(
-        `UNAUTHORIZED [${request.method}] ${request.url} — ${exception.message}`,
-      );
-
-      response.status(HttpStatus.UNAUTHORIZED).json({
-        statusCode: HttpStatus.UNAUTHORIZED,
-        code: exception.code,
-        message: exception.message,
-      });
+    if (response.headersSent) {
       return;
     }
 
@@ -37,11 +27,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         `${exception.code} [${request.method}] ${request.url} — ${exception.message}`,
       );
 
-      response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        code: exception.code,
-        message: exception.message,
-      });
+      this.sendError(
+        response,
+        exception.statusCode,
+        exception.code,
+        exception.message,
+      );
       return;
     }
 
@@ -49,17 +40,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const status = exception.getStatus();
       const body = exception.getResponse();
 
+      const message: string | string[] =
+        typeof body === 'string'
+          ? body
+          : (((body as Record<string, unknown>).message as
+              string | string[] | undefined) ?? 'Internal server error');
+
       this.logger.warn(
         `HTTP ${status} [${request.method}] ${request.url} — ${exception.message}`,
       );
 
-      const message =
-        typeof body === 'string'
-          ? body
-          : ((body as Record<string, unknown>).message ??
-            'Internal server error');
-
-      response.status(status).json({ statusCode: status, message });
+      this.sendError(response, status, undefined, message);
       return;
     }
 
@@ -68,9 +59,24 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       exception instanceof Error ? exception.stack : '',
     );
 
-    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: 'Internal server error',
+    this.sendError(
+      response,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      undefined,
+      'Internal server error',
+    );
+  }
+
+  private sendError(
+    response: Response,
+    status: number,
+    code: string | undefined,
+    message: string | string[],
+  ) {
+    response.status(status).json({
+      statusCode: status,
+      ...(code === undefined ? {} : { code }),
+      message,
     });
   }
 }
