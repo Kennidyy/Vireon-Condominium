@@ -291,7 +291,7 @@ and should remain visible until resolved:
    but the
    [application bootstrap](../../src/apps/api/src/main.ts)
    globally registers an Identity-owned
-   [filter](../../src/apps/api/src/modules/identity/presentation/nestjs/filters/GlobalExceptionFilter.ts)
+   [filter](../../src/apps/api/src/modules/shared/presentation/filters/GlobalExceptionFilter.ts)
    that tests with `instanceof` against
    [Identity's `DomainException`](../../src/apps/api/src/modules/identity/domain/exceptions/DomainException.ts).
    Despite identical shapes, these are different runtime classes. Resident

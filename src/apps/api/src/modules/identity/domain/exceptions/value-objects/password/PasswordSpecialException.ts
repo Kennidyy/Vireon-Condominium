@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class PasswordSpecialException extends DomainException {
   readonly code = 'PASSWORD_SPECIAL_CHAR';

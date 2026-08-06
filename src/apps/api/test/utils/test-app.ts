@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../../src/app.module';
-import { GlobalExceptionFilter } from '../../src/modules/identity/presentation/nestjs/filters/GlobalExceptionFilter';
+import { GlobalExceptionFilter } from '../../src/modules/shared/presentation/filters/GlobalExceptionFilter';
 
 export async function createTestApp(): Promise<INestApplication> {
   const moduleFixture: TestingModule = await Test.createTestingModule({

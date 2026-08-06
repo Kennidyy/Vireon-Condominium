@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class PasswordUpperCaseException extends DomainException {
   readonly code = 'PASSWORD_UPPER_CASE';

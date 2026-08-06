@@ -1,4 +1,4 @@
-import { DomainException } from '../../domain/exceptions/DomainException';
+import { DomainException } from '../../../shared/domain/exceptions/DomainException';
 
 export class InvalidCredentialException extends DomainException {
   constructor() {
@@ -6,4 +6,5 @@ export class InvalidCredentialException extends DomainException {
   }
 
   readonly code = 'INVALID_CREDENTIALS';
+  readonly statusCode = 401;
 }

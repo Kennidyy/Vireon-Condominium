@@ -67,11 +67,12 @@ describe('Auth E2E User', () => {
       app,
       'unknown@vireon.test',
       'StrongPass@123',
-    ).expect(500);
+    ).expect(401);
 
     expect(response.body).toEqual({
-      statusCode: 500,
-      message: 'Internal server error',
+      statusCode: 401,
+      code: 'INVALID_CREDENTIALS',
+      message: 'Email or password are wrong',
     });
   });
 
@@ -80,11 +81,12 @@ describe('Auth E2E User', () => {
       app,
       user.email,
       'WrongPass@999',
-    ).expect(500);
+    ).expect(401);
 
     expect(response.body).toEqual({
-      statusCode: 500,
-      message: 'Internal server error',
+      statusCode: 401,
+      code: 'INVALID_CREDENTIALS',
+      message: 'Email or password are wrong',
     });
   });
 

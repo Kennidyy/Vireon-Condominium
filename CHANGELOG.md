@@ -69,7 +69,7 @@ the current architectural limitations that remain before publication.
   in external storage.
 - Resident domain and application exceptions extend a Resident-specific base,
   while the current
-  [global exception filter](src/apps/api/src/modules/identity/presentation/nestjs/filters/GlobalExceptionFilter.ts)
+  [global exception filter](src/apps/api/src/modules/shared/presentation/filters/GlobalExceptionFilter.ts)
   recognizes Identity's exception base. Resident exceptions can therefore fall
   through to the generic `500` response instead of the intended domain-error
   response.

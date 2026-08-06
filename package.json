@@ -9,6 +9,7 @@
     "format:check": "prettier --check .",
     "check-types": "turbo run check-types",
     "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
     "eval": "bun run format && bun run lint && bun run check-types && bun run format:check && bun run test",
     "infra:up": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml up -d",
     "infra:down": "docker compose --env-file src/apps/api/.env -f src/apps/api/infrastructure/docker/docker-compose.yaml down",
