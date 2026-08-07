@@ -10,6 +10,7 @@ describe('Auth E2E User', () => {
   let admin: { id: string; email: string; password: string };
   let adminToken: string;
   let user: { id: string; email: string; password: string };
+  const createdUserIds: string[] = [];
 
   beforeAll(async () => {
     database = new TestDatabase();
@@ -46,7 +47,10 @@ describe('Auth E2E User', () => {
 
   afterAll(async () => {
     await app.close();
-    await database.deleteUser(user.id);
+    for (const id of createdUserIds) {
+      await database.deleteUser(id);
+    }
+    await database.deleteUser(`${user?.id}`);
     await database.deleteUser(admin.id);
     await database.disconnect();
   });
@@ -142,5 +146,39 @@ describe('Auth E2E User', () => {
       .expect(400);
 
     expect(response.body.statusCode).toBe(400);
+  });
+
+  it('should return 401 (not 500) for a user whose stored hash is corrupted', async () => {
+    const corrupt = await database.createUserWithCorruptedHash(UserRole.USER);
+    createdUserIds.push(corrupt.id);
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: corrupt.email, password: corrupt.password })
+      .expect(401);
+
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 401,
+        code: 'INVALID_CREDENTIALS',
+        message: 'Email or password are wrong',
+      }),
+    );
+    expect(response.body.path).toBe('/auth/login');
+    expect(response.body.requestId).toEqual(expect.any(String));
+  });
+
+  it('should reject authorization headers from leaking on invalid login', async () => {
+    const corrupt = await database.createUserWithCorruptedHash(UserRole.USER);
+    createdUserIds.push(corrupt.id);
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: corrupt.email, password: corrupt.password })
+      .expect(401);
+
+    expect(response.body).not.toHaveProperty('stack');
+    expect(response.body).not.toHaveProperty('password');
+    expect(JSON.stringify(response.body)).not.toContain('argon2');
   });
 });

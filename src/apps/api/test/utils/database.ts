@@ -36,6 +36,20 @@ export class TestDatabase {
     return { id, email, password };
   }
 
+  async createUserWithCorruptedHash(
+    role: UserRole = UserRole.USER,
+  ): Promise<TestUser> {
+    const id = crypto.randomUUID();
+    const email = `e2e-corrupt-${id}@vireon.test`;
+    const password = 'StrongPass@123';
+
+    await this.prisma.user.create({
+      data: { id, email, password: 'not-an-argon2-hash', role },
+    });
+
+    return { id, email, password };
+  }
+
   async deleteUser(id: string): Promise<void> {
     await this.prisma.resident.deleteMany({ where: { id } });
     await this.prisma.user.deleteMany({ where: { id } });

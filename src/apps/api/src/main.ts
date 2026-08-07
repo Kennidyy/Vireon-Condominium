@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './modules/shared/presentation/filters/GlobalExceptionFilter';
+import { assertConfig } from './config/bootstrap-config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +20,8 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   const configService = app.get(ConfigService);
+  assertConfig(configService);
+
   const port = configService.get<number>('app.port', 3000);
 
   await app.listen(port);
