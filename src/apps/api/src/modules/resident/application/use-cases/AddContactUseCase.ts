@@ -4,6 +4,7 @@ import { AddContactCommand } from '../command/AddContactCommand';
 import { Contact } from '../../domain/entities/Contact';
 import { ContactType } from '../../domain/enum/ContactType';
 import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
+import { ResidentAccessPolicy } from '../policies/ResidentAccessPolicy';
 
 @Injectable()
 export class AddContactUseCase {
@@ -18,6 +19,12 @@ export class AddContactUseCase {
     if (!resident) {
       throw new ResidentNotFoundException();
     }
+
+    ResidentAccessPolicy.assertCanMutate(
+      resident.id,
+      command.authenticatedUserId,
+      command.authenticatedRole,
+    );
 
     const contact = Contact.create(
       ContactType[command.type as keyof typeof ContactType],

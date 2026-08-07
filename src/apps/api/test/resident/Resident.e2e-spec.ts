@@ -562,4 +562,93 @@ describe('Resident E2E', () => {
       expect(response.body.statusCode).toBe(401);
     });
   });
+
+  describe('ownership enforcement', () => {
+    it('should forbid a USER-role account from adding a contact to another user’s resident', async () => {
+      const owner = await createUserAndResident('Owner Contato');
+      const attacker = await createUser();
+
+      const response = await request(app.getHttpServer())
+        .post(`/residents/${owner.id}/contacts`)
+        .set(bearer(attacker.token))
+        .send({ type: 'EMAIL', value: 'interferencia@example.com' })
+        .expect(403);
+
+      expect(response.body.statusCode).toBe(403);
+    });
+
+    it('should forbid a USER-role account from updating a contact on another user’s resident', async () => {
+      const owner = await createUserAndResident('Owner Update');
+      const attacker = await createUser();
+
+      const added = await request(app.getHttpServer())
+        .post(`/residents/${owner.id}/contacts`)
+        .set(bearer(owner.token))
+        .send({ type: 'EMAIL', value: 'owner@example.com' })
+        .expect(201);
+
+      const contactId = added.body.contacts[0].id;
+
+      const response = await request(app.getHttpServer())
+        .patch(`/residents/${owner.id}/contacts/${contactId}`)
+        .set(bearer(attacker.token))
+        .send({ value: 'invadido@example.com' })
+        .expect(403);
+
+      expect(response.body.statusCode).toBe(403);
+    });
+
+    it('should forbid a USER-role account from removing a contact on another user’s resident', async () => {
+      const owner = await createUserAndResident('Owner Remove');
+      const attacker = await createUser();
+
+      const added = await request(app.getHttpServer())
+        .post(`/residents/${owner.id}/contacts`)
+        .set(bearer(owner.token))
+        .send({ type: 'EMAIL', value: 'owner-remove@example.com' })
+        .expect(201);
+
+      const contactId = added.body.contacts[0].id;
+
+      const response = await request(app.getHttpServer())
+        .delete(`/residents/${owner.id}/contacts/${contactId}`)
+        .set(bearer(attacker.token))
+        .expect(403);
+
+      expect(response.body.statusCode).toBe(403);
+    });
+
+    it('should preserve the contact after a denied cross-user mutation', async () => {
+      const owner = await createUserAndResident('Owner Persist');
+      const attacker = await createUser();
+
+      const added = await request(app.getHttpServer())
+        .post(`/residents/${owner.id}/contacts`)
+        .set(bearer(owner.token))
+        .send({ type: 'EMAIL', value: 'preservar@example.com' })
+        .expect(201);
+
+      const contactId = added.body.contacts[0].id;
+
+      await request(app.getHttpServer())
+        .patch(`/residents/${owner.id}/contacts/${contactId}`)
+        .set(bearer(attacker.token))
+        .send({ value: 'tentativa@example.com' })
+        .expect(403);
+
+      const after = await request(app.getHttpServer())
+        .get(`/residents/${owner.id}`)
+        .set(bearer(adminToken))
+        .expect(200);
+
+      expect(after.body.contacts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: contactId,
+            value: 'preservar@example.com',
+          }),
+        ]),
+      );
+    });
+  });
 });

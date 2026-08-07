@@ -138,8 +138,18 @@ export class ResidentController {
   @Post(':id/contacts')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
-  async addContact(@Param('id') id: string, @Body() dto: AddContactRequest) {
-    const command = new AddContactCommand(id, dto.type, dto.value);
+  async addContact(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: AddContactRequest,
+  ) {
+    const command = new AddContactCommand(
+      id,
+      dto.type,
+      dto.value,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.addContactUseCase.execute(command);
 
@@ -150,11 +160,18 @@ export class ResidentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
   async updateContactValue(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('contactId') contactId: string,
     @Body() dto: UpdateContactValueRequest,
   ) {
-    const command = new UpdateContactValueCommand(id, contactId, dto.value);
+    const command = new UpdateContactValueCommand(
+      id,
+      contactId,
+      dto.value,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.updateContactValueUseCase.execute(command);
 
@@ -165,10 +182,16 @@ export class ResidentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
   async setPrimaryContact(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('contactId') contactId: string,
   ) {
-    const command = new SetPrimaryContactCommand(id, contactId);
+    const command = new SetPrimaryContactCommand(
+      id,
+      contactId,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.setPrimaryContactUseCase.execute(command);
 
@@ -179,10 +202,16 @@ export class ResidentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
   async removeContact(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('contactId') contactId: string,
   ) {
-    const command = new RemoveContactCommand(id, contactId);
+    const command = new RemoveContactCommand(
+      id,
+      contactId,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.removeContactUseCase.execute(command);
 

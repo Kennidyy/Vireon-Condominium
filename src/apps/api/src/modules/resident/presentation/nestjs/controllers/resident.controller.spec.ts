@@ -176,13 +176,18 @@ describe('ResidentController', () => {
       const resident = createTestResident();
       mockAddContact.execute.mockResolvedValue(resident);
       const dto = { type: 'EMAIL', value: 'joao@example.com' };
+      const req = {
+        user: { id: 'user-id', role: 'USER' as const },
+      } as AuthenticatedRequest;
 
-      const result = await controller.addContact('resident-id', dto);
+      const result = await controller.addContact(req, 'resident-id', dto);
 
       expect(mockAddContact.execute).toHaveBeenCalledWith({
         id: 'resident-id',
         type: 'EMAIL',
         value: 'joao@example.com',
+        authenticatedUserId: 'user-id',
+        authenticatedRole: 'USER',
       });
       expect(result?.id).toBe(resident.id);
     });
@@ -204,6 +209,8 @@ describe('ResidentController', () => {
         id: 'resident-id',
         contactId: 'contact-id',
         value: 'new@example.com',
+        authenticatedUserId: 'user-id',
+        authenticatedRole: 'USER',
       });
       expect(result?.id).toBe(resident.id);
     });
@@ -222,6 +229,8 @@ describe('ResidentController', () => {
       expect(mockSetPrimaryContact.execute).toHaveBeenCalledWith({
         id: 'resident-id',
         contactId: 'contact-id',
+        authenticatedUserId: 'user-id',
+        authenticatedRole: 'USER',
       });
       expect(result?.id).toBe(resident.id);
     });
@@ -240,6 +249,8 @@ describe('ResidentController', () => {
       expect(mockRemoveContact.execute).toHaveBeenCalledWith({
         id: 'resident-id',
         contactId: 'contact-id',
+        authenticatedUserId: 'user-id',
+        authenticatedRole: 'USER',
       });
       expect(result?.id).toBe(resident.id);
     });
