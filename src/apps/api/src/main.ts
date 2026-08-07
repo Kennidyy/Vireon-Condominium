@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './modules/shared/presentation/filters/GlobalExceptionFilter';
+import { setupOpenApi } from './modules/shared/presentation/swagger/setup-open-api';
 import { assertConfig } from './config/bootstrap-config';
 
 async function bootstrap() {
@@ -21,6 +22,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   assertConfig(configService);
+
+  setupOpenApi(app);
 
   const port = configService.get<number>('app.port', 3000);
 

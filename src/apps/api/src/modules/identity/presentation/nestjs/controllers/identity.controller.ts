@@ -23,6 +23,9 @@ import { UpdateUserRequest } from '../dto/UpdateUserRequest';
 import { JwtAuthGuard } from '../../../../auth/infrastructure/guards/JwtAuthGuard';
 import { RolesGuard } from '../../../../auth/infrastructure/guards/RolesGuard';
 import { Roles } from '../../../../auth/infrastructure/decorators/Roles';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+@ApiTags('identity')
+@ApiBearerAuth()
 @Controller('identity')
 export class IdentityController {
   constructor(

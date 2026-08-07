@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { GlobalExceptionFilter } from '../../src/modules/shared/presentation/filters/GlobalExceptionFilter';
+import { setupOpenApi } from '../../src/modules/shared/presentation/swagger/setup-open-api';
 
 export async function createTestApp(): Promise<INestApplication> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,6 +19,8 @@ export async function createTestApp(): Promise<INestApplication> {
     }),
   );
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  setupOpenApi(app);
 
   await app.init();
 

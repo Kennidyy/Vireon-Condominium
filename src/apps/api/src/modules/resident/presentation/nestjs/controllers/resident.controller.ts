@@ -41,7 +41,10 @@ import { RemoveContactUseCase } from '../../../application/use-cases/RemoveConta
 import { RemoveContactCommand } from '../../../application/command/RemoveContactCommand';
 import { ResidentResponseMapper } from '../mappers/ResidentResponseMapper';
 import { SearchResidentsQueryDto } from '../dto/SearchResidentsQueryDto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('residents')
+@ApiBearerAuth()
 @Controller('residents')
 export class ResidentController {
   constructor(
