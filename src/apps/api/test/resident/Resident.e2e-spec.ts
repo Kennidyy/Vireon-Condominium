@@ -101,11 +101,15 @@ describe('Resident E2E', () => {
         .send({ name: 'Maria Souza' })
         .expect(409);
 
-      expect(response.body).toEqual({
-        statusCode: 409,
-        code: 'RESIDENT_ALREADY_EXISTS',
-        message: 'Resident already exists',
-      });
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          statusCode: 409,
+          code: 'RESIDENT_ALREADY_EXISTS',
+          message: 'Resident already exists',
+        }),
+      );
+      expect(response.body.path).toBe('/residents');
+      expect(response.body.requestId).toEqual(expect.any(String));
     });
 
     it('should reject an empty name', async () => {

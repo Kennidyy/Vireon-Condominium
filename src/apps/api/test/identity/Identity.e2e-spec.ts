@@ -89,6 +89,8 @@ describe('Identity E2E', () => {
       statusCode: 409,
       code: 'EMAIL_ALREADY_IN_USE',
       message: 'This email is already in use',
+      path: '/identity/users',
+      requestId: expect.any(String),
     });
   });
 
@@ -196,11 +198,15 @@ describe('Identity E2E', () => {
       .set(bearer(adminToken))
       .expect(404);
 
-    expect(response.body).toEqual({
-      statusCode: 404,
-      code: 'USER_NOT_FOUND',
-      message: 'User not found',
-    });
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 404,
+        code: 'USER_NOT_FOUND',
+        message: 'User not found',
+      }),
+    );
+    expect(response.body.path).toContain('/identity/users');
+    expect(response.body.requestId).toEqual(expect.any(String));
   });
 
   it('should return a user by id', async () => {
@@ -351,11 +357,15 @@ describe('Identity E2E', () => {
       .send({ email: 'anyone@vireon.test' })
       .expect(404);
 
-    expect(response.body).toEqual({
-      statusCode: 404,
-      code: 'USER_NOT_FOUND',
-      message: 'User not found',
-    });
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 404,
+        code: 'USER_NOT_FOUND',
+        message: 'User not found',
+      }),
+    );
+    expect(response.body.path).toContain('/identity/users/');
+    expect(response.body.requestId).toEqual(expect.any(String));
   });
 
   it('should delete a user', async () => {
@@ -389,10 +399,14 @@ describe('Identity E2E', () => {
       .set(bearer(adminToken))
       .expect(404);
 
-    expect(response.body).toEqual({
-      statusCode: 404,
-      code: 'USER_NOT_FOUND',
-      message: 'User not found',
-    });
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 404,
+        code: 'USER_NOT_FOUND',
+        message: 'User not found',
+      }),
+    );
+    expect(response.body.path).toContain('/identity/users/');
+    expect(response.body.requestId).toEqual(expect.any(String));
   });
 });

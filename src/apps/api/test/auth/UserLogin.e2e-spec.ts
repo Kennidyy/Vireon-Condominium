@@ -69,11 +69,15 @@ describe('Auth E2E User', () => {
       'StrongPass@123',
     ).expect(401);
 
-    expect(response.body).toEqual({
-      statusCode: 401,
-      code: 'INVALID_CREDENTIALS',
-      message: 'Email or password are wrong',
-    });
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 401,
+        code: 'INVALID_CREDENTIALS',
+        message: 'Email or password are wrong',
+      }),
+    );
+    expect(response.body.path).toBe('/auth/login');
+    expect(response.body.requestId).toEqual(expect.any(String));
   });
 
   it('should reject a wrong password', async () => {
@@ -83,11 +87,15 @@ describe('Auth E2E User', () => {
       'WrongPass@999',
     ).expect(401);
 
-    expect(response.body).toEqual({
-      statusCode: 401,
-      code: 'INVALID_CREDENTIALS',
-      message: 'Email or password are wrong',
-    });
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 401,
+        code: 'INVALID_CREDENTIALS',
+        message: 'Email or password are wrong',
+      }),
+    );
+    expect(response.body.path).toBe('/auth/login');
+    expect(response.body.requestId).toEqual(expect.any(String));
   });
 
   it('should reject a malformed email', async () => {

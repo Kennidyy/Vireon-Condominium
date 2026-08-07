@@ -2,6 +2,7 @@ import { ArgumentsHost, BadRequestException, Logger } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { GlobalExceptionFilter } from './GlobalExceptionFilter';
 import { DomainException } from '../../domain/exceptions/DomainException';
+import { RequestIdAwareRequest } from '../middleware/RequestIdMiddleware';
 
 class FakeDomainException extends DomainException {
   readonly code = 'FAKE_DOMAIN';
@@ -40,11 +41,21 @@ describe('GlobalExceptionFilter', () => {
     };
   });
 
-  function host(request: Partial<Request> = {}): ArgumentsHost {
+  function host(
+    request: Partial<Request> = {},
+    requestId: string | undefined = 'rid-123',
+  ): ArgumentsHost {
+    const req = {
+      originalUrl: '/residents/abc',
+      method: 'GET',
+      ...request,
+      requestId,
+    } as RequestIdAwareRequest;
+
     return {
       switchToHttp: () => ({
         getResponse: () => response as unknown as Response,
-        getRequest: () => request as Request,
+        getRequest: () => req,
       }),
     } as unknown as ArgumentsHost;
   }
@@ -57,6 +68,8 @@ describe('GlobalExceptionFilter', () => {
       statusCode: 400,
       code: 'FAKE_DOMAIN',
       message: 'opaque message',
+      path: '/residents/abc',
+      requestId: 'rid-123',
     });
   });
 
@@ -68,6 +81,8 @@ describe('GlobalExceptionFilter', () => {
       statusCode: 404,
       code: 'NOT_FOUND',
       message: 'not found',
+      path: '/residents/abc',
+      requestId: 'rid-123',
     });
   });
 
@@ -78,6 +93,8 @@ describe('GlobalExceptionFilter', () => {
     expect(response.json).toHaveBeenCalledWith({
       statusCode: 400,
       message: 'bad request',
+      path: '/residents/abc',
+      requestId: 'rid-123',
     });
   });
 
@@ -90,6 +107,8 @@ describe('GlobalExceptionFilter', () => {
     expect(response.json).toHaveBeenCalledWith({
       statusCode: 400,
       message: ['email must be valid'],
+      path: '/residents/abc',
+      requestId: 'rid-123',
     });
   });
 
@@ -100,6 +119,8 @@ describe('GlobalExceptionFilter', () => {
     expect(response.json).toHaveBeenCalledWith({
       statusCode: 500,
       message: 'Internal server error',
+      path: '/residents/abc',
+      requestId: 'rid-123',
     });
   });
 
