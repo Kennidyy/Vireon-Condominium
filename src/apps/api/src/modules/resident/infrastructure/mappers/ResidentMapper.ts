@@ -26,14 +26,20 @@ export class ResidentMapper {
         })),
       },
 
-      profilePhoto: {
-        create: {
-          id: photo.id,
-          storageKey: photo.storageKey,
-          contentType: ResidentMapper.imageTypeToPrisma(photo.contentType),
-          size: photo.size,
-        },
-      },
+      ...(photo
+        ? {
+            profilePhoto: {
+              create: {
+                id: photo.id,
+                storageKey: photo.storageKey,
+                contentType: ResidentMapper.imageTypeToPrisma(
+                  photo.contentType,
+                ),
+                size: photo.size,
+              },
+            },
+          }
+        : {}),
     };
   }
 
@@ -53,36 +59,46 @@ export class ResidentMapper {
         })),
       },
 
-      profilePhoto: {
-        upsert: {
-          create: {
-            id: photo.id,
-            storageKey: photo.storageKey,
-            contentType: ResidentMapper.imageTypeToPrisma(photo.contentType),
-            size: photo.size,
-          },
-          update: {
-            storageKey: photo.storageKey,
-            contentType: ResidentMapper.imageTypeToPrisma(photo.contentType),
-            size: photo.size,
-          },
-        },
-      },
+      ...(photo
+        ? {
+            profilePhoto: {
+              upsert: {
+                create: {
+                  id: photo.id,
+                  storageKey: photo.storageKey,
+                  contentType: ResidentMapper.imageTypeToPrisma(
+                    photo.contentType,
+                  ),
+                  size: photo.size,
+                },
+                update: {
+                  storageKey: photo.storageKey,
+                  contentType: ResidentMapper.imageTypeToPrisma(
+                    photo.contentType,
+                  ),
+                  size: photo.size,
+                },
+              },
+            },
+          }
+        : {}),
     };
   }
 
   static toDomain(
     id: string,
     name: string,
-    prismaProfilePhoto: PrismaProfilePhoto,
+    prismaProfilePhoto: PrismaProfilePhoto | null,
     prismaContact: PrismaContact[],
   ) {
-    const photo = ProfilePhoto.restore(
-      prismaProfilePhoto.id,
-      prismaProfilePhoto.storageKey,
-      ResidentMapper.toDomainImageType(prismaProfilePhoto.contentType),
-      prismaProfilePhoto.size,
-    );
+    const photo = prismaProfilePhoto
+      ? ProfilePhoto.restore(
+          prismaProfilePhoto.id,
+          prismaProfilePhoto.storageKey,
+          ResidentMapper.toDomainImageType(prismaProfilePhoto.contentType),
+          prismaProfilePhoto.size,
+        )
+      : null;
 
     const contacts = prismaContact.map((contact) => {
       return Contact.restore(

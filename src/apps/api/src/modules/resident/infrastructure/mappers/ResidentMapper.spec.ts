@@ -133,8 +133,8 @@ describe('ResidentMapper', () => {
       expect(resident).toBeInstanceOf(Resident);
       expect(resident.id).toBe(residentId);
       expect(resident.name).toBe('João Silva');
-      expect(resident.profilePhoto.storageKey).toBe('photos/abc.png');
-      expect(resident.profilePhoto.contentType).toBe(ImageType.PNG);
+      expect(resident.profilePhoto?.storageKey).toBe('photos/abc.png');
+      expect(resident.profilePhoto?.contentType).toBe(ImageType.PNG);
       expect(resident.contactList[0].value).toBe('joao@example.com');
       expect(resident.contactList[0].type).toBe(ContactType.EMAIL);
       expect(resident.contactList[0].isPrimary).toBe(true);
@@ -148,7 +148,7 @@ describe('ResidentMapper', () => {
         [],
       );
 
-      expect(resident.profilePhoto.contentType).toBe(ImageType.JPEG);
+      expect(resident.profilePhoto?.contentType).toBe(ImageType.JPEG);
     });
 
     it('should map PHONE contact type correctly', () => {
@@ -167,18 +167,20 @@ describe('ResidentMapper', () => {
     it('should preserve data through toPersistence and toDomain', () => {
       const resident = makeResident();
       const persisted = ResidentMapper.toPersistence(resident);
-      const photo = persisted.profilePhoto.create;
+      const photo = persisted.profilePhoto?.create;
       const contacts = persisted.contacts.create;
+
+      expect(photo).toBeDefined();
 
       const domain = ResidentMapper.toDomain(
         persisted.id,
         persisted.name,
         {
-          id: photo.id,
+          id: photo!.id,
           residentId: persisted.id,
-          storageKey: photo.storageKey,
-          contentType: photo.contentType,
-          size: photo.size,
+          storageKey: photo!.storageKey,
+          contentType: photo!.contentType,
+          size: photo!.size,
         },
         contacts.map((contact) => ({
           id: contact.id,
@@ -191,8 +193,8 @@ describe('ResidentMapper', () => {
 
       expect(domain.id).toBe(resident.id);
       expect(domain.name).toBe(resident.name);
-      expect(domain.profilePhoto.storageKey).toBe(
-        resident.profilePhoto.storageKey,
+      expect(domain.profilePhoto?.storageKey).toBe(
+        resident.profilePhoto?.storageKey,
       );
       expect(domain.contactList[0].value).toBe('joao@example.com');
     });

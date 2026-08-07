@@ -3,7 +3,6 @@ import type { ResidentRepository } from '../ports/ResidentRepository';
 import { CreateResidentCommand } from '../command/CreateResidentCommand';
 import { Resident } from '../../domain/entities/Resident';
 import { PersonName } from '../../domain/value-objects/PersonName';
-import { ProfilePhoto } from '../../domain/entities/ProfilePhoto';
 import { Uuid } from '../../domain/value-objects/Uuid';
 import { ResidentAlreadyExistsException } from '../exceptions/ResidentAlreadyExistsException';
 
@@ -24,7 +23,6 @@ export class CreateResidentUseCase {
     const resident = Resident.create(
       Uuid.create(command.id),
       PersonName.create(command.name),
-      ProfilePhoto.default(),
     );
 
     await this.residentRepository.save(resident);
