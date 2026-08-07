@@ -1,14 +1,21 @@
 {
   "name": "Vireon Development",
+
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
   },
+
   "remoteUser": "vscode",
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ],
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    }
+  },
+
   "postCreateCommand": "nix develop --command just setup",
+
   "customizations": {
     "jetbrains": {
       "backend": "WebStorm"
