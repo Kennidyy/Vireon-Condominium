@@ -77,13 +77,20 @@ bunx prisma generate
 bunx prisma migrate dev
 ```
 
+From the repository root, the development seed can be applied with:
+
+```bash
+just db-seed
+```
+
 For a non-development environment, use the migration deployment command appropriate to that environment:
 
 ```bash
 bunx prisma migrate deploy
 ```
 
-The repository contains a development seed source, but it is not wired to a package script or Prisma seed entry. Inspect the file and its credentials before choosing to run it manually.
+`just setup` starts the development database, applies committed migrations, and
+runs this seed automatically.
 
 ## Run the API
 
@@ -96,6 +103,11 @@ bun run dev
 The default base URL is `http://localhost:3000`.
 
 From the repository root, `bun run dev` starts the Turborepo development task instead.
+It also resolves the database host automatically when invoked inside the
+optional Dev Container. Prefer this root command (or `just dev`) there; running
+the API workspace's `bun run dev` directly bypasses the container-aware database
+wrapper. The local `.env` should continue to use `localhost` so it remains valid
+for host development.
 
 ## Authentication
 

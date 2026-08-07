@@ -41,14 +41,14 @@ cloning the repository, run:
 ```bash
 direnv allow
 just setup
-just db-up
 just dev
 ```
 
 `just setup` installs Bun dependencies, copies
 `src/apps/api/.env.example` to the ignored `src/apps/api/.env` when necessary,
-and generates the Prisma client. Review the generated local environment file and
-replace its example secrets before using it outside local development.
+starts the development database, generates the Prisma client, applies committed
+migrations, and runs the development seed. Review the generated local environment
+file and replace its example secrets before using it outside local development.
 
 If `direnv` is not installed, commands can be run explicitly through Nix:
 
@@ -66,6 +66,38 @@ The host Docker socket is mounted so the Nix-provided Docker client can manage
 the project's Compose services. The host must therefore provide Docker, and
 access to the socket grants the container control over that Docker daemon.
 
+The development PostgreSQL container publishes `DB_PORT` on the Docker host.
+Inside a Dev Container, `localhost` refers to the Dev Container itself rather
+than that host. The root `bun run dev` command and the database `just` recipes
+therefore execute through
+`src/apps/api/infrastructure/docker/run-with-database.sh`. The wrapper keeps the
+committed `DATABASE_URL` convention (`localhost`) for normal host development,
+but, when it detects a container, it probes the container gateway and
+`host.docker.internal` and exports a process-local URL with the reachable host.
+The Turborepo `dev` task explicitly passes this URL and the other runtime
+configuration variables through to the API process. No values or secrets are
+stored in `turbo.json`, and the wrapper does not rewrite `.env`.
+
+Always start the application from the repository root with one of these
+equivalent commands:
+
+```bash
+just dev
+bun run dev
+```
+
+Running `bun run dev` directly inside `src/apps/api` bypasses the root wrapper
+and is not supported from a Dev Container. If the database is unavailable, the
+wrapper exits before NestJS starts and reports the unreachable published port,
+instead of allowing every database-backed HTTP route to fail with `500`.
+
+To diagnose connectivity without exposing credentials, run:
+
+```bash
+bash src/apps/api/infrastructure/docker/run-with-database.sh \
+  bash -c 'value=${DATABASE_URL#*@}; printf "%s\n" "${value%%/*}"'
+```
+
 ## Commands
 
 Run `just` to list every recipe. The primary daily commands are:
@@ -80,6 +112,8 @@ Run `just` to list every recipe. The primary daily commands are:
 | `just db-up`      | Start the local PostgreSQL service                      |
 | `just db-down`    | Remove the local Compose stack                          |
 | `just db-migrate` | Create and apply a development migration                |
+| `just db-deploy`  | Apply committed migrations                              |
+| `just db-seed`    | Seed the development database                           |
 | `just db-reset`   | Reset the development database                          |
 | `just db-studio`  | Open Prisma Studio                                      |
 

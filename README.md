@@ -206,9 +206,15 @@ bun run dev
 ```
 
 The API listens on `http://localhost:3000` unless `PORT` is changed.
+When this command runs inside the optional Dev Container, it resolves the
+published PostgreSQL port through the Docker host automatically; the `.env`
+file can keep using `localhost`, so the same configuration also works directly
+on the host. See the
+[development environment guide](docs/development-environment.md#dev-container)
+for the networking behavior and troubleshooting command.
 
-> [!NOTE]
-> The seed source is present, but no root or API package script currently wires it into the documented setup. Review it before executing it in a local environment.
+The root `just setup` command also starts PostgreSQL, applies committed
+migrations, and seeds the development database.
 
 ## Commands
 
