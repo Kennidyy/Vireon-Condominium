@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-v0.2.0-0F766E?style=flat-square" alt="Version v0.2.0"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-v0.3.0-0F766E?style=flat-square" alt="Version v0.3.0"></a>
   <a href="docs/architecture/engineering-decisions.md#versioning-during-initial-development"><img src="https://img.shields.io/badge/status-pre--1.0%20development-334155?style=flat-square" alt="Status: pre-1.0 development"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-0F766E?style=flat-square" alt="MIT License"></a>
 </p>
@@ -27,28 +27,29 @@
 Vireon Condominium is an early-stage condominium management project. The current backend establishes identity, authentication, and resident-profile capabilities as a foundation for future condominium operations. The repository is intended to make domain rules and technical boundaries visible in code; it does not yet represent a complete condominium product.
 
 > [!IMPORTANT]
-> **Current delivery — `v0.2.0`**
+> **Current delivery — `v0.3.0`**
 >
 > **Status:** pre-1.0 development delivery, prepared for publication
 >
-> This delivery documents and exposes the implemented Resident bounded context. Vireon remains below `1.0.0` because its public API, architecture, and domain model may still change incompatibly. See the [changelog](CHANGELOG.md) for the delivery scope and known limitations.
+> This delivery hardens the API around the implemented Identity and Resident bounded contexts: ownership-aware authorization, a unified exception contract, request identifiers, request logging, an OpenAPI document, and an active end-to-end test suite. Vireon remains below `1.0.0` because its public API, architecture, and domain model may still change incompatibly. See the [changelog](CHANGELOG.md) for the delivery scope and known limitations.
 
 ## Project status
 
-| Area                             | Status                                            | Evidence in the current repository                                                                         |
-| -------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Identity                         | Implemented                                       | User creation, lookup, update, deletion, role assignment, email and password rules                         |
-| Authentication                   | Implemented with known error-handling limitations | JWT login, bearer-token validation, and role guards                                                        |
-| Resident                         | Implemented                                       | Resident profile, contacts, profile-photo metadata, use cases, HTTP routes, Prisma adapter, and unit tests |
-| Profile-photo metadata           | Implemented                                       | Storage key, MIME type, and declared byte size are validated and persisted                                 |
-| Object storage and file transfer | Postponed                                         | No runtime storage service, binary upload, object verification, signed read, or cleanup flow is present    |
-| Authorization                    | Partially implemented                             | Routes use JWT and role guards; resident ownership is not checked on contact mutation routes               |
-| Verification                     | Partially implemented                             | Unit tests exist across Resident layers; no active integration or end-to-end test suite is present         |
-| Broader condominium operations   | Planned                                           | Condominium, unit, membership, communication, occurrence, and related workflows are not implemented        |
+| Area                             | Status      | Evidence in the current repository                                                                                              |
+| -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Identity                         | Implemented | User creation, lookup, update, deletion, role assignment, email and password rules                                              |
+| Authentication                   | Implemented | JWT login, bearer-token validation, role guards, and fail-fast `JWT_SECRET` bootstrap validation                                |
+| Resident                         | Implemented | Resident profile, contacts, profile-photo metadata, use cases, HTTP routes, Prisma adapter, and unit tests                      |
+| Profile-photo metadata           | Implemented | Storage key, MIME type, and declared byte size are validated and persisted; optional in the domain, default avatar in responses |
+| Object storage and file transfer | Postponed   | No runtime storage service, binary upload, object verification, signed read, or cleanup flow is present                         |
+| Authorization                    | Implemented | JWT and role guards, ownership enforcement for contact and resident mutations (`403` on cross-owner access)                     |
+| Error contract                   | Implemented | Unified `{ statusCode, code?, message, path, requestId }` response body and `x-request-id` header                               |
+| Verification                     | Implemented | Unit tests, active PostgreSQL-backed E2E suite, OpenAPI document, and `tsc`/lint checks                                         |
+| Broader condominium operations   | Planned     | Condominium, unit, membership, communication, occurrence, and related workflows are not implemented                             |
 
 ## Business context
 
-Condominium operations require more than user accounts. The product direction is to connect authenticated identities with resident profiles and, in later deliveries, the operational records of a condominium. Version `v0.2.0` is limited to the identity-to-resident foundation: it does not yet model buildings, units, occupancy, notices, requests, or occurrences.
+Condominium operations require more than user accounts. The product direction is to connect authenticated identities with resident profiles and, in later deliveries, the operational records of a condominium. Version `v0.3.0` is limited to the identity-to-resident foundation: it does not yet model buildings, units, occupancy, notices, requests, or occurrences.
 
 ---
 
@@ -94,7 +95,9 @@ The current Resident implementation supports:
 
 - creating and renaming the resident associated with the authenticated user;
 - administrative lookup, listing, photo-metadata replacement, and deletion;
-- public case-insensitive lookup by name;
+- public case-insensitive search by name on `GET /residents`, and an
+  administrative list-all when the endpoint is called without a `name` filter;
+- ownership enforcement for contact mutations (`403` when a `USER` addresses another owner's resident);
 - adding, editing, prioritizing, and removing email or Brazilian mobile-phone contacts;
 - enforcing the creation/addition limit of ten contacts;
 - validating person names, UUIDs, contact values, PNG/JPEG content types, and a 5 MiB photo-metadata size ceiling;
@@ -225,9 +228,16 @@ Run these from the repository root unless noted otherwise.
 
 ## Testing
 
-Resident has co-located Jest unit specifications for domain objects, application use cases, the in-memory repository, persistence mapping, DTO validation, response mapping, and controller delegation. Use-case tests use `FakeResidentRepository`; they do not connect to PostgreSQL. There are no active integration or end-to-end specifications in the current tree.
+Resident and Identity have co-located Jest unit specifications for domain objects, application use cases, the in-memory repository, persistence mapping, DTO validation, response mapping, and controller delegation. Use-case tests use `FakeResidentRepository`; they do not connect to PostgreSQL.
 
-Run all workspace tests:
+An active PostgreSQL-backed end-to-end suite is at `src/apps/api/test/` and covers the login matrix, identity administration, resident creation, renaming, search, ownership, contacts, profile-photo responses, the unified error contract, and the OpenAPI document. It runs against a throwaway database container:
+
+```bash
+cd src/apps/api
+bash test/run-e2e.sh
+```
+
+Run all workspace unit tests:
 
 ```bash
 bun run test
@@ -253,24 +263,24 @@ TMPDIR=/tmp bun run test -- --runInBand --testPathPatterns=modules/resident
 
 - Public API contracts are not versioned and may change before `1.0.0`.
 - `Resident.id` currently reuses `User.id`; this is a temporary integration simplification, not a permanent domain invariant.
-- Contact routes allow the `USER` role to supply any resident identifier; ownership enforcement is not implemented there.
-- Profile-photo operations accept and persist metadata only. No multipart upload, object-storage adapter, file lifecycle, or retrievable URL is implemented.
-- The Prisma relation permits a missing profile-photo row, while the Resident domain and repository expect one.
-- Resident typed exceptions are not recognized by the currently registered Identity exception filter and therefore reach the generic HTTP 500 branch.
-- No OpenAPI specification, integration test suite, active end-to-end suite, or production deployment configuration is present.
+- Profile-photo operations accept and persist metadata only. No multipart upload, object-storage adapter, file lifecycle, or retrievable URL is implemented; object storage (e.g., MinIO) is deferred.
+- The Prisma relation permits a missing profile-photo row. The domain now treats the photo as optional (`null`) and the response falls back to a default avatar.
+- Resident application use cases use NestJS dependency-injection decorators; the domain is framework-independent, but the application layer is not fully framework-agnostic.
+- The Resident presentation layer imports Auth guards and the role enum through concrete Auth paths.
+- No production deployment configuration or database migrations for a managed PostgreSQL provider are present.
 
 ## Documentation
 
 | Architecture and domain                                                | Project and API                                                        |
 | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [Documentation index](docs/README.md)                                  | [API setup and route summary](src/apps/api/README.md)                  |
+| [Documentation index](docs/README.md)                                  | [API setup, route summary, and OpenAPI](src/apps/api/README.md)        |
 | [Architecture overview](docs/architecture/overview.md)                 | [Changelog](CHANGELOG.md)                                              |
 | [Engineering decisions](docs/architecture/engineering-decisions.md)    | [Identity bounded context](docs/contexts/bounded-contexts/identity.md) |
 | [Resident bounded context](docs/contexts/bounded-contexts/resident.md) |                                                                        |
 
 ## Roadmap
 
-`v0.2.0` is the current Resident delivery. The next work is intentionally unversioned until a delivery is approved. Candidate areas include independent Resident identity, ownership-aware authorization, operational profile-photo storage, integration/E2E testing, and the condominium/unit/membership model. These items are planned, not implemented.
+`v0.3.0` is the current delivery. The next work is intentionally unversioned until a delivery is approved. Candidate areas include independent Resident identity, operational profile-photo storage, pagination, and the condominium/unit/membership model. These items are planned, not implemented.
 
 ## License
 
