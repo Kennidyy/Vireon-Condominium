@@ -20,6 +20,8 @@ services:
 
   database-e2e:
     image: postgres:17
+    profiles:
+      - e2e
     environment:
       POSTGRES_USER: vireon_e2e
       POSTGRES_PASSWORD: vireon_e2e
