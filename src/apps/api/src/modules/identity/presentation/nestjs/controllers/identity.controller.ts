@@ -37,8 +37,16 @@ export class IdentityController {
   @Get('users')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getByEmail(@Query('email') email: string) {
-    return await this.getUserByEmailUseCase.execute(email);
+  async getUsers(
+    @Query('email') email?: string,
+  ): Promise<UserResponseDto | UserResponseDto[]> {
+    if (email !== undefined) {
+      return await this.getUserByEmailUseCase.execute(email);
+    }
+
+    const users = await this.getAllUsersUseCase.execute();
+
+    return users.map((user) => new UserResponseDto(user));
   }
 
   @Get('users/:id')
@@ -67,15 +75,6 @@ export class IdentityController {
   @Roles(UserRole.ADMIN)
   async update(@Param('id') id: string, @Body() dto: UpdateUserRequest) {
     return await this.updateUserUseCase.execute(id, dto);
-  }
-
-  @Get('all')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async getAll() {
-    const users = await this.getAllUsersUseCase.execute();
-
-    return users.map((user) => new UserResponseDto(user));
   }
 
   @Get('me')

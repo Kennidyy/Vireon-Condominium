@@ -40,6 +40,7 @@ import { SetPrimaryContactCommand } from '../../../application/command/SetPrimar
 import { RemoveContactUseCase } from '../../../application/use-cases/RemoveContactUseCase';
 import { RemoveContactCommand } from '../../../application/command/RemoveContactCommand';
 import { ResidentResponseMapper } from '../mappers/ResidentResponseMapper';
+import { SearchResidentsQueryDto } from '../dto/SearchResidentsQueryDto';
 
 @Controller('residents')
 export class ResidentController {
@@ -91,17 +92,17 @@ export class ResidentController {
     await this.deleteResidentUseCase.execute(command);
   }
 
-  @Get()
-  async getByName(@Query('name') name: string) {
-    const residents = await this.getResidentByName.execute(name);
+  @Get('search')
+  async searchResidents(@Query() dto: SearchResidentsQueryDto) {
+    const residents = await this.getResidentByName.execute(dto.name);
 
     return ResidentResponseMapper.toResponseList(residents);
   }
 
-  @Get('all')
+  @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getAll() {
+  async getResidents() {
     const residents = await this.getAllResidentsUseCase.execute();
 
     return ResidentResponseMapper.toResponseList(residents);

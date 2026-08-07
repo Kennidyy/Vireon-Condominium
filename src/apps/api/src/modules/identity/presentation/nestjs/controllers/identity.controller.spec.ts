@@ -8,6 +8,7 @@ import type { GetAllUsersUseCase } from '../../../application/use-cases/GetAllUs
 import { User } from '../../../domain/entities/User';
 import { Email } from '../../../domain/value-objects/Email';
 import { Password } from '../../../domain/value-objects/Password';
+import type { UserResponseDto } from '../dto/UserResponseDto';
 
 type MockUseCase = { execute: jest.Mock };
 
@@ -54,14 +55,14 @@ describe('IdentityController', () => {
     });
   });
 
-  describe('getByEmail', () => {
-    it('should call get by email use case', async () => {
+  describe('getUsers', () => {
+    it('should call get by email use case when an email is provided', async () => {
       mockGetByEmail.execute.mockResolvedValue({
         id: 'id',
         email: 'test@email.com',
       });
 
-      const result = await controller.getByEmail('test@email.com');
+      const result = await controller.getUsers('test@email.com');
 
       expect(mockGetByEmail.execute).toHaveBeenCalledWith('test@email.com');
       expect(result).toEqual({ id: 'id', email: 'test@email.com' });
@@ -82,17 +83,18 @@ describe('IdentityController', () => {
     });
   });
 
-  describe('getAll', () => {
-    it('should return users mapped to DTOs', async () => {
+  describe('getUsers (list)', () => {
+    it('should return users mapped to DTOs when no email is provided', async () => {
       const user = createTestUser();
       mockGetAll.execute.mockResolvedValue([user]);
 
-      const result = await controller.getAll();
+      const result = await controller.getUsers();
 
       expect(mockGetAll.execute).toHaveBeenCalled();
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(user.id);
-      expect(result[0].email).toBe(user.email.value);
+      const list = result as UserResponseDto[];
+      expect(list).toHaveLength(1);
+      expect(list[0].id).toBe(user.id);
+      expect(list[0].email).toBe(user.email.value);
     });
   });
 

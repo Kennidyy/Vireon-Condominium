@@ -167,7 +167,7 @@ describe('Resident E2E', () => {
         .expect(200);
 
       const search = await request(app.getHttpServer())
-        .get(`/residents?name=${encodeURIComponent('Joao Pedro')}`)
+        .get(`/residents/search?name=${encodeURIComponent('Joao Pedro')}`)
         .expect(200);
 
       expect(search.body).toEqual(
@@ -183,7 +183,7 @@ describe('Resident E2E', () => {
       const user = await createUserAndResident('Ana Beatriz');
 
       const response = await request(app.getHttpServer())
-        .get(`/residents?name=${encodeURIComponent('ana beatriz')}`)
+        .get(`/residents/search?name=${encodeURIComponent('ana beatriz')}`)
         .expect(200);
 
       expect(response.body).toEqual(
@@ -195,10 +195,36 @@ describe('Resident E2E', () => {
 
     it('should reject a search without matches', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/residents?name=${encodeURIComponent('inexistent-name')}`)
+        .get(`/residents/search?name=${encodeURIComponent('inexistent-name')}`)
         .expect(404);
 
       expect(response.body.statusCode).toBe(404);
+    });
+
+    it('should reject a search without a name', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/residents/search')
+        .expect(400);
+
+      expect(response.body.statusCode).toBe(400);
+    });
+
+    it('should reject a search with a whitespace-only name', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/residents/search')
+        .query({ name: '   ' })
+        .expect(400);
+
+      expect(response.body.statusCode).toBe(400);
+    });
+
+    it('should reject unexpected query parameters', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/residents/search')
+        .query({ name: 'João', unknown: 'value' })
+        .expect(400);
+
+      expect(response.body.statusCode).toBe(400);
     });
   });
 
@@ -207,7 +233,7 @@ describe('Resident E2E', () => {
       const user = await createUserAndResident('Carlos Pereira');
 
       const response = await request(app.getHttpServer())
-        .get('/residents/all')
+        .get('/residents')
         .set(bearer(adminToken))
         .expect(200);
 
@@ -222,7 +248,7 @@ describe('Resident E2E', () => {
       const user = await createUserAndResident('Marcos Lima');
 
       const response = await request(app.getHttpServer())
-        .get('/residents/all')
+        .get('/residents')
         .set(bearer(user.token))
         .expect(403);
 
@@ -231,7 +257,7 @@ describe('Resident E2E', () => {
 
     it('should require authentication to list residents', async () => {
       const response = await request(app.getHttpServer())
-        .get('/residents/all')
+        .get('/residents')
         .expect(401);
 
       expect(response.body.statusCode).toBe(401);

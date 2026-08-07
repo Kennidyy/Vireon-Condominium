@@ -226,18 +226,22 @@ describe('Identity E2E', () => {
       .set(bearer(adminToken))
       .expect(404);
 
-    expect(response.body).toEqual({
-      statusCode: 404,
-      code: 'USER_NOT_FOUND',
-      message: 'User not found',
-    });
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 404,
+        code: 'USER_NOT_FOUND',
+        message: 'User not found',
+      }),
+    );
+    expect(response.body.path).toContain('/identity/users/');
+    expect(response.body.requestId).toEqual(expect.any(String));
   });
 
   it('should list all users', async () => {
     const user = await createUserViaApi();
 
     const response = await request(app.getHttpServer())
-      .get('/identity/all')
+      .get('/identity/users')
       .set(bearer(adminToken))
       .expect(200);
 

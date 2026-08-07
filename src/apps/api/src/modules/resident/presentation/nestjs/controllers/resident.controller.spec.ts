@@ -108,12 +108,12 @@ describe('ResidentController', () => {
     });
   });
 
-  describe('getByName', () => {
+  describe('searchResidents', () => {
     it('should return residents mapped to DTOs', async () => {
       const resident = createTestResident();
       mockGetByName.execute.mockResolvedValue([resident]);
 
-      const result = await controller.getByName('João');
+      const result = await controller.searchResidents({ name: 'João' });
 
       expect(mockGetByName.execute).toHaveBeenCalledWith('João');
       expect(result).toHaveLength(1);
@@ -123,12 +123,12 @@ describe('ResidentController', () => {
     });
   });
 
-  describe('getAll', () => {
+  describe('getResidents', () => {
     it('should return all residents mapped to DTOs', async () => {
       const resident = createTestResident();
       mockGetAll.execute.mockResolvedValue([resident]);
 
-      const result = await controller.getAll();
+      const result = await controller.getResidents();
 
       expect(mockGetAll.execute).toHaveBeenCalled();
       expect(result).toHaveLength(1);
@@ -198,8 +198,12 @@ describe('ResidentController', () => {
       const resident = createTestResident();
       mockUpdateContactValue.execute.mockResolvedValue(resident);
       const dto = { value: 'new@example.com' };
+      const req = {
+        user: { id: 'user-id', role: 'USER' as const },
+      } as AuthenticatedRequest;
 
       const result = await controller.updateContactValue(
+        req,
         'resident-id',
         'contact-id',
         dto,
@@ -220,8 +224,12 @@ describe('ResidentController', () => {
     it('should call set primary contact use case with the command', async () => {
       const resident = createTestResident();
       mockSetPrimaryContact.execute.mockResolvedValue(resident);
+      const req = {
+        user: { id: 'user-id', role: 'USER' as const },
+      } as AuthenticatedRequest;
 
       const result = await controller.setPrimaryContact(
+        req,
         'resident-id',
         'contact-id',
       );
@@ -240,8 +248,12 @@ describe('ResidentController', () => {
     it('should call remove contact use case with the command', async () => {
       const resident = createTestResident();
       mockRemoveContact.execute.mockResolvedValue(resident);
+      const req = {
+        user: { id: 'user-id', role: 'USER' as const },
+      } as AuthenticatedRequest;
 
       const result = await controller.removeContact(
+        req,
         'resident-id',
         'contact-id',
       );
