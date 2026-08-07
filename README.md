@@ -143,6 +143,11 @@ Vireon-Condominium/
 
 ## Local development
 
+> [!TIP]
+> The recommended reproducible workflow uses Nix, direnv, and `just`. See the
+> [development environment guide](docs/development-environment.md) for local,
+> Dev Container, and CI usage.
+
 ### Prerequisites
 
 - Bun `1.3.14`
@@ -222,6 +227,9 @@ Run these from the repository root unless noted otherwise.
 | `bun run db:up`                           | Start the local PostgreSQL service                     |
 | `bun run db:stop`                         | Stop the local PostgreSQL service                      |
 | `bun run infra:up` / `bun run infra:down` | Start or remove all currently defined Compose services |
+
+The equivalent `just` recipes are the preferred project interface. Run `just`
+to list them or `just ci` to reproduce the complete GitHub Actions pipeline.
 
 > [!NOTE]
 > The GitHub Actions workflow is configured to install dependencies, generate Prisma Client, check formatting, lint, type-check, apply migrations to a PostgreSQL service, run tests, and build. A configured workflow is not evidence that an arbitrary branch is currently passing; consult the corresponding GitHub run when that status matters.
