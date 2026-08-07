@@ -1,0 +1,20 @@
+{
+  "name": "Vireon Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "remoteUser": "vscode",
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "postCreateCommand": "nix develop --command just setup",
+  "customizations": {
+    "jetbrains": {
+      "backend": "WebStorm"
+    },
+    "vscode": {
+      "extensions": ["jnoortheen.nix-ide", "mkhl.direnv"]
+    }
+  }
+}
