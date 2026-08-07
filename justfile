@@ -16,7 +16,7 @@ install-frozen:
 setup-env:
     @if [[ ! -f "{{env_file}}" ]]; then cp "{{api_dir}}/.env.example" "{{env_file}}"; echo "Created {{env_file}} from the example file"; fi
 
-setup: install setup-env db-generate
+setup: install setup-env db-up db-generate db-deploy db-seed
 
 dev:
     bun run dev
@@ -56,7 +56,7 @@ infra-logs: setup-env
     docker compose --env-file {{env_file}} --file {{compose_file}} logs --follow
 
 db-up: setup-env
-    docker compose --env-file {{env_file}} --file {{compose_file}} up --detach database
+    docker compose --env-file {{env_file}} --file {{compose_file}} up --detach --wait database
 
 db-down: setup-env
     docker compose --env-file {{env_file}} --file {{compose_file}} down
@@ -68,16 +68,22 @@ db-logs: setup-env
     docker compose --env-file {{env_file}} --file {{compose_file}} logs --follow database
 
 db-reset: setup-env
-    cd {{api_dir}} && bunx prisma migrate reset
+    cd {{api_dir}} && bash infrastructure/docker/run-with-database.sh bunx prisma migrate reset
 
 db-migrate: setup-env
-    cd {{api_dir}} && bunx prisma migrate dev
+    cd {{api_dir}} && bash infrastructure/docker/run-with-database.sh bunx prisma migrate dev
+
+db-deploy: setup-env
+    cd {{api_dir}} && bash infrastructure/docker/run-with-database.sh bunx prisma migrate deploy
+
+db-seed: setup-env
+    cd {{api_dir}} && bash infrastructure/docker/run-with-database.sh bun run infrastructure/database/prisma/seed.ts
 
 db-generate:
     cd {{api_dir}} && bunx prisma generate
 
 db-studio: setup-env
-    cd {{api_dir}} && bunx prisma studio
+    cd {{api_dir}} && bash infrastructure/docker/run-with-database.sh bunx prisma studio --port 5555 --browser none
 
 clean:
     rm -rf node_modules packages/ui/node_modules src/apps/api/node_modules .turbo src/apps/api/dist

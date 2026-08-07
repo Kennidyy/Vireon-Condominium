@@ -15,7 +15,14 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": [
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "JWT_EXPIRES_IN",
+        "NODE_ENV",
+        "PORT"
+      ]
     },
     "test": {},
     "test:e2e": {}

@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "bash src/apps/api/infrastructure/docker/run-with-database.sh turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
