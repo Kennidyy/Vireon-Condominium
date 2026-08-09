@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class ImageExceedsMaxSizeException extends DomainException {
   readonly code = 'IMAGE_EXCEEDS_MAX_SIZE';

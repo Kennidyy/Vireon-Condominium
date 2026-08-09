@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class PasswordMinLengthException extends DomainException {
   readonly code = 'PASSWORD_MIN_LENGTH';

@@ -2,6 +2,7 @@ import { FakeResidentRepository } from '../../infrastructure/mock/FakeResidentRe
 import { AddContactUseCase } from './AddContactUseCase';
 import { AddContactCommand } from '../command/AddContactCommand';
 import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
+import { ResidentAccessDeniedException } from '../exceptions/ResidentAccessDeniedException';
 import { InvalidEmailFormatException } from '../../domain/exceptions/value-objects/email/InvalidEmailFormatException';
 import { InvalidPhoneException } from '../../domain/exceptions/value-objects/phone/InvalidPhoneException';
 import { Uuid } from '../../domain/value-objects/Uuid';
@@ -9,6 +10,7 @@ import { PersonName } from '../../domain/value-objects/PersonName';
 import { ProfilePhoto } from '../../domain/entities/ProfilePhoto';
 import { Resident } from '../../domain/entities/Resident';
 import { ImageType } from '../../domain/enum/ImageType';
+import { UserRole } from '../../domain/enum/UserRole';
 
 describe('AddContactUseCase', () => {
   let repository: FakeResidentRepository;
@@ -28,7 +30,13 @@ describe('AddContactUseCase', () => {
     await repository.save(resident);
 
     await useCase.execute(
-      new AddContactCommand(resident.id, 'EMAIL', 'joao@example.com'),
+      new AddContactCommand(
+        resident.id,
+        'EMAIL',
+        'joao@example.com',
+        resident.id,
+        UserRole.USER,
+      ),
     );
 
     const updated = await repository.getById(resident.id);
@@ -45,7 +53,13 @@ describe('AddContactUseCase', () => {
     await repository.save(resident);
 
     await useCase.execute(
-      new AddContactCommand(resident.id, 'PHONE', '+5511999999999'),
+      new AddContactCommand(
+        resident.id,
+        'PHONE',
+        '+5511999999999',
+        resident.id,
+        UserRole.USER,
+      ),
     );
 
     const updated = await repository.getById(resident.id);
@@ -59,6 +73,8 @@ describe('AddContactUseCase', () => {
           '550e8400-e29b-41d4-a716-446655440000',
           'EMAIL',
           'joao@example.com',
+          '550e8400-e29b-41d4-a716-446655440000',
+          UserRole.USER,
         ),
       ),
     ).rejects.toThrow(ResidentNotFoundException);
@@ -73,7 +89,15 @@ describe('AddContactUseCase', () => {
     await repository.save(resident);
 
     await expect(
-      useCase.execute(new AddContactCommand(resident.id, 'EMAIL', 'invalid')),
+      useCase.execute(
+        new AddContactCommand(
+          resident.id,
+          'EMAIL',
+          'invalid',
+          resident.id,
+          UserRole.USER,
+        ),
+      ),
     ).rejects.toThrow(InvalidEmailFormatException);
   });
 
@@ -87,8 +111,57 @@ describe('AddContactUseCase', () => {
 
     await expect(
       useCase.execute(
-        new AddContactCommand(resident.id, 'PHONE', '11999999999'),
+        new AddContactCommand(
+          resident.id,
+          'PHONE',
+          '11999999999',
+          resident.id,
+          UserRole.USER,
+        ),
       ),
     ).rejects.toThrow(InvalidPhoneException);
+  });
+
+  it('should deny a non-owner from adding a contact', async () => {
+    const resident = Resident.create(
+      Uuid.generate(),
+      PersonName.create('João Silva'),
+      ProfilePhoto.create('photos/abc.png', ImageType.PNG, 1024),
+    );
+    await repository.save(resident);
+
+    await expect(
+      useCase.execute(
+        new AddContactCommand(
+          resident.id,
+          'EMAIL',
+          'joao@example.com',
+          '550e8400-e29b-41d4-a716-446655440000',
+          UserRole.USER,
+        ),
+      ),
+    ).rejects.toThrow(ResidentAccessDeniedException);
+  });
+
+  it('should allow an ADMIN to add a contact to any resident', async () => {
+    const resident = Resident.create(
+      Uuid.generate(),
+      PersonName.create('João Silva'),
+      ProfilePhoto.create('photos/abc.png', ImageType.PNG, 1024),
+    );
+    await repository.save(resident);
+
+    await useCase.execute(
+      new AddContactCommand(
+        resident.id,
+        'EMAIL',
+        'admin@example.com',
+        '550e8400-e29b-41d4-a716-446655440000',
+        UserRole.ADMIN,
+      ),
+    );
+
+    const updated = await repository.getById(resident.id);
+    expect(updated?.contactList).toHaveLength(1);
   });
 });

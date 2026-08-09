@@ -3,7 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { GlobalExceptionFilter } from './modules/identity/presentation/nestjs/filters/GlobalExceptionFilter';
+import { GlobalExceptionFilter } from './modules/shared/presentation/filters/GlobalExceptionFilter';
+import { setupOpenApi } from './modules/shared/presentation/swagger/setup-open-api';
+import { assertConfig } from './config/bootstrap-config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +21,10 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   const configService = app.get(ConfigService);
+  assertConfig(configService);
+
+  setupOpenApi(app);
+
   const port = configService.get<number>('app.port', 3000);
 
   await app.listen(port);

@@ -36,8 +36,8 @@ describe('UpdateProfilePhotoUseCase', () => {
     );
 
     const updated = await repository.getById(resident.id);
-    expect(updated?.profilePhoto.storageKey).toBe('photos/new.png');
-    expect(updated?.profilePhoto.contentType).toBe(ImageType.JPEG);
+    expect(updated?.profilePhoto?.storageKey).toBe('photos/new.png');
+    expect(updated?.profilePhoto?.contentType).toBe(ImageType.JPEG);
   });
 
   it('should throw when resident is not found', async () => {

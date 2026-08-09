@@ -4,7 +4,7 @@
 
 The Resident bounded context manages the condominium-facing profile associated with a system identity. It owns a resident's name, contact channels, primary-contact selection, and profile-photo metadata.
 
-This document describes the implementation delivered in `v0.2.0`. Vireon remains under active development, and the public API and domain model may still change incompatibly before `1.0.0`.
+This document describes the implementation delivered in `v0.3.0`. Vireon remains under active development, and the public API and domain model may still change incompatibly before `1.0.0`.
 
 ## Scope
 
@@ -115,7 +115,7 @@ Restoration paths intentionally trust more persistence data than creation paths.
 | `GetByNameUseCase`       | Performs a case-insensitive substring search and raises `ResidentNotFoundException` when no rows match. |
 | `GetAllResidentsUseCase` | Returns all persisted residents, including an empty list.                                               |
 
-There is no separate “find by user ID” query. In `v0.2.0`, the user and resident identifiers have the same value, so the repository has only `getById`.
+There is no separate “find by user ID” query. The user and resident identifiers currently have the same value, so the repository has only `getById`.
 
 ## Application Use Cases
 
@@ -129,21 +129,21 @@ Notable exceptions to that pattern are:
 
 ## Public API
 
-The implemented controller exposes exactly eleven routes under `/residents`. “User or admin” means that both roles pass the current role guard; it does not imply resource ownership.
+The implemented controller exposes ten routes under `/residents`. “User or admin” means that both roles pass the role guard; contact mutations additionally enforce ownership for `USER` subjects.
 
-| Method   | Route                                        | Purpose                                  | Authentication | Authorization | Input                                                | Success response               | Relevant logical errors                                       |
-| -------- | -------------------------------------------- | ---------------------------------------- | -------------- | ------------- | ---------------------------------------------------- | ------------------------------ | ------------------------------------------------------------- |
-| `POST`   | `/residents`                                 | Create the authenticated user's Resident | JWT            | User or admin | Body: `{ "name": string }`                           | `201`; no response body        | Resident already exists; invalid UUID or name                 |
-| `PATCH`  | `/residents`                                 | Change the authenticated resident's name | JWT            | User or admin | Body: `{ "name": string }`                           | `200`; no response body        | Resident not found; invalid name                              |
-| `DELETE` | `/residents/:id`                             | Delete a Resident                        | JWT            | Admin         | Path: `id`                                           | `200`; no response body        | Prisma delete failure, including a missing row                |
-| `GET`    | `/residents?name=:name`                      | Search by name fragment                  | None           | Public        | Query: `name`                                        | `200`; Resident response array | Resident not found when the result is empty                   |
-| `GET`    | `/residents/all`                             | List every Resident                      | JWT            | Admin         | None                                                 | `200`; Resident response array | Persistence/restoration failure                               |
-| `GET`    | `/residents/:id`                             | Find a Resident by ID                    | JWT            | Admin         | Path: `id`                                           | `200`; Resident response       | Resident not found                                            |
-| `PATCH`  | `/residents/:id/photo`                       | Replace profile-photo metadata           | JWT            | Admin         | Body: `storageKey`, `contentType`, `size`            | `200`; Resident response       | Resident not found; invalid image type, size, or storage key  |
-| `POST`   | `/residents/:id/contacts`                    | Add a Contact                            | JWT            | User or admin | Body: `{ "type": string, "value": string }`          | `201`; Resident response       | Resident not found; invalid contact; maximum contacts reached |
-| `PATCH`  | `/residents/:id/contacts/:contactId`         | Change a Contact value                   | JWT            | User or admin | Path: `id`, `contactId`; body: `{ "value": string }` | `200`; Resident response       | Resident or Contact not found; invalid contact value          |
-| `PATCH`  | `/residents/:id/contacts/:contactId/primary` | Select the primary Contact               | JWT            | User or admin | Path: `id`, `contactId`                              | `200`; Resident response       | Resident or Contact not found                                 |
-| `DELETE` | `/residents/:id/contacts/:contactId`         | Remove a Contact                         | JWT            | User or admin | Path: `id`, `contactId`                              | `200`; Resident response       | Resident or Contact not found                                 |
+| Method   | Route                                        | Purpose                                  | Authentication | Authorization | Input                                                | Success response               | Relevant logical errors                                                                                 |
+| -------- | -------------------------------------------- | ---------------------------------------- | -------------- | ------------- | ---------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `POST`   | `/residents`                                 | Create the authenticated user's Resident | JWT            | User or admin | Body: `{ "name": string }`                           | `201`; no response body        | Resident already exists; invalid UUID or name                                                           |
+| `PATCH`  | `/residents`                                 | Change the authenticated resident's name | JWT            | User or admin | Body: `{ "name": string }`                           | `200`; no response body        | Resident not found; invalid name                                                                        |
+| `DELETE` | `/residents/:id`                             | Delete a Resident                        | JWT            | Admin         | Path: `id`                                           | `200`; no response body        | Prisma delete failure, including a missing row                                                          |
+| `GET`    | `/residents/search?name=:name`               | Search by name fragment                  | None           | Public        | Query: `name`                                        | `200`; Resident response array | Missing/empty `name` or unknown parameters (`400`); Resident not found when the result is empty (`404`) |
+| `GET`    | `/residents`                                 | List every Resident                      | JWT            | Admin         | None                                                 | `200`; Resident response array | No credentials (`401`); non-admin role (`403`)                                                          |
+| `GET`    | `/residents/:id`                             | Find a Resident by ID                    | JWT            | Admin         | Path: `id`                                           | `200`; Resident response       | Resident not found                                                                                      |
+| `PATCH`  | `/residents/:id/photo`                       | Replace profile-photo metadata           | JWT            | Admin         | Body: `storageKey`, `contentType`, `size`            | `200`; Resident response       | Resident not found; invalid image type, size, or storage key                                            |
+| `POST`   | `/residents/:id/contacts`                    | Add a Contact                            | JWT            | User or admin | Body: `{ "type": string, "value": string }`          | `201`; Resident response       | Resident not found; invalid contact; maximum contacts reached                                           |
+| `PATCH`  | `/residents/:id/contacts/:contactId`         | Change a Contact value                   | JWT            | User or admin | Path: `id`, `contactId`; body: `{ "value": string }` | `200`; Resident response       | Resident or Contact not found; invalid contact value                                                    |
+| `PATCH`  | `/residents/:id/contacts/:contactId/primary` | Select the primary Contact               | JWT            | User or admin | Path: `id`, `contactId`                              | `200`; Resident response       | Resident or Contact not found                                                                           |
+| `DELETE` | `/residents/:id/contacts/:contactId`         | Remove a Contact                         | JWT            | User or admin | Path: `id`, `contactId`                              | `200`; Resident response       | Resident or Contact not found                                                                           |
 
 The Resident response shape is:
 
@@ -177,7 +177,7 @@ The Resident response shape is:
 
 The mapper converts domain MIME values (`image/png`, `image/jpeg`) to Prisma enum values (`PNG`, `JPEG`). On aggregate update it deletes all Contact rows and recreates the current contact list. It upserts profile-photo metadata.
 
-There is an important model mismatch: Prisma declares `Resident.profilePhoto` optional, but the domain constructor requires a ProfilePhoto and the repository throws a generic error when it loads a Resident without one. The database permits a state that the adapter cannot restore.
+There is no longer a domain/persistence mismatch: Prisma declares `Resident.profilePhoto` optional and the domain now represents an absent photo as `null`. The mapper omits the relational row when there is no photo, and the response falls back to the `defaults/profile.jpg` avatar key.
 
 The latest migration constrains deletion of a referenced User, while deleting a Resident cascades to its Contact and ProfilePhoto rows.
 
@@ -194,17 +194,17 @@ The intended domain/application codes include:
 | Contact values      | `EMAIL_IS_REQUIRED`, `INVALID_EMAIL_FORMAT`, `PHONE_IS_REQUIRED`, `INVALID_PHONE`             |
 | Profile photo       | `STORAGE_KEY_IS_REQUIRED`, `INVALID_IMAGE_TYPE`, `IMAGE_EXCEEDS_MAX_SIZE`                     |
 
-Current HTTP mapping is incomplete. The global filter checks the Identity context's `DomainException` class, while Resident exceptions extend a separate Resident `DomainException`. As a result, Resident typed exceptions currently fall through to the generic `500 Internal server error` response instead of the filter's domain-error branch, which returns `400` with a code. Prisma errors also fall through to `500`.
+The global exception filter now recognizes the shared exception hierarchy and maps every domain/application exception to its code and HTTP status. Unexpected failures, including Prisma errors, are translated to a generic `500 Internal server error`. Error bodies follow `{ statusCode, message, path, requestId, code? }` and the `requestId` also appears in the `x-request-id` response header.
 
 Nest validation and guard failures are `HttpException` instances and retain their framework status, including request-validation `400`, unauthenticated `401`, and forbidden `403` responses.
 
 ## Authorization Behavior
 
 - `POST /residents` and `PATCH /residents` derive the target identifier from the authenticated JWT subject. A request body cannot select another Resident for these operations.
-- Delete, list-all, get-by-ID, and profile-photo replacement are administrator-only.
-- Name search is public and returns the full Resident response shape.
+- Delete, list-all (the `/residents` route without a `name` filter), get-by-ID, and profile-photo replacement are administrator-only.
+- Name search is public and returns the full Resident response shape; the same route without a `name` filter lists every Resident for `ADMIN` accounts (`401` when unauthenticated, `403` for `USER`).
 - Contact mutation routes allow both users and administrators and accept the target Resident ID from the path.
-- The contact routes do not compare the path identifier with the authenticated subject. A user who knows another Resident ID can currently attempt to mutate that Resident's contacts. Role checks therefore exist, but ownership authorization is incomplete.
+- A `USER` subject must own the resident addressed by a contact mutation. `ResidentAccessPolicy` compares the authenticated identifier with the resident owner and raises `403 RESIDENT_ACCESS_DENIED` otherwise; `ADMIN` subjects skip that check. The check lives in the application layer, so it holds regardless of the HTTP routing.
 
 ## Dependencies
 
@@ -233,7 +233,7 @@ The repository contains Resident-focused unit tests at four boundaries:
 - Infrastructure unit tests for `ResidentMapper` and the fake repository.
 - Presentation unit tests for the controller, request DTO validation, and response DTO construction. Controller tests exercise response mapping indirectly; there is no dedicated `ResidentResponseMapper` specification.
 
-No Resident integration test exercises `PrismaResidentRepository` against PostgreSQL, and no Resident E2E specification exercises the HTTP routes with real guards, filters, and persistence. Existing controller tests call controller methods directly and do not prove the effective HTTP status or exception mapping.
+A PostgreSQL-backed end-to-end suite under `src/apps/api/test/` exercises the real HTTP routes with guards, filters, and the Prisma adapter, including ownership `403`s, the unified error contract, and the OpenAPI document. The suite runs through `bash test/run-e2e.sh`, which starts an ephemeral PostgreSQL container, migrates and seeds it, runs the tests, and tears it down.
 
 ## Engineering Decisions
 
@@ -252,33 +252,25 @@ Resident entities distinguish creation, which generates child identifiers and ap
 ## Current Limitations
 
 - Resident and User identities and lifecycles are coupled by the shared primary key.
-- Resident exceptions are not mapped to appropriate HTTP statuses and currently produce generic `500` responses.
-- User-role checks exist, but contact mutations do not enforce ownership.
 - Resident name search is unauthenticated and returns the complete response shape.
-- Resident name search has no query DTO or required-field validation; the behavior of an omitted `name` value is not defined consistently at the presentation boundary.
 - The contact request DTO validates `type` only as a string, not as the `EMAIL`/`PHONE` enum; an unsupported string can bypass contact-value validation and fail later at persistence.
-- Profile-photo updates accept metadata only. There is no file upload, object existence check, signed read URL, replacement cleanup, or deletion cleanup.
-- The default `defaults/profile.jpg` key is created as metadata, but the implementation does not provision an object at that key.
-- The domain requires a profile photo, while the Prisma relation is nullable.
-- Profile-photo size has an upper bound but no non-negative or integer domain rule.
+- Profile-photo updates accept metadata only. There is no file upload, object existence check, signed read URL, replacement cleanup, or deletion cleanup; the `defaults/profile.jpg` key is not provisioned in storage.
+- Profile-photo size has an upper bound but no explicit non-negative or integer domain rule.
 - Aggregate updates replace all persisted Contact rows rather than applying incremental relational changes.
 - Restoration paths can reintroduce states that creation paths would reject.
-- There is no real-database integration coverage or Resident HTTP E2E coverage.
 
 ## Planned Evolution
 
 The confirmed identity evolution is to introduce an independent Resident identifier and retain the User association through an explicit `userId` field.
 
-Other implementation gaps that should be resolved before documenting the related capabilities as complete include:
+Other implementation gaps to resolve before documenting the related capabilities as complete include:
 
-- Add resource-ownership authorization for resident-scoped mutations.
-- Map Resident and persistence failures to an explicit HTTP error contract.
-- Align profile-photo nullability across the domain, mapper, and schema.
+- Pagination for the Resident search and list routes.
+- Map persistent failures to explicit HTTP codes instead of a generic `500`.
 - Add a real object-storage workflow if profile-photo upload and retrieval are delivered.
 - Validate contact type and photo size at the request boundary and in the domain.
-- Add Prisma integration tests and guarded HTTP E2E tests.
 
-These items are planned evolution, not implemented behavior in `v0.2.0`.
+These items are planned evolution, not implemented behavior in `v0.3.0`.
 
 ## Implementation Evidence
 
@@ -288,4 +280,4 @@ These items are planned evolution, not implemented behavior in `v0.2.0`.
 - [Resident aggregate](../../../src/apps/api/src/modules/resident/domain/entities/Resident.ts) and [aggregate tests](../../../src/apps/api/src/modules/resident/domain/entities/Resident.spec.ts)
 - [Repository port](../../../src/apps/api/src/modules/resident/application/ports/ResidentRepository.ts), [Prisma adapter](../../../src/apps/api/src/modules/resident/infrastructure/repositories/PrismaResidentRepository.ts), and [persistence mapper](../../../src/apps/api/src/modules/resident/infrastructure/mappers/ResidentMapper.ts)
 - [Prisma schema](../../../src/apps/api/infrastructure/database/prisma/schema.prisma) and [Resident migrations](../../../src/apps/api/infrastructure/database/prisma/migrations)
-- [Engineering decisions](../../architecture/engineering-decisions.md), [`v0.2.0` changelog](../../../CHANGELOG.md), and [documentation index](../../README.md)
+- [Engineering decisions](../../architecture/engineering-decisions.md), [`v0.3.0` changelog](../../../CHANGELOG.md), and [documentation index](../../README.md)

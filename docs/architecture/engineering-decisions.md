@@ -265,12 +265,12 @@ premature.
   defined stability;
 - do not create retroactive releases merely to fill skipped version numbers.
 
-The current delivery is documented as `v0.2.0` in the
+The current delivery is documented as `v0.3.0` in the
 [changelog](../../CHANGELOG.md).
 
 **Consequences and limitations.** Consumers must expect incompatible changes
 between pre-1.0 functional deliveries. Documentation must distinguish current,
-planned, postponed, and removed behavior and must not describe `v0.2.0` as
+planned, postponed, and removed behavior and must not describe `v0.3.0` as
 stable or production-ready.
 
 ## Current cross-cutting trade-offs
@@ -291,7 +291,7 @@ and should remain visible until resolved:
    but the
    [application bootstrap](../../src/apps/api/src/main.ts)
    globally registers an Identity-owned
-   [filter](../../src/apps/api/src/modules/identity/presentation/nestjs/filters/GlobalExceptionFilter.ts)
+   [filter](../../src/apps/api/src/modules/shared/presentation/filters/GlobalExceptionFilter.ts)
    that tests with `instanceof` against
    [Identity's `DomainException`](../../src/apps/api/src/modules/identity/domain/exceptions/DomainException.ts).
    Despite identical shapes, these are different runtime classes. Resident

@@ -1,6 +1,6 @@
 # Vireon Documentation
 
-This directory describes the repository state prepared for `v0.2.0`. The project remains in pre-1.0 development, so API contracts, architecture, and domain boundaries may change incompatibly.
+This directory describes the repository state prepared for `v0.3.0`. The project remains in pre-1.0 development, so API contracts, architecture, and domain boundaries may change incompatibly.
 
 Documentation distinguishes four states:
 
@@ -19,7 +19,7 @@ Documentation distinguishes four states:
 | What does Resident own and expose?             | [Resident bounded context](contexts/bounded-contexts/resident.md) |
 | What does Identity own?                        | [Identity bounded context](contexts/bounded-contexts/identity.md) |
 | What are the API-specific commands and routes? | [API README](../src/apps/api/README.md)                           |
-| What is included in `v0.2.0`?                  | [Changelog](../CHANGELOG.md)                                      |
+| What is included in `v0.3.0`?                  | [Changelog](../CHANGELOG.md)                                      |
 
 ## Architecture
 
@@ -51,13 +51,23 @@ The local Bruno collection is ignored by Git and is therefore not part of the pu
 
 ## Testing
 
-Resident unit specifications are co-located with the source under [`src/apps/api/src/modules/resident`](../src/apps/api/src/modules/resident). They cover domain behavior, application orchestration through the in-memory repository, persistence mapping, request DTOs, response mapping, and controller delegation.
+Resident and Identity unit specifications are co-located with the source under
+`src/apps/api/src/modules/...`. They cover domain behavior, application
+orchestration through the in-memory repository, persistence mapping, request
+DTOs, response transformation, middleware, the exception filter, and controller
+delegation.
 
-There is no active integration or end-to-end specification in the current tree. The CI workflow starts PostgreSQL and deploys migrations before running the same workspace test command; that does not make the unit suite a database integration suite.
+An active PostgreSQL-backed end-to-end suite lives in
+[`src/apps/api/test`](../src/apps/api/test) and is run with
+`bash test/run-e2e.sh` from `src/apps/api`. It spawns an ephemeral PostgreSQL
+container, applies migrations and seeds, runs the Supertest suites, and tears
+the container down. The suite covers login (including a corrupted-hash `401`),
+identity administration, resident flows, ownership `403`s, the unified error
+contract, and the OpenAPI document.
 
 ## Releases
 
-- [`v0.2.0` delivery notes](../CHANGELOG.md)
+- [`v0.3.0` delivery notes](../CHANGELOG.md)
 - Versioning rules are recorded under [Versioning during initial development](architecture/engineering-decisions.md#versioning-during-initial-development).
 
 Skipped version numbers are not backfilled, and `1.0.0` is reserved for explicitly defined product and public-contract stability.

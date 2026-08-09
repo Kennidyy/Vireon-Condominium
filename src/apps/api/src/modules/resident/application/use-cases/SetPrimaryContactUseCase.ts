@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { ResidentRepository } from '../ports/ResidentRepository';
 import { SetPrimaryContactCommand } from '../command/SetPrimaryContactCommand';
 import { ResidentNotFoundException } from '../exceptions/ResidentNotFoundException';
+import { ResidentAccessPolicy } from '../policies/ResidentAccessPolicy';
 
 @Injectable()
 export class SetPrimaryContactUseCase {
@@ -16,6 +17,12 @@ export class SetPrimaryContactUseCase {
     if (!resident) {
       throw new ResidentNotFoundException();
     }
+
+    ResidentAccessPolicy.assertCanMutate(
+      resident.id,
+      command.authenticatedUserId,
+      command.authenticatedRole,
+    );
 
     resident.setPrimaryContact(command.contactId);
 

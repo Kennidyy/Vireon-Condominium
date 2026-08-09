@@ -26,7 +26,7 @@ Identity does not own:
 
 Auth currently imports Identity's concrete Argon2 adapter in module wiring, so the source-module separation is not a fully independent adapter boundary. This qualification is described in the [architecture overview](../../architecture/overview.md).
 
-Resident does not import or manipulate the `User` entity. The two contexts are associated through an identifier. In `v0.2.0`, persistence temporarily reuses `User.id` as `Resident.id`; this is a transitional integration decision rather than an Identity invariant. See [Temporary shared identifier](resident.md#temporary-shared-identifier).
+Resident does not import or manipulate the `User` entity. The two contexts are associated through an identifier. In `v0.3.0`, persistence currently reuses `User.id` as `Resident.id`; this is a transitional integration decision rather than an Identity invariant. See [Temporary shared identifier](resident.md#temporary-shared-identifier).
 
 ## Public API
 

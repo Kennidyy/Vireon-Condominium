@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../infrastructure/database/prisma/prisma.service';
 import { ResidentRepository } from '../../application/ports/ResidentRepository';
 import { Resident } from '../../domain/entities/Resident';
@@ -6,20 +6,7 @@ import { ResidentMapper } from '../mappers/ResidentMapper';
 
 @Injectable()
 export class PrismaResidentRepository implements ResidentRepository {
-  private readonly logger = new Logger(PrismaResidentRepository.name);
-
-  private static readonly MISSING_PROFILE_PHOTO_MESSAGE =
-    'Resident persisted without profile photo.';
-
   constructor(private readonly prismaService: PrismaService) {}
-
-  private throwMissingProfilePhoto(id: string): never {
-    this.logger.error(
-      `${PrismaResidentRepository.MISSING_PROFILE_PHOTO_MESSAGE} (resident id: ${id})`,
-    );
-
-    throw new Error(PrismaResidentRepository.MISSING_PROFILE_PHOTO_MESSAGE);
-  }
 
   async save(resident: Resident): Promise<void> {
     const data = ResidentMapper.toPersistence(resident);
@@ -53,18 +40,14 @@ export class PrismaResidentRepository implements ResidentRepository {
       },
     });
 
-    return residents.map((resident) => {
-      if (!resident.profilePhoto) {
-        this.throwMissingProfilePhoto(resident.id);
-      }
-
-      return ResidentMapper.toDomain(
+    return residents.map((resident) =>
+      ResidentMapper.toDomain(
         resident.id,
         resident.name,
         resident.profilePhoto,
         resident.contacts,
-      );
-    });
+      ),
+    );
   }
 
   async getById(id: string): Promise<Resident | null> {
@@ -77,10 +60,6 @@ export class PrismaResidentRepository implements ResidentRepository {
     });
 
     if (!data) return null;
-
-    if (!data.profilePhoto) {
-      this.throwMissingProfilePhoto(data.id);
-    }
 
     return ResidentMapper.toDomain(
       data.id,
@@ -99,17 +78,13 @@ export class PrismaResidentRepository implements ResidentRepository {
       },
     });
 
-    return residents.map((resident) => {
-      if (!resident.profilePhoto) {
-        this.throwMissingProfilePhoto(resident.id);
-      }
-
-      return ResidentMapper.toDomain(
+    return residents.map((resident) =>
+      ResidentMapper.toDomain(
         resident.id,
         resident.name,
         resident.profilePhoto,
         resident.contacts,
-      );
-    });
+      ),
+    );
   }
 }

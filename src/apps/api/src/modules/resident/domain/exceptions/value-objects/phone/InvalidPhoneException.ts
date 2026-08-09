@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class InvalidPhoneException extends DomainException {
   readonly code = 'INVALID_PHONE';

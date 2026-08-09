@@ -5,11 +5,14 @@ import {
 } from '../dto/ResidentResponseDto';
 
 export class ResidentResponseMapper {
+  private static readonly DEFAULT_PROFILE_PHOTO = 'defaults/profile.jpg';
+
   static toResponse(resident: Resident): ResidentResponseDto {
     return new ResidentResponseDto(
       resident.id,
       resident.name,
-      resident.profilePhoto.storageKey,
+      resident.profilePhoto?.storageKey ??
+        ResidentResponseMapper.DEFAULT_PROFILE_PHOTO,
       resident.contactList.map(
         (contact) =>
           new ContactResponseDto(

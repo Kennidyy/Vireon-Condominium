@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class PersonNameTooLargeException extends DomainException {
   readonly code = 'NAME_TOO_LARGE';

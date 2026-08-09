@@ -1,4 +1,4 @@
-import { DomainException } from '../../DomainException';
+import { DomainException } from '../../../../../shared/domain/exceptions/DomainException';
 
 export class StorageKeyIsRequiredException extends DomainException {
   readonly code = 'STORAGE_KEY_IS_REQUIRED';

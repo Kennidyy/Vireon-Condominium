@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { InvalidCredentialException } from '../../../identity/application/exceptions/InvalidCredentialException';
 import type { IdentityProvider } from '../ports/IdentityProvider';
 import { LoginUserCommand } from '../command/LoginUserCommand';
 import type { AuthPasswordHasher } from '../ports/AuthPasswordHasher';
@@ -19,7 +20,7 @@ export class LoginUserUseCase {
     const user = await this.identityProvider.getByEmail(command.email);
 
     if (!user) {
-      throw new Error('Wrong credentials');
+      throw new InvalidCredentialException();
     }
 
     const validPassword = await this.authPasswordHasher.compare(
@@ -28,7 +29,7 @@ export class LoginUserUseCase {
     );
 
     if (!validPassword) {
-      throw new Error('Wrong credentials');
+      throw new InvalidCredentialException();
     }
 
     const token = await this.tokenSigner.sign({

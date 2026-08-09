@@ -40,7 +40,11 @@ import { SetPrimaryContactCommand } from '../../../application/command/SetPrimar
 import { RemoveContactUseCase } from '../../../application/use-cases/RemoveContactUseCase';
 import { RemoveContactCommand } from '../../../application/command/RemoveContactCommand';
 import { ResidentResponseMapper } from '../mappers/ResidentResponseMapper';
+import { SearchResidentsQueryDto } from '../dto/SearchResidentsQueryDto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('residents')
+@ApiBearerAuth()
 @Controller('residents')
 export class ResidentController {
   constructor(
@@ -91,17 +95,17 @@ export class ResidentController {
     await this.deleteResidentUseCase.execute(command);
   }
 
-  @Get()
-  async getByName(@Query('name') name: string) {
-    const residents = await this.getResidentByName.execute(name);
+  @Get('search')
+  async searchResidents(@Query() dto: SearchResidentsQueryDto) {
+    const residents = await this.getResidentByName.execute(dto.name);
 
     return ResidentResponseMapper.toResponseList(residents);
   }
 
-  @Get('all')
+  @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async getAll() {
+  async getResidents() {
     const residents = await this.getAllResidentsUseCase.execute();
 
     return ResidentResponseMapper.toResponseList(residents);
@@ -138,8 +142,18 @@ export class ResidentController {
   @Post(':id/contacts')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
-  async addContact(@Param('id') id: string, @Body() dto: AddContactRequest) {
-    const command = new AddContactCommand(id, dto.type, dto.value);
+  async addContact(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: AddContactRequest,
+  ) {
+    const command = new AddContactCommand(
+      id,
+      dto.type,
+      dto.value,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.addContactUseCase.execute(command);
 
@@ -150,11 +164,18 @@ export class ResidentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
   async updateContactValue(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('contactId') contactId: string,
     @Body() dto: UpdateContactValueRequest,
   ) {
-    const command = new UpdateContactValueCommand(id, contactId, dto.value);
+    const command = new UpdateContactValueCommand(
+      id,
+      contactId,
+      dto.value,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.updateContactValueUseCase.execute(command);
 
@@ -165,10 +186,16 @@ export class ResidentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
   async setPrimaryContact(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('contactId') contactId: string,
   ) {
-    const command = new SetPrimaryContactCommand(id, contactId);
+    const command = new SetPrimaryContactCommand(
+      id,
+      contactId,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.setPrimaryContactUseCase.execute(command);
 
@@ -179,10 +206,16 @@ export class ResidentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
   async removeContact(
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Param('contactId') contactId: string,
   ) {
-    const command = new RemoveContactCommand(id, contactId);
+    const command = new RemoveContactCommand(
+      id,
+      contactId,
+      req.user.id,
+      req.user.role,
+    );
 
     const resident = await this.removeContactUseCase.execute(command);
 

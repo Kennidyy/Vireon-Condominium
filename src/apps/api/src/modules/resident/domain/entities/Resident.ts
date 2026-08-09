@@ -11,13 +11,13 @@ export class Resident {
   readonly #id: Uuid;
 
   #name: PersonName;
-  #profilePhoto: ProfilePhoto;
+  #profilePhoto: ProfilePhoto | null;
   #contacts: Contact[];
 
   private constructor(
     id: Uuid,
     name: PersonName,
-    profilePhoto: ProfilePhoto,
+    profilePhoto: ProfilePhoto | null,
     contacts: Contact[],
   ) {
     this.#id = id;
@@ -29,7 +29,7 @@ export class Resident {
   public static create(
     userId: Uuid,
     name: PersonName,
-    profilePhoto: ProfilePhoto,
+    profilePhoto: ProfilePhoto | null = null,
     contacts: Contact[] = [],
   ): Resident {
     if (contacts.length > Resident.MAX_CONTACTS) {
@@ -42,7 +42,7 @@ export class Resident {
   public static restore(
     id: string,
     name: string,
-    profilePhoto: ProfilePhoto,
+    profilePhoto: ProfilePhoto | null,
     contacts: Contact[],
   ): Resident {
     return new Resident(
@@ -118,6 +118,10 @@ export class Resident {
   }
 
   get profilePhoto() {
+    if (!this.#profilePhoto) {
+      return null;
+    }
+
     return {
       id: this.#profilePhoto.id,
       storageKey: this.#profilePhoto.storageKey,

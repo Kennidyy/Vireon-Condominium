@@ -94,7 +94,7 @@ describe('Resident Entity', () => {
       expect(resident.id).toBe(id);
       expect(resident.userId).toBe(id);
       expect(resident.name).toBe('João Silva');
-      expect(resident.profilePhoto.storageKey).toBe('photos/abc.png');
+      expect(resident.profilePhoto?.storageKey).toBe('photos/abc.png');
       expect(resident.contactList).toHaveLength(1);
     });
 
@@ -134,9 +134,9 @@ describe('Resident Entity', () => {
 
       resident.changeProfilePhoto(newPhoto);
 
-      expect(resident.profilePhoto.storageKey).toBe('photos/new.png');
-      expect(resident.profilePhoto.contentType).toBe(ImageType.JPEG);
-      expect(resident.profilePhoto.size).toBe(512);
+      expect(resident.profilePhoto?.storageKey).toBe('photos/new.png');
+      expect(resident.profilePhoto?.contentType).toBe(ImageType.JPEG);
+      expect(resident.profilePhoto?.size).toBe(512);
     });
   });
 

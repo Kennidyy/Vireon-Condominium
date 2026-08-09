@@ -4,6 +4,92 @@ This changelog records public project deliveries. Vireon is still in initial
 development, so its API, architecture, and domain model may change
 incompatibly before `1.0.0`.
 
+## v0.3.0 — API reliability delivery
+
+This delivery hardens the API around the Identity and Resident bounded
+contexts: ownership-aware authorization, a unified HTTP error contract,
+request correlation, structured request logging, an OpenAPI document, and an
+active PostgreSQL-backed end-to-end suite.
+
+### Added
+
+- Ownership-aware authorization in the
+  [Resident application layer](src/apps/api/src/modules/resident/application/)
+  through the `ResidentAccessPolicy`, together with the
+  `RESIDENT_ACCESS_DENIED` exception (`403`). Contact-mutation commands carry
+  the authenticated subject and role, and the HTTP adapter forwards them from
+  the request.
+- A unified
+  [global exception filter](src/apps/api/src/modules/shared/presentation/filters/GlobalExceptionFilter.ts)
+  emitting `{ statusCode, message, path, requestId, code? }` for both domain
+  and application exceptions, with a generic `Internal server error` for
+  unexpected failures.
+- A
+  [request-ID middleware](src/apps/api/src/modules/shared/presentation/middleware/RequestIdMiddleware.ts)
+  that accepts a validated `X-Request-Id` header or generates one, propagates
+  it to error responses, and echoes it in the response header.
+- A
+  [request logger](src/apps/api/src/modules/shared/presentation/middleware/RequestLoggerMiddleware.ts)
+  emitting `METHOD path status durationMs requestId=...` for every request.
+- An OpenAPI document served at `GET /docs` (UI) and `GET /docs-json`,
+  generated with `@nestjs/swagger`, describing the `auth`, `identity`, and
+  `residents` groups with bearer security.
+- An active end-to-end suite under
+  [`src/apps/api/test/`](src/apps/api/test/) driven by `test/run-e2e.sh`,
+  covering login (including a `401` for corrupted hashes), identity
+  administration, resident flow, ownership `403`s, photo metadata, the error
+  contract, and the OpenAPI document.
+- An explicit bootstrap check in
+  [`src/main.ts`](src/apps/api/src/main.ts) prevents the process from starting when
+  `JWT_SECRET` is missing.
+
+### Changed
+
+- `GET /identity/all` was removed: `GET /identity/users` now lists all users
+  when called without an `email` query parameter and otherwise returns the
+  existing email lookup.
+- `GET /residents/all` was removed: `GET /residents` now lists every
+  resident for `ADMIN` accounts only (`403` for `USER` roles, `401` when
+  unauthenticated). Public search moved to `GET /residents/search?name=…`
+  (`400` when `name` is missing, empty, or unexpected query parameters are
+  sent; `404` when there are no matches).
+- Profile-photo is optional in the
+  [Resident domain](src/apps/api/src/modules/resident/domain/entities/Resident.ts);
+  the response mapper keeps an explicit `defaults/profile.jpg` avatar. The
+  repository no longer rejects residents without a photo row.
+- Internally inconsistent login errors now return `401 INVALID_CREDENTIALS`
+  instead of `500`, verified in the login E2E matrix.
+- `main.ts` fails fast when `JWT_SECRET` is missing.
+
+### Fixed
+
+- Resident contact mutations now reject `USER` subjects that address another
+  owner's resident with `403 RESIDENT_ACCESS_DENIED` instead of mutating the
+  target.
+- Resident exceptions now flow through the unified exception filter and no
+  longer fall through to a generic `500`.
+- The error response contract is consistent across identity and resident
+  contexts and exposes the correlation `requestId`.
+
+### Removed
+
+- Removed the temporary `GET /identity/all` and `GET /residents/all` routes
+  and their controller handlers/specifications.
+
+### Known limitations
+
+- `Resident.id` currently reuses `User.id`. This simplifies the present
+  one-to-one association but couples the identities and lifecycles of the two
+  concepts.
+- Profile-photo operations accept and persist metadata only. No object
+  storage (such as MinIO) is wired, so upload, read, verify, and cleanup
+  remain outside this delivery.
+- Resident application use cases use NestJS dependency-injection decorators.
+- The Resident HTTP adapter imports Auth guards, role metadata, and the Auth
+  role enum through concrete Auth paths.
+- There is no production deployment configuration yet; the E2E harness runs
+  against an ephemeral PostgreSQL container.
+
 ## v0.2.0 — Prepared for publication
 
 This delivery introduces the implemented Resident bounded context and records
@@ -69,7 +155,7 @@ the current architectural limitations that remain before publication.
   in external storage.
 - Resident domain and application exceptions extend a Resident-specific base,
   while the current
-  [global exception filter](src/apps/api/src/modules/identity/presentation/nestjs/filters/GlobalExceptionFilter.ts)
+  [global exception filter](src/apps/api/src/modules/shared/presentation/filters/GlobalExceptionFilter.ts)
   recognizes Identity's exception base. Resident exceptions can therefore fall
   through to the generic `500` response instead of the intended domain-error
   response.
